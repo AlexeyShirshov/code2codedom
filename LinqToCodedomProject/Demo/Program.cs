@@ -34,6 +34,10 @@ namespace Demo
             Builder.@if((Par<int> a) => a.v == 10,
                 Builder.stmt(() => Console.WriteLine("Hello, world!")));
 
+            Builder.@if((Par<int> a) => a.v == 10,
+                Builder.GetStmts(Builder.stmt(() => Console.WriteLine("true"))),
+                Builder.stmt(() => Console.WriteLine("false")));
+
             Console.WriteLine(c.GenerateCode(LinqToCodedom.CodeDom.Language.CSharp));
 
             Console.WriteLine(c.GenerateCode(LinqToCodedom.CodeDom.Language.VB));

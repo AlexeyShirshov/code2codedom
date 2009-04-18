@@ -56,6 +56,17 @@ namespace LinqToCodedom.Generator
             return new CodeConditionStatement();
         }
 
+        public static CodeConditionStatement @if<T>(Expression<Func<T, bool>> condition,
+            CodeStatement[] trueStatements, params CodeStatement[] falseStatements)
+        {
+            return new CodeConditionStatement();
+        }
+
+        public static CodeStatement[] GetStmts(params CodeStatement[] stmts)
+        {
+            return stmts;
+        }
+
         public static T Eval<T>(Expression exp)
         {
             return (T)Expression.Lambda(exp).Compile().DynamicInvoke();
