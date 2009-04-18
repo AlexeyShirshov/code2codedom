@@ -1,0 +1,47 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToCodedom", "LinqToCodedom\LinqToCodedom.csproj", "{FD81A5CB-BEC5-4B58-9A40-161BD87CF74D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo", "Demo\Demo.csproj", "{ADF4DAD3-9A8F-4207-90D9-4AF4320A0DB9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToCodedomTest", "LinqToCodedomTest\LinqToCodedomTest.csproj", "{5B031C1D-341A-4C76-B822-DA7C0F35C457}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 4
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs10.codeplex.com/
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = Demo\\Demo.csproj
+		SccProjectName1 = Demo
+		SccLocalPath1 = Demo
+		SccProjectUniqueName2 = LinqToCodedom\\LinqToCodedom.csproj
+		SccProjectName2 = LinqToCodedom
+		SccLocalPath2 = LinqToCodedom
+		SccProjectUniqueName3 = LinqToCodedomTest\\LinqToCodedomTest.csproj
+		SccProjectName3 = LinqToCodedomTest
+		SccLocalPath3 = LinqToCodedomTest
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FD81A5CB-BEC5-4B58-9A40-161BD87CF74D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD81A5CB-BEC5-4B58-9A40-161BD87CF74D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD81A5CB-BEC5-4B58-9A40-161BD87CF74D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD81A5CB-BEC5-4B58-9A40-161BD87CF74D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADF4DAD3-9A8F-4207-90D9-4AF4320A0DB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADF4DAD3-9A8F-4207-90D9-4AF4320A0DB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADF4DAD3-9A8F-4207-90D9-4AF4320A0DB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADF4DAD3-9A8F-4207-90D9-4AF4320A0DB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B031C1D-341A-4C76-B822-DA7C0F35C457}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B031C1D-341A-4C76-B822-DA7C0F35C457}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B031C1D-341A-4C76-B822-DA7C0F35C457}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B031C1D-341A-4C76-B822-DA7C0F35C457}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
