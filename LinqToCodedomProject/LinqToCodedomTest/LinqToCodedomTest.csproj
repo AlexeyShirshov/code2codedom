@@ -50,7 +50,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConditionalStatementTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LinqToCodedom\LinqToCodedom.csproj">
+      <Project>{FD81A5CB-BEC5-4B58-9A40-161BD87CF74D}</Project>
+      <Name>LinqToCodedom</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
