@@ -9,6 +9,13 @@ namespace LinqToCodedom.Visitors
 {
     public class CodeExpressionVisitor
     {
+        private List<CodeArgumentReferenceExpression> _params = new List<CodeArgumentReferenceExpression>();
+
+        public List<CodeArgumentReferenceExpression> Params
+        {
+            get { return _params; }
+        }
+
         private CodeStatementVisitor _vis;
 
         public CodeExpressionVisitor(CodeStatementVisitor vis)
@@ -55,7 +62,7 @@ namespace LinqToCodedom.Visitors
                 case ExpressionType.RightShift:
                 case ExpressionType.LeftShift:
                 case ExpressionType.ExclusiveOr:
-                //return this.VisitBinary((BinaryExpression)exp);
+                    return this.VisitBinary((BinaryExpression)exp);
                 case ExpressionType.TypeIs:
                 //return this.VisitTypeIs((TypeBinaryExpression)exp);
                 case ExpressionType.Conditional:
@@ -69,7 +76,7 @@ namespace LinqToCodedom.Visitors
                 case ExpressionType.Call:
                 //return this.VisitMethodCall((MethodCallExpression)exp);
                 case ExpressionType.Lambda:
-                //return this.VisitLambda((LambdaExpression)exp);
+                    return this.VisitLambda((LambdaExpression)exp);
                 case ExpressionType.New:
                 //return this.VisitNew((NewExpression)exp);
                 case ExpressionType.NewArrayInit:
@@ -86,6 +93,32 @@ namespace LinqToCodedom.Visitors
             }
         }
 
+        private CodeExpression VisitBinary(BinaryExpression binaryExpression)
+        {
+            switch (binaryExpression.NodeType)
+            {
+                case ExpressionType.Equal:
+                    return new CodeBinaryOperatorExpression(
+                        Visit(binaryExpression.Left), CodeBinaryOperatorType.IdentityEquality,
+                        Visit(binaryExpression.Right));
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        private CodeExpression VisitLambda(LambdaExpression lambdaExpression)
+        {
+            foreach (var p in lambdaExpression.Parameters)
+            {
+                if (p.Type.IsGenericType && p.Type.GetGenericTypeDefinition() == typeof(Par<>))
+                {
+                    _params.Add(new CodeArgumentReferenceExpression(p.Name));
+                }
+            }
+
+            return Visit(lambdaExpression.Body);
+        }
+
         private CodeExpression VisitConstant(ConstantExpression constantExpression)
         {
             return new CodePrimitiveExpression(constantExpression.Value);
@@ -93,7 +126,10 @@ namespace LinqToCodedom.Visitors
 
         private CodeExpression VisitParameter(ParameterExpression parameterExpression)
         {
-            return _vis.Params.Find((p) => p.ParameterName == parameterExpression.Name);
+            if (_vis != null)
+                return _vis.Params.Find((p) => p.ParameterName == parameterExpression.Name);
+            else
+                return _params.Find((p) => p.ParameterName == parameterExpression.Name);
         }
 
         private CodeExpression VisitMemberAccess(MemberExpression memberExpression)
