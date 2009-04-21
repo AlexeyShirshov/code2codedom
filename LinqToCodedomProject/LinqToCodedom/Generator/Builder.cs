@@ -10,12 +10,12 @@ namespace LinqToCodedom.Generator
 {
     public static class Builder
     {
-        public static CodeStatement stmt(Expression<Sub> exp)
+        public static CodeStatement stmt(Expression<Action> exp)
         {
             return new CodeStatementVisitor().Visit(exp);
         }
 
-        public static CodeStatement stmt<T>(Expression<Sub<T>> exp)
+        public static CodeStatement stmt<T>(Expression<Action<T>> exp)
         {
             return new CodeStatementVisitor().Visit(exp);
         }
@@ -59,9 +59,8 @@ namespace LinqToCodedom.Generator
         public static CodeConditionStatement If<T>(Expression<Func<T, bool>> condition,
             CodeStatement[] trueStatements, params CodeStatement[] falseStatements)
         {
-            var visitor = new CodeExpressionVisitor(new CodeStatementVisitor());
             var condStatement = new CodeConditionStatement();
-            condStatement.Condition = visitor.Visit(condition);
+            condStatement.Condition = new CodeExpressionVisitor(null).Visit(condition);
             condStatement.TrueStatements.AddRange(trueStatements);
             if (falseStatements != null)
                 condStatement.FalseStatements.AddRange(falseStatements);

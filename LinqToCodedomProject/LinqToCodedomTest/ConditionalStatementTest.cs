@@ -75,7 +75,7 @@ namespace LinqToCodedomTest
                   c.Class("TestClass")
                     .AddMethod(
                         Builder.Method(null, MemberAttributes.Public | MemberAttributes.Static, (int a) => "Print",
-                            Builder.If( (Par<int> a) => a.v > 0, Builder.stmt(() => Console.WriteLine("unit"))))));
+                            Builder.If( (Par<int> a) => a.v == 0, Builder.stmt(() => Console.WriteLine("unit"))))));
 
             string code = c.GenerateCode(LinqToCodedom.CodeDom.Language.CSharp);
             Console.WriteLine(code);
