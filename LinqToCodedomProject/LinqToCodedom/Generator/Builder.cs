@@ -50,16 +50,22 @@ namespace LinqToCodedom.Generator
             return method;
         }
 
-        public static CodeConditionStatement @if<T>(Expression<Func<T, bool>> condition,
+        public static CodeConditionStatement If<T>(Expression<Func<T, bool>> condition,
             params CodeStatement[] trueStatements)
         {
-            return new CodeConditionStatement();
+            return If(condition, trueStatements, null);
         }
 
-        public static CodeConditionStatement @if<T>(Expression<Func<T, bool>> condition,
+        public static CodeConditionStatement If<T>(Expression<Func<T, bool>> condition,
             CodeStatement[] trueStatements, params CodeStatement[] falseStatements)
         {
-            return new CodeConditionStatement();
+            var visitor = new CodeExpressionVisitor(new CodeStatementVisitor());
+            var condStatement = new CodeConditionStatement();
+            condStatement.Condition = visitor.Visit(condition);
+            condStatement.TrueStatements.AddRange(trueStatements);
+            if (falseStatements != null)
+                condStatement.FalseStatements.AddRange(falseStatements);
+            return condStatement;
         }
 
         public static CodeStatement[] GetStmts(params CodeStatement[] stmts)
