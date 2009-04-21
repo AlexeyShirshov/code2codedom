@@ -95,15 +95,121 @@ namespace LinqToCodedom.Visitors
 
         private CodeExpression VisitBinary(BinaryExpression binaryExpression)
         {
-            switch (binaryExpression.NodeType)
-            {
-                case ExpressionType.Equal:
-                    return new CodeBinaryOperatorExpression(
-                        Visit(binaryExpression.Left), CodeBinaryOperatorType.IdentityEquality,
-                        Visit(binaryExpression.Right));
-                default:
-                    throw new NotImplementedException();
-            }
+			CodeBinaryOperatorType operType;
+
+
+			switch (binaryExpression.NodeType)
+			{
+				case ExpressionType.Add:
+					operType = CodeBinaryOperatorType.Add;
+					break;
+				case ExpressionType.AddChecked:
+					operType = CodeBinaryOperatorType.Add;
+					break;
+				case ExpressionType.And:
+					operType = CodeBinaryOperatorType.BooleanAnd;
+					break;
+				case ExpressionType.AndAlso:
+					operType = CodeBinaryOperatorType.BooleanAnd;
+					break;
+				case ExpressionType.ArrayIndex:
+					
+				case ExpressionType.ArrayLength:
+					
+				case ExpressionType.Call:
+					
+				case ExpressionType.Coalesce:
+					
+				case ExpressionType.Conditional:
+					
+				case ExpressionType.Constant:
+					
+				case ExpressionType.Convert:
+					
+				case ExpressionType.ConvertChecked:
+					
+				case ExpressionType.Divide:
+					operType = CodeBinaryOperatorType.Divide;
+					break;
+				case ExpressionType.Equal:
+					operType = CodeBinaryOperatorType.IdentityEquality;
+					break;
+				case ExpressionType.ExclusiveOr:
+					operType = CodeBinaryOperatorType.BooleanOr;
+					break;
+				case ExpressionType.GreaterThan:
+					operType = CodeBinaryOperatorType.GreaterThan;
+					break;
+				case ExpressionType.GreaterThanOrEqual:
+					operType = CodeBinaryOperatorType.GreaterThanOrEqual;
+					break;
+				case ExpressionType.Invoke:
+					
+				case ExpressionType.Lambda:
+					
+				case ExpressionType.LeftShift:
+					
+				case ExpressionType.LessThan:
+					operType = CodeBinaryOperatorType.LessThan;
+					break;
+				case ExpressionType.LessThanOrEqual:
+					operType = CodeBinaryOperatorType.LessThanOrEqual;
+					break;
+				case ExpressionType.ListInit:
+				case ExpressionType.MemberAccess:
+				case ExpressionType.MemberInit:
+				case ExpressionType.Modulo:
+					operType = CodeBinaryOperatorType.Modulus;
+					break;
+				case ExpressionType.Multiply:
+					operType = CodeBinaryOperatorType.Multiply;
+					break;
+				case ExpressionType.MultiplyChecked:
+					operType = CodeBinaryOperatorType.Multiply;
+					break;
+				case ExpressionType.Negate:
+				
+				case ExpressionType.NegateChecked:
+				
+				case ExpressionType.New:
+				
+				case ExpressionType.NewArrayBounds:
+				
+				case ExpressionType.NewArrayInit:
+				case ExpressionType.Not:
+					
+				case ExpressionType.NotEqual:
+					operType = CodeBinaryOperatorType.IdentityInequality;
+					break;
+				case ExpressionType.Or:
+					operType = CodeBinaryOperatorType.BooleanOr;
+					break;
+				case ExpressionType.OrElse:
+					operType = CodeBinaryOperatorType.BooleanOr;
+					break;
+				case ExpressionType.Parameter:
+				case ExpressionType.Power:					
+				case ExpressionType.Quote:
+					
+				case ExpressionType.RightShift:
+					
+				case ExpressionType.Subtract:
+					operType = CodeBinaryOperatorType.Subtract;
+					break;
+				case ExpressionType.SubtractChecked:
+					operType = CodeBinaryOperatorType.Subtract;
+					break;
+				case ExpressionType.TypeAs:
+				case ExpressionType.TypeIs:
+				case ExpressionType.UnaryPlus:
+				default:
+					throw new NotImplementedException();
+					break;
+			}
+			return new CodeBinaryOperatorExpression(
+                        Visit(binaryExpression.Left), operType, Visit(binaryExpression.Right));
+				
+            
         }
 
         private CodeExpression VisitLambda(LambdaExpression lambdaExpression)
