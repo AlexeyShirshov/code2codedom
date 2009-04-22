@@ -20,9 +20,14 @@ namespace LinqToCodedom.Generator
             return new CodeStatementVisitor(new VisitorContext()).Visit(exp);
         }
 
-        public static CodeStatement Line<TResult, T>(Expression<Func<TResult, T>> exp)
+        public static CodeStatement stmt<TResult>(Expression<Func<TResult>> exp)
         {
-            return null;
+            return new CodeStatementVisitor(new VisitorContext()).Visit(exp);
+        }
+
+        public static CodeStatement stmt<TResult, T>(Expression<Func<TResult, T>> exp)
+        {
+            return new CodeStatementVisitor(new VisitorContext()).Visit(exp);
         }
 
         private static string GetMethodName(LambdaExpression exp, CodeParameterDeclarationExpressionCollection pars)
