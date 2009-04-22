@@ -12,12 +12,12 @@ namespace LinqToCodedom.Generator
     {
         public static CodeStatement stmt(Expression<Action> exp)
         {
-            return new CodeStatementVisitor().Visit(exp);
+            return new CodeStatementVisitor(new VisitorContext()).Visit(exp);
         }
 
         public static CodeStatement stmt<T>(Expression<Action<T>> exp)
         {
-            return new CodeStatementVisitor().Visit(exp);
+            return new CodeStatementVisitor(new VisitorContext()).Visit(exp);
         }
 
         public static CodeStatement Line<TResult, T>(Expression<Func<TResult, T>> exp)
@@ -60,7 +60,7 @@ namespace LinqToCodedom.Generator
             CodeStatement[] trueStatements, params CodeStatement[] falseStatements)
         {
             var condStatement = new CodeConditionStatement();
-            condStatement.Condition = new CodeExpressionVisitor(null).Visit(condition);
+            condStatement.Condition = new CodeExpressionVisitor(new VisitorContext()).Visit(condition);
             condStatement.TrueStatements.AddRange(trueStatements);
             if (falseStatements != null)
                 condStatement.FalseStatements.AddRange(falseStatements);

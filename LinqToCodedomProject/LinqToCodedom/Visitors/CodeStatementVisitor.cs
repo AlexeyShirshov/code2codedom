@@ -9,11 +9,11 @@ namespace LinqToCodedom.Visitors
 {
     public class CodeStatementVisitor
     {
-        private List<CodeArgumentReferenceExpression> _params = new List<CodeArgumentReferenceExpression>();
+        private VisitorContext _ctx;
 
-        public List<CodeArgumentReferenceExpression> Params
+        public CodeStatementVisitor(VisitorContext ctx)
         {
-            get { return _params; }
+            _ctx = ctx;
         }
 
         public CodeStatement Visit(Expression exp)
@@ -82,41 +82,18 @@ namespace LinqToCodedom.Visitors
                 case ExpressionType.ListInit:
                     //return this.VisitListInit((ListInitExpression)exp);
                 default:
-                    throw new Exception(string.Format("Unhandled expression type: '{0}'", exp.NodeType));
+                    throw new NotImplementedException(string.Format("Unhandled expression type: '{0}'", exp.NodeType));
             }
         }
 
         private CodeStatement VisitMethodCall(MethodCallExpression methodCallExpression)
         {
-            var c = new CodeMethodInvokeExpression(GetMethodRef(methodCallExpression.Method));
-            foreach (var par in methodCallExpression.Arguments)
-            {
-                c.Parameters.Add(new CodeExpressionVisitor(this).Visit(par));
-            }
-            c.Method.TargetObject = new CodeExpressionVisitor(this).Visit(methodCallExpression.Object);
-            return new CodeExpressionStatement(c);
-        }
-
-        private CodeMethodReferenceExpression GetMethodRef(System.Reflection.MethodInfo methodInfo)
-        {
-            var c = new CodeMethodReferenceExpression()
-            {
-                MethodName = methodInfo.Name
-            };
-            if (methodInfo.IsStatic)
-                c.MethodName = methodInfo.DeclaringType.FullName + "." + methodInfo.Name;
-            return c;
+            return new CodeExpressionStatement(new CodeExpressionVisitor(_ctx).Visit(methodCallExpression));
         }
 
         private CodeStatement VisitLambda(LambdaExpression lambdaExpression)
         {
-            foreach (var p in lambdaExpression.Parameters)
-            {
-                if (p.Type.IsGenericType && p.Type.GetGenericTypeDefinition() == typeof(Par<>))
-                {
-                    _params.Add(new CodeArgumentReferenceExpression(p.Name));
-                }
-            }
+            _ctx.VisitParams(lambdaExpression.Parameters);
 
             return Visit(lambdaExpression.Body);
         }
