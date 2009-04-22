@@ -26,23 +26,20 @@ namespace Demo
                     .AddMethod(
                         Builder.Method(null, MemberAttributes.Public | MemberAttributes.Static, (int a)=>"Print",
                             Builder.stmt((Par<int> a) => Console.WriteLine(a.v)),
-                            Builder.stmt(() => Console.WriteLine("Hello, world!"))
+                            Builder.stmt(() => Console.WriteLine("Hello, world!")),
+                            Builder.If((Par<int> a) => a.v == 10,
+                                Builder.stmt(() => Console.WriteLine("Hello, world!"))),
+                            Builder.If((Par<int> a) => a.v.GetHashCode() == 10 && a.v < 1 && (2 + 3) < 7,
+                                Builder.GetStmts(Builder.stmt(() => Console.WriteLine("true"))),
+                                Builder.stmt(() => Console.WriteLine("false")))
                         )
                 )
             );
 
-            Builder.If((Par<int> a) => a.v == 10,
-                Builder.stmt(() => Console.WriteLine("Hello, world!")));
-
-            Builder.If((Par<int> a) => a.v == 10 && a.v < 1 && (2 + 3) < 7,
-                Builder.GetStmts(Builder.stmt(() => Console.WriteLine("true"))),
-                Builder.stmt(() => Console.WriteLine("false")));
 
             Console.WriteLine(c.GenerateCode(LinqToCodedom.CodeDom.Language.CSharp));
 
             Console.WriteLine(c.GenerateCode(LinqToCodedom.CodeDom.Language.VB));
-
-			
 
             var method = c.Compile().GetType("Samples.TestClass").GetMethod("Print");
 

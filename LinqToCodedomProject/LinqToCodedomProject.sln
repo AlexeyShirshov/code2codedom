@@ -8,6 +8,21 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToCodedomTest", "LinqToCodedomTest\LinqToCodedomTest.csproj", "{5B031C1D-341A-4C76-B822-DA7C0F35C457}"
 EndProject
 Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 4
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs10.codeplex.com/
+		SccProjectUniqueName0 = LinqToCodedom\\LinqToCodedom.csproj
+		SccProjectName0 = LinqToCodedom
+		SccLocalPath0 = LinqToCodedom
+		SccProjectUniqueName1 = LinqToCodedomTest\\LinqToCodedomTest.csproj
+		SccProjectName1 = LinqToCodedomTest
+		SccLocalPath1 = LinqToCodedomTest
+		SccProjectUniqueName2 = Demo\\Demo.csproj
+		SccProjectName2 = Demo
+		SccLocalPath2 = Demo
+		SccLocalPath3 = .
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU

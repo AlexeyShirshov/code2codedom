@@ -9,18 +9,11 @@ namespace LinqToCodedom.Visitors
 {
     public class CodeExpressionVisitor
     {
-        private List<CodeArgumentReferenceExpression> _params = new List<CodeArgumentReferenceExpression>();
+        private VisitorContext _ctx;
 
-        public List<CodeArgumentReferenceExpression> Params
+        public CodeExpressionVisitor(VisitorContext ctx)
         {
-            get { return _params; }
-        }
-
-        private CodeStatementVisitor _vis;
-
-        public CodeExpressionVisitor(CodeStatementVisitor vis)
-        {
-            _vis = vis;
+            _ctx = ctx;
         }
 
         public CodeExpression Visit(Expression exp)
@@ -70,11 +63,11 @@ namespace LinqToCodedom.Visitors
                 case ExpressionType.Constant:
                     return this.VisitConstant((ConstantExpression)exp);
                 case ExpressionType.Parameter:
-                    return this.VisitParameter((ParameterExpression)exp);
+                    return _ctx.VisitParameter((ParameterExpression)exp);
                 case ExpressionType.MemberAccess:
                     return this.VisitMemberAccess((MemberExpression)exp);
                 case ExpressionType.Call:
-                //return this.VisitMethodCall((MethodCallExpression)exp);
+                    return this.VisitMethodCall((MethodCallExpression)exp);
                 case ExpressionType.Lambda:
                     return this.VisitLambda((LambdaExpression)exp);
                 case ExpressionType.New:
@@ -89,15 +82,36 @@ namespace LinqToCodedom.Visitors
                 case ExpressionType.ListInit:
                 //return this.VisitListInit((ListInitExpression)exp);
                 default:
-                    throw new Exception(string.Format("Unhandled expression type: '{0}'", exp.NodeType));
+                    throw new NotImplementedException(string.Format("Unhandled expression type: '{0}'", exp.NodeType));
             }
+        }
+
+        public static CodeMethodReferenceExpression GetMethodRef(System.Reflection.MethodInfo methodInfo)
+        {
+            var c = new CodeMethodReferenceExpression()
+            {
+                MethodName = methodInfo.Name
+            };
+            if (methodInfo.IsStatic)
+                c.MethodName = methodInfo.DeclaringType.FullName + "." + methodInfo.Name;
+            return c;
+        }
+
+        private CodeExpression VisitMethodCall(MethodCallExpression methodCallExpression)
+        {
+            var c = new CodeMethodInvokeExpression(GetMethodRef(methodCallExpression.Method));
+            foreach (var par in methodCallExpression.Arguments)
+            {
+                c.Parameters.Add(new CodeExpressionVisitor(_ctx).Visit(par));
+            }
+            c.Method.TargetObject = new CodeExpressionVisitor(_ctx).Visit(methodCallExpression.Object);
+            return c;
         }
 
         private CodeExpression VisitBinary(BinaryExpression binaryExpression)
         {
 			CodeBinaryOperatorType operType;
-
-
+            
 			switch (binaryExpression.NodeType)
 			{
 				case ExpressionType.Add:
@@ -214,13 +228,7 @@ namespace LinqToCodedom.Visitors
 
         private CodeExpression VisitLambda(LambdaExpression lambdaExpression)
         {
-            foreach (var p in lambdaExpression.Parameters)
-            {
-                if (p.Type.IsGenericType && p.Type.GetGenericTypeDefinition() == typeof(Par<>))
-                {
-                    _params.Add(new CodeArgumentReferenceExpression(p.Name));
-                }
-            }
+            _ctx.VisitParams(lambdaExpression.Parameters);
 
             return Visit(lambdaExpression.Body);
         }
@@ -228,14 +236,6 @@ namespace LinqToCodedom.Visitors
         private CodeExpression VisitConstant(ConstantExpression constantExpression)
         {
             return new CodePrimitiveExpression(constantExpression.Value);
-        }
-
-        private CodeExpression VisitParameter(ParameterExpression parameterExpression)
-        {
-            if (_vis != null)
-                return _vis.Params.Find((p) => p.ParameterName == parameterExpression.Name);
-            else
-                return _params.Find((p) => p.ParameterName == parameterExpression.Name);
         }
 
         private CodeExpression VisitMemberAccess(MemberExpression memberExpression)

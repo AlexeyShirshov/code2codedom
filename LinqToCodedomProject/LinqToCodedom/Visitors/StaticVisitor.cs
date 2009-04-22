@@ -9,9 +9,9 @@ namespace LinqToCodedom.Visitors
 {
 	public static class StaticVisitor
 	{
-		public static CodeExpression Visit(this BinaryExpression expression)
-		{
-			return new CodeExpressionVisitor(null).Visit(expression);
-		}
+        //public static CodeExpression Visit(this BinaryExpression expression)
+        //{
+        //    return new CodeExpressionVisitor(null).Visit(expression);
+        //}
 	}
 }
