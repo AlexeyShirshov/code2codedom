@@ -25,11 +25,11 @@ namespace Demo
                   c.Class("TestClass")
                     .AddMethod(
                         Builder.Method(null, MemberAttributes.Public | MemberAttributes.Static, (int a)=>"Print",
-                            Builder.stmt((Par<int> a) => Console.WriteLine(a.v)),
+                            Builder.stmt((Par<int> a) => Console.WriteLine(a)),
                             Builder.stmt(() => Console.WriteLine("Hello, world!")),
-                            Builder.@if((Par<int> a) => a.v == 10,
+                            Builder.@if((Par<int> a) => a == 10,
                                 Builder.stmt(() => Console.WriteLine("Hello, world!"))),
-                            Builder.@if((Par<int> a) => a.v.GetHashCode() == 10 && a.v < 1 && (2 + 3) < 7,
+                            Builder.@if((Par<int> a) => a.GetHashCode() == 10 && a < 1 && (2 + 3) < 7,
                                 Builder.GetStmts(Builder.stmt(() => Console.WriteLine("true"))),
                                 Builder.stmt(() => Console.WriteLine("false")))
                         )

@@ -9,25 +9,32 @@ namespace LinqToCodedom.Visitors
 {
     public class VisitorContext
     {
-        private List<CodeArgumentReferenceExpression> _params = new List<CodeArgumentReferenceExpression>();
+        private List<CodeExpression> _params = new List<CodeExpression>();
 
-        public List<CodeArgumentReferenceExpression> Params
+        public List<CodeExpression> Params
         {
             get { return _params; }
         }
 
         public CodeExpression VisitParameter(ParameterExpression parameterExpression)
         {
-            return _params.Find((p) => p.ParameterName == parameterExpression.Name);
+            return _params.Find((p) => p.UserData["name"] == parameterExpression.Name);
         }
 
         public void VisitParams(System.Collections.ObjectModel.ReadOnlyCollection<ParameterExpression> @params)
         {
             foreach (var p in @params)
             {
-                if (p.Type.IsGenericType && p.Type.GetGenericTypeDefinition() == typeof(Par<>))
+                if (p.Type.IsGenericType)
                 {
-                    _params.Add(new CodeArgumentReferenceExpression(p.Name));
+                    if (p.Type.GetGenericTypeDefinition() == typeof(Par<>))
+                        _params.Add(new CodeArgumentReferenceExpression(p.Name));
+                    else if (p.Type.GetGenericTypeDefinition() == typeof(Var<>))
+                        _params.Add(new CodeVariableReferenceExpression(p.Name));
+                    else
+                        throw new NotImplementedException();
+
+                    _params[_params.Count - 1].UserData["name"] = p.Name;
                 }
             }
         }
