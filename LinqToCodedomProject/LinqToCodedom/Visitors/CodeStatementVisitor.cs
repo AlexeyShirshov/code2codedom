@@ -61,7 +61,7 @@ namespace LinqToCodedom.Visitors
                 case ExpressionType.Conditional:
                     //return this.VisitConditional((ConditionalExpression)exp);
                 case ExpressionType.Constant:
-                    //return this.VisitConstant((ConstantExpression)exp);
+                    return this.VisitConstant((ConstantExpression)exp);
                 case ExpressionType.Parameter:
                     //return this.VisitParameter((ParameterExpression)exp);
                 case ExpressionType.MemberAccess:
@@ -84,6 +84,11 @@ namespace LinqToCodedom.Visitors
                 default:
                     throw new NotImplementedException(string.Format("Unhandled expression type: '{0}'", exp.NodeType));
             }
+        }
+
+        private CodeStatement VisitConstant(ConstantExpression constantExpression)
+        {
+            return new CodeExpressionStatement(new CodeExpressionVisitor(_ctx).Visit(constantExpression));
         }
 
         private CodeStatement VisitMethodCall(MethodCallExpression methodCallExpression)
