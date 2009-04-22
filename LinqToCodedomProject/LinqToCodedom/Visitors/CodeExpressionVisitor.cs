@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.CodeDom;
 using System.Linq.Expressions;
+using LinqToCodedom.Generator;
 
 namespace LinqToCodedom.Visitors
 {
@@ -31,7 +32,7 @@ namespace LinqToCodedom.Visitors
                 case ExpressionType.ArrayLength:
                 case ExpressionType.Quote:
                 case ExpressionType.TypeAs:
-                //return this.VisitUnary((UnaryExpression)exp);
+                    return this.VisitUnary((UnaryExpression)exp);
                 case ExpressionType.Add:
                 case ExpressionType.AddChecked:
                 case ExpressionType.Subtract:
@@ -86,6 +87,19 @@ namespace LinqToCodedom.Visitors
             }
         }
 
+        private CodeExpression VisitUnary(UnaryExpression unaryExpression)
+        {
+            switch (unaryExpression.NodeType)
+            {
+                case ExpressionType.Convert:
+                    var c = Visit(unaryExpression.Operand);
+                    if (c != null)
+                        return c;
+                    break;
+            }
+            throw new NotImplementedException();
+        }
+
         public static CodeMethodReferenceExpression GetMethodRef(System.Reflection.MethodInfo methodInfo)
         {
             var c = new CodeMethodReferenceExpression()
@@ -99,13 +113,26 @@ namespace LinqToCodedom.Visitors
 
         private CodeExpression VisitMethodCall(MethodCallExpression methodCallExpression)
         {
-            var c = new CodeMethodInvokeExpression(GetMethodRef(methodCallExpression.Method));
-            foreach (var par in methodCallExpression.Arguments)
+            var mr = GetMethodRef(methodCallExpression.Method);
+            if (mr.MethodName == "LinqToCodedom.Generator.Builder.Var")
             {
-                c.Parameters.Add(new CodeExpressionVisitor(_ctx).Visit(par));
+                return new CodeVariableReferenceExpression(
+                    Builder.Eval<string>(methodCallExpression.Arguments[0]));
             }
-            c.Method.TargetObject = new CodeExpressionVisitor(_ctx).Visit(methodCallExpression.Object);
-            return c;
+            else if (mr.MethodName == "LinqToCodedom.Generator.Builder.get_nil")
+            {
+                return null;
+            }
+            else
+            {
+                var c = new CodeMethodInvokeExpression(mr);
+                foreach (var par in methodCallExpression.Arguments)
+                {
+                    c.Parameters.Add(new CodeExpressionVisitor(_ctx).Visit(par));
+                }
+                c.Method.TargetObject = new CodeExpressionVisitor(_ctx).Visit(methodCallExpression.Object);
+                return c;
+            }
         }
 
         private CodeExpression VisitBinary(BinaryExpression binaryExpression)
@@ -126,27 +153,11 @@ namespace LinqToCodedom.Visitors
 				case ExpressionType.AndAlso:
 					operType = CodeBinaryOperatorType.BooleanAnd;
 					break;
-				case ExpressionType.ArrayIndex:
-					
-				case ExpressionType.ArrayLength:
-					
-				case ExpressionType.Call:
-					
-				case ExpressionType.Coalesce:
-					
-				case ExpressionType.Conditional:
-					
-				case ExpressionType.Constant:
-					
-				case ExpressionType.Convert:
-					
-				case ExpressionType.ConvertChecked:
-					
 				case ExpressionType.Divide:
 					operType = CodeBinaryOperatorType.Divide;
 					break;
 				case ExpressionType.Equal:
-					operType = CodeBinaryOperatorType.IdentityEquality;
+					operType = CodeBinaryOperatorType.ValueEquality;
 					break;
 				case ExpressionType.ExclusiveOr:
 					operType = CodeBinaryOperatorType.BooleanOr;
@@ -169,9 +180,6 @@ namespace LinqToCodedom.Visitors
 				case ExpressionType.LessThanOrEqual:
 					operType = CodeBinaryOperatorType.LessThanOrEqual;
 					break;
-				case ExpressionType.ListInit:
-				case ExpressionType.MemberAccess:
-				case ExpressionType.MemberInit:
 				case ExpressionType.Modulo:
 					operType = CodeBinaryOperatorType.Modulus;
 					break;
@@ -185,11 +193,6 @@ namespace LinqToCodedom.Visitors
 				
 				case ExpressionType.NegateChecked:
 				
-				case ExpressionType.New:
-				
-				case ExpressionType.NewArrayBounds:
-				
-				case ExpressionType.NewArrayInit:
 				case ExpressionType.Not:
 					
 				case ExpressionType.NotEqual:
@@ -201,11 +204,9 @@ namespace LinqToCodedom.Visitors
 				case ExpressionType.OrElse:
 					operType = CodeBinaryOperatorType.BooleanOr;
 					break;
-				case ExpressionType.Parameter:
 				case ExpressionType.Power:					
-				case ExpressionType.Quote:
-					
-				case ExpressionType.RightShift:
+
+                case ExpressionType.RightShift:
 					
 				case ExpressionType.Subtract:
 					operType = CodeBinaryOperatorType.Subtract;
@@ -213,24 +214,26 @@ namespace LinqToCodedom.Visitors
 				case ExpressionType.SubtractChecked:
 					operType = CodeBinaryOperatorType.Subtract;
 					break;
-				case ExpressionType.TypeAs:
-				case ExpressionType.TypeIs:
 				case ExpressionType.UnaryPlus:
 				default:
 					throw new NotImplementedException();
 					break;
 			}
-			return new CodeBinaryOperatorExpression(
+
+            return new CodeBinaryOperatorExpression(
                         Visit(binaryExpression.Left), operType, Visit(binaryExpression.Right));
-				
-            
         }
 
         private CodeExpression VisitLambda(LambdaExpression lambdaExpression)
         {
             _ctx.VisitParams(lambdaExpression.Parameters);
 
-            return Visit(lambdaExpression.Body);
+            var c = Visit(lambdaExpression.Body);
+
+            if (c.GetType() == typeof(Builder.CodeNilExpression))
+                return _ctx.Params[0];
+
+            return c;
         }
 
         private CodeExpression VisitConstant(ConstantExpression constantExpression)
@@ -240,11 +243,28 @@ namespace LinqToCodedom.Visitors
 
         private CodeExpression VisitMemberAccess(MemberExpression memberExpression)
         {
-            var c = Visit(memberExpression.Expression);
-            if (c is CodeSnippetExpression)
-                throw new NotImplementedException();
+            if (memberExpression.Expression == null)
+            {
+                if (memberExpression.Type == typeof(Builder.NilClass))
+                {
+                    if (memberExpression.Member.Name == "nil")
+                    {
+                        return new Builder.CodeNilExpression();
+                    }
+                    else
+                        throw new NotImplementedException();
+                }
+                else
+                    return null;
+            }
             else
-                return c;
+            {
+                var c = Visit(memberExpression.Expression);
+                if (c is CodeSnippetExpression)
+                    throw new NotImplementedException();
+                else
+                    return c;
+            }
         }
     }
 }

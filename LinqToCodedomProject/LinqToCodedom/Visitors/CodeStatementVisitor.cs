@@ -31,7 +31,7 @@ namespace LinqToCodedom.Visitors
                 case ExpressionType.ArrayLength:
                 case ExpressionType.Quote:
                 case ExpressionType.TypeAs:
-                    //return this.VisitUnary((UnaryExpression)exp);
+                    return this.VisitUnary((UnaryExpression)exp);
                 case ExpressionType.Add:
                 case ExpressionType.AddChecked:
                 case ExpressionType.Subtract:
@@ -84,6 +84,11 @@ namespace LinqToCodedom.Visitors
                 default:
                     throw new NotImplementedException(string.Format("Unhandled expression type: '{0}'", exp.NodeType));
             }
+        }
+
+        private CodeStatement VisitUnary(UnaryExpression unaryExpression)
+        {
+            return new CodeExpressionStatement(new CodeExpressionVisitor(_ctx).Visit(unaryExpression));
         }
 
         private CodeStatement VisitConstant(ConstantExpression constantExpression)
