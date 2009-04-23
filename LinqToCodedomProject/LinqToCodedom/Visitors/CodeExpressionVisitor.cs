@@ -92,6 +92,7 @@ namespace LinqToCodedom.Visitors
             switch (unaryExpression.NodeType)
             {
                 case ExpressionType.Convert:
+                case ExpressionType.Quote:
                     var c = Visit(unaryExpression.Operand);
                     if (c != null)
                         return c;

@@ -29,7 +29,7 @@ namespace Demo
                             Builder.stmt(() => Console.WriteLine("Hello, world!")),
                             Builder.@if((Par<int> a) => a == 10,
                                 Builder.stmt(() => Console.WriteLine("Hello, world!"))),
-                            Builder.@if((Par<int> a) => a.GetHashCode() == 10 && a < 1 && (2 + 3) < 7,
+                            Builder.ifelse((Par<int> a) => a.GetHashCode() == 10 && a < 1 && (2 + 3) < 7,
                                 Builder.GetStmts(Builder.stmt(() => Console.WriteLine("true"))),
                                 Builder.stmt(() => Console.WriteLine("false")))
                         )
