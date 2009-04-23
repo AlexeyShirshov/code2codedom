@@ -53,13 +53,20 @@
   <ItemGroup>
     <Compile Include="Generator\Builder.cs" />
     <Compile Include="Generator\Delegates.cs" />
+    <Compile Include="Generator\Statements\assign.cs" />
+    <Compile Include="Generator\Statements\declare.cs" />
+    <Compile Include="Generator\Statements\for.cs" />
+    <Compile Include="Generator\Statements\if.cs" />
+    <Compile Include="Generator\Statements\return.cs" />
+    <Compile Include="Generator\Statements\stmt.cs" />
+    <Compile Include="References\LateBinding.cs" />
     <Compile Include="Visitors\CodeDomExpressionVisitor.cs" />
     <Compile Include="CodeDOM\CodeDom.cs" />
     <Compile Include="CodeDOM\CodeDomeExtensions.cs" />
     <Compile Include="Visitors\CodeExpressionVisitor.cs" />
     <Compile Include="Visitors\CodeStatementVisitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="References.cs" />
+    <Compile Include="References\References.cs" />
     <Compile Include="Visitors\StaticVisitor.cs" />
     <Compile Include="Visitors\VisitorContext.cs" />
   </ItemGroup>
