@@ -51,6 +51,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeDOM\MemberMethod.cs" />
+    <Compile Include="CodeDOM\Namespace.cs" />
     <Compile Include="Generator\Builder.cs" />
     <Compile Include="Generator\Delegates.cs" />
     <Compile Include="Generator\Statements\assign.cs" />
@@ -62,7 +64,7 @@
     <Compile Include="References\LateBinding.cs" />
     <Compile Include="Visitors\CodeDomExpressionVisitor.cs" />
     <Compile Include="CodeDOM\CodeDom.cs" />
-    <Compile Include="CodeDOM\CodeDomeExtensions.cs" />
+    <Compile Include="CodeDOM\TypeDeclaration.cs" />
     <Compile Include="Visitors\CodeExpressionVisitor.cs" />
     <Compile Include="Visitors\CodeStatementVisitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

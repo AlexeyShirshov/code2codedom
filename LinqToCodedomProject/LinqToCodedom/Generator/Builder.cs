@@ -22,6 +22,11 @@ namespace LinqToCodedom.Generator
             }
         }
 
+        public static This @this
+        {
+            get { return default(This); }
+        }
+
         public static T Var<T>(string exp)
         {
             return default(T);
@@ -37,8 +42,8 @@ namespace LinqToCodedom.Generator
             return Eval<string>(exp.Body);
         }
 
-        public static CodeMemberMethod Method<TResult, T>(Type returnType, MemberAttributes ma, 
-            Expression<Func<TResult, T>> paramsAndName, params CodeStatement[] statements)
+        public static CodeMemberMethod Method<T>(Type returnType, MemberAttributes ma, 
+            Expression<Func<T, string>> paramsAndName, params CodeStatement[] statements)
         {
             CodeMemberMethod method = new CodeMemberMethod()
             {
@@ -76,6 +81,21 @@ namespace LinqToCodedom.Generator
                     return (T)Expression.Lambda(exp).Compile().DynamicInvoke();
                 }
             }
+        }
+
+        public static CodeMemberProperty GetProperty(Type propertyType, MemberAttributes ma, string name,
+            params CodeStatement[] statements)
+        {
+            var c = new CodeMemberProperty()
+            {
+                Name = name,
+                Attributes = ma,
+                Type = new CodeTypeReference(propertyType),
+            };
+
+            c.GetStatements.AddRange(statements);
+
+            return c;
         }
     }
 }
