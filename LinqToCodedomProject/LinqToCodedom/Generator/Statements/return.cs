@@ -1,0 +1,29 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.CodeDom;
+using LinqToCodedom.Visitors;
+using System.Linq.Expressions;
+
+namespace LinqToCodedom.Generator
+{
+    public static partial class Builder
+    {
+        public static CodeStatement @return<TResult>(Expression<Func<TResult>> exp)
+        {
+            return new CodeMethodReturnStatement(new CodeExpressionVisitor(new VisitorContext()).Visit(exp));
+        }
+
+        public static CodeStatement @return<TResult, T>(Expression<Func<TResult, T>> exp)
+        {
+            return new CodeMethodReturnStatement(new CodeExpressionVisitor(new VisitorContext()).Visit(exp));
+        }
+
+        public static CodeStatement @return<TResult>(Expression<Action<TResult>> exp)
+        {
+            return new CodeMethodReturnStatement(new CodeExpressionVisitor(new VisitorContext()).Visit(exp));
+        }
+
+    }
+}
