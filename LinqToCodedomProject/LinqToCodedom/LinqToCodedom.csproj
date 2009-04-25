@@ -51,9 +51,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CodeDOM\MemberMethod.cs" />
+    <Compile Include="CodeDOM\Member.cs" />
     <Compile Include="CodeDOM\Namespace.cs" />
     <Compile Include="Generator\Builder.cs" />
+    <Compile Include="CodeDOM\ClassBuilder.cs" />
     <Compile Include="Generator\Delegates.cs" />
     <Compile Include="Generator\Statements\assign.cs" />
     <Compile Include="Generator\Statements\declare.cs" />
