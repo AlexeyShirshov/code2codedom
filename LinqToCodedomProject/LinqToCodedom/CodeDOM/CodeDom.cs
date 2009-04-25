@@ -5,12 +5,12 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System;
+using System.Linq;
 
 namespace LinqToCodedom
 {
-    public class CodeDom
+    public partial class CodeDom
     {
-
         private List<CodeNamespace> _namespaces = new List<CodeNamespace>();
         
         private System.Collections.Specialized.StringCollection _assemblies = 
@@ -50,19 +50,6 @@ namespace LinqToCodedom
             _assemblies.Add(referencedAssembly);
 
             return this;
-        }
-
-        public CodeTypeDeclaration Class(string className)
-        {
-            return new CodeTypeDeclaration(className);
-        }
-
-        public CodeTypeDeclaration Class(string className, MemberAttributes attributes)
-        {
-            return new CodeTypeDeclaration(className)
-            {
-                Attributes = attributes
-            };
         }
 
         public CodeCompileUnit CompileUnit

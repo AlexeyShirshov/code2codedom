@@ -16,10 +16,7 @@ namespace LinqToCodedom.Generator
 
         public static NilClass nil
         {
-            get
-            {
-                return null;
-            }
+            get { return null; }
         }
 
         public static This @this
@@ -27,34 +24,29 @@ namespace LinqToCodedom.Generator
             get { return default(This); }
         }
 
-        public static T Var<T>(string exp)
+        public static This @base
+        {
+            get { return default(This); }
+        }
+
+        public static T Var<T>(string name)
         {
             return default(T);
         }
 
-        private static string GetMethodName(LambdaExpression exp, CodeParameterDeclarationExpressionCollection pars)
+        public static T Par<T>(string name)
+        {
+            return default(T);
+        }
+
+        private static T GetMethodName<T>(LambdaExpression exp, CodeParameterDeclarationExpressionCollection pars)
         {
             foreach (var p in exp.Parameters)
             {
                 var par = new CodeParameterDeclarationExpression(p.Type, p.Name);
                 pars.Add(par);
             }
-            return Eval<string>(exp.Body);
-        }
-
-        public static CodeMemberMethod Method<T>(Type returnType, MemberAttributes ma, 
-            Expression<Func<T, string>> paramsAndName, params CodeStatement[] statements)
-        {
-            CodeMemberMethod method = new CodeMemberMethod()
-            {
-                ReturnType = returnType == null ? null : new CodeTypeReference(returnType),
-                Attributes = ma
-            };
-
-            method.Name = GetMethodName(paramsAndName, method.Parameters);
-            method.Statements.AddRange(statements);
-
-            return method;
+            return Eval<T>(exp.Body);
         }
 
         public static CodeStatement[] GetStmts(params CodeStatement[] stmts)
@@ -83,6 +75,26 @@ namespace LinqToCodedom.Generator
             }
         }
 
+        #region Method
+        public static CodeMemberMethod Method<T>(Type returnType, MemberAttributes ma,
+            Expression<Func<T, string>> paramsAndName, params CodeStatement[] statements)
+        {
+            CodeMemberMethod method = new CodeMemberMethod()
+            {
+                ReturnType = returnType == null ? null : new CodeTypeReference(returnType),
+                Attributes = ma
+            };
+
+            method.Name = GetMethodName<string>(paramsAndName, method.Parameters);
+            method.Statements.AddRange(statements);
+
+            return method;
+        }
+
+        #endregion
+
+        #region Properties
+
         public static CodeMemberProperty GetProperty(Type propertyType, MemberAttributes ma, string name,
             params CodeStatement[] statements)
         {
@@ -97,5 +109,147 @@ namespace LinqToCodedom.Generator
 
             return c;
         }
+
+        public static CodeMemberProperty Property(Type propertyType, MemberAttributes ma, string name,
+            CodeStatement[] getStatements, params CodeStatement[] setStatements)
+        {
+            var c = new CodeMemberProperty()
+            {
+                Name = name,
+                Attributes = ma,
+                Type = new CodeTypeReference(propertyType),
+            };
+
+            c.GetStatements.AddRange(getStatements);
+            c.SetStatements.AddRange(setStatements);
+
+            return c;
+        }
+
+        #endregion
+
+        #region Fields
+        public static CodeMemberField Field(Type fieldType, MemberAttributes ma, string name,
+            CodeExpression initExpression)
+        {
+            var c = new CodeMemberField()
+            {
+                Name = name,
+                Attributes = ma,
+                Type = new CodeTypeReference(fieldType),
+                InitExpression = initExpression,
+            };
+
+            return c;
+        }
+        #endregion
+
+        #region Event
+        public static CodeMemberEvent Event(Type delegateType, MemberAttributes ma, string name)
+        {
+            var c = new CodeMemberEvent()
+            {
+                Name = name,
+                Attributes = ma,
+                Type = new CodeTypeReference(delegateType),
+            };
+
+            return c;
+        }
+        #endregion
+
+        #region Delegate
+        public static CodeTypeDelegate Delegate<T>(Type returnType, MemberAttributes ma,
+            Expression<Func<T, string>> paramsAndName)
+        {
+            var c = new CodeTypeDelegate()
+            {
+                Attributes = ma,
+                ReturnType = new CodeTypeReference(returnType),
+            };
+
+            c.Name = GetMethodName<string>(paramsAndName, c.Parameters);
+
+            return c;
+        }
+        #endregion
+
+        #region Ctor
+        public static CodeConstructor Ctor<T>(Expression<Func<T, MemberAttributes>> paramsAndAccessLevel,
+            params CodeStatement[] statements)
+        {
+            var c = new CodeConstructor();
+
+            c.Attributes = GetMethodName<MemberAttributes>(paramsAndAccessLevel, c.Parameters);
+            c.Statements.AddRange(statements);
+
+            return c;
+        }
+        #endregion
+
+        #region Attribute
+
+        public static CodeAttributeDeclaration Attribute(CodeTypeReference type)
+        {
+            return new CodeAttributeDeclaration(type);
+        }
+
+        public static CodeAttributeDeclaration Attribute(string type)
+        {
+            return new CodeAttributeDeclaration(type);
+        }
+
+        public static CodeAttributeDeclaration Attribute<T>(CodeTypeReference type,
+            Expression<Func<T>> anonymType)
+        {
+            var c = new CodeAttributeDeclaration(type);
+            InitAttributeArgs(anonymType, c);
+            return c;
+
+        }
+
+        public static CodeAttributeDeclaration Attribute(CodeTypeReference type,
+            params object[] args)
+        {
+            var c = new CodeAttributeDeclaration(type);
+            c.Arguments.AddRange(args.Select((a) => new CodeAttributeArgument(new CodePrimitiveExpression(a))).ToArray());
+            return c;
+
+        }
+
+        public static CodeAttributeDeclaration Attribute<T>(string type,
+            Expression<Func<T>> anonymType)
+        {
+            var c = new CodeAttributeDeclaration(type);
+
+            InitAttributeArgs(anonymType, c);
+
+            return c;
+
+        }
+
+        private static void InitAttributeArgs(Expression anonymType, CodeAttributeDeclaration c)
+        {
+            object o = Eval<object>(anonymType);
+
+            foreach (System.Reflection.PropertyInfo pi in
+                o.GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance))
+            {
+                c.Arguments.Add(new CodeAttributeArgument(pi.Name,
+                    new CodePrimitiveExpression(pi.GetValue(o, null))
+                ));
+            }
+        }
+
+        public static CodeAttributeDeclaration Attribute(string type,
+            params object[] args)
+        {
+            var c = new CodeAttributeDeclaration(type);
+            c.Arguments.AddRange(args.Select((a) => new CodeAttributeArgument(new CodePrimitiveExpression(a))).ToArray());
+            return c;
+
+        }
+
+        #endregion
     }
 }
