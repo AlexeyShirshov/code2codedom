@@ -73,13 +73,13 @@ namespace LinqToCodedomTest
             c.AddNamespace("Samples").AddClass(
               c.Class("TestClass")
                 .AddMethod(typeof(int), MemberAttributes.Public, (int a) => "Test",
-                    Builder.@return((Par<int> a) => a+100)
+                    Builder.@return((ParamRef<int> a) => a+100)
                 )
                 .AddMethod(
                     Builder.Method(typeof(int), MemberAttributes.Public, (int a) => "Test1",
                         Builder.@return(() => 
-                            Builder.Var<int>("a") + 
-                            Builder.@this.Call<int, int>("Test", ()=>3))
+                            Builder.VarRef<int>("a") +
+                            Builder.@this.Call<int>("Test").Args(() => Builder.Seq(3,4,5)))
                     )
                 )
             );
@@ -105,6 +105,10 @@ namespace LinqToCodedomTest
 
             Assert.AreEqual(104, TestClass.InvokeMember("Test1", System.Reflection.BindingFlags.Default, null, t,
                 new object[] { 1 }));
+
+            Builder.@this.Call("dsfg", () => Builder.Seq(3, 4, 5));
+
+            Builder.@this.Call("dsfg", () => Builder.NamedSeq(new { i = 10, s = ""}));
         }
 
         [TestMethod]
@@ -118,7 +122,7 @@ namespace LinqToCodedomTest
                     Builder.@return(() => 100)
                 )
                 .AddMethod(typeof(int), MemberAttributes.Public, (int a) => "Test1",
-                    Builder.@return((Var<int> a) =>
+                    Builder.@return((ParamRef<int> a) =>
                         a + Builder.@this.Property<int>("Test"))
                 )
             );

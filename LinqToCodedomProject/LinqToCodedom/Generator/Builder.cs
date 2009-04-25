@@ -29,12 +29,21 @@ namespace LinqToCodedom.Generator
             get { return default(This); }
         }
 
-        public static T Var<T>(string name)
+        public static void Seq(params object[] args)
+        {
+        }
+
+        public static T NamedSeq<T>(T anonymousTypeDeclaration)
         {
             return default(T);
         }
 
-        public static T Par<T>(string name)
+        public static T VarRef<T>(string name)
+        {
+            return default(T);
+        }
+
+        public static T ParamRef<T>(string name)
         {
             return default(T);
         }
@@ -74,6 +83,25 @@ namespace LinqToCodedom.Generator
                 }
             }
         }
+
+        #region Default
+
+        public static CodeDefaultValueExpression @default(CodeTypeReference type)
+        {
+            return new CodeDefaultValueExpression(type);
+        }
+
+        public static CodeDefaultValueExpression @default(string type)
+        {
+            return new CodeDefaultValueExpression(new CodeTypeReference(type));
+        }
+
+        public static CodeDefaultValueExpression @default(Type type)
+        {
+            return new CodeDefaultValueExpression(new CodeTypeReference(type));
+        }
+
+        #endregion
 
         #region Method
         public static CodeMemberMethod Method<T>(Type returnType, MemberAttributes ma,

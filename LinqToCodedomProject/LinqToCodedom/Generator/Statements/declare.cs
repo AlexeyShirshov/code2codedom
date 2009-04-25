@@ -10,6 +10,21 @@ namespace LinqToCodedom.Generator
 {
     public static partial class Builder
     {
+        public static CodeVariableDeclarationStatement declare(CodeTypeReference type, string varName)
+        {
+            return new CodeVariableDeclarationStatement(type, varName, Builder.@default(type));
+        }
+
+        public static CodeVariableDeclarationStatement declare(string type, string varName)
+        {
+            return new CodeVariableDeclarationStatement(type, varName, Builder.@default(type));
+        }
+
+        public static CodeVariableDeclarationStatement declare(Type type, string varName)
+        {
+            return new CodeVariableDeclarationStatement(type, varName, Builder.@default(type));
+        }
+        
         public static CodeVariableDeclarationStatement declare<TResult>(
             string varName, Expression<Func<TResult>> initExp)
         {
