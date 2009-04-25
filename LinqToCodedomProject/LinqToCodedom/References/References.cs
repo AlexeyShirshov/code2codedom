@@ -5,21 +5,21 @@ using System.Text;
 
 namespace LinqToCodedom
 {
-    public class Var<T>
+    public class VarRef<T>
     {
         public T v;
 
-        public static implicit operator T(Var<T> d)
+        public static implicit operator T(VarRef<T> d)
         {
             return default(T);
         }
     }
 
-    public class Par<T>
+    public class ParamRef<T>
     {
         public T v;
 
-        public static implicit operator T(Par<T> d)
+        public static implicit operator T(ParamRef<T> d)
         {
             return default(T);
         }

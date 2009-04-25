@@ -72,7 +72,7 @@ namespace LinqToCodedomTest
               c.Class("TestClass")
                 .AddMethod(
                     Builder.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test",
-                        Builder.ifelse((Par<int> a) => a.v == 10,
+                        Builder.ifelse((ParamRef<int> a) => a.v == 10,
                             Builder.GetStmts(Builder.@return(() => 1)),
                             Builder.@return(() => -1)
                         )
@@ -80,7 +80,7 @@ namespace LinqToCodedomTest
                 )
                 .AddMethod(
                     Builder.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test2",
-                        Builder.ifelse((Par<int> a) => a.v < 10,
+                        Builder.ifelse((ParamRef<int> a) => a.v < 10,
                             Builder.GetStmts(Builder.@return(() => 1)),
                             Builder.@return(() => -1)
                         )
@@ -88,7 +88,7 @@ namespace LinqToCodedomTest
                 )
                 .AddMethod(
                     Builder.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test3",
-                        Builder.ifelse((Par<int> a) => a.v * 3 < 7,
+                        Builder.ifelse((ParamRef<int> a) => a.v * 3 < 7,
                             Builder.GetStmts(Builder.@return(() => 1)),
                             Builder.@return(() => -1)
                         )
@@ -96,7 +96,7 @@ namespace LinqToCodedomTest
                 )
                 .AddMethod(
                     Builder.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test4",
-                        Builder.ifelse((Par<int> a) => Math.Abs(a.v) * 3 < 7 + Math.Min(4, a.v),
+                        Builder.ifelse((ParamRef<int> a) => Math.Abs(a.v) * 3 < 7 + Math.Min(4, a.v),
                             Builder.GetStmts(Builder.@return(() => 1)),
                             Builder.@return(() => -1)
                         )
@@ -145,21 +145,21 @@ namespace LinqToCodedomTest
                         Builder.declare("res", () => 0),
                         Builder.@for(
                             "i", //int i
-                            (Par<int> a) => a,  // = a 
-                            (Var<int> i) => i < 10, //i<10
-                            (Var<int> i) => i + 1, //i+=1
-                                Builder.assign((Var<int> res) => Builder.nil, (Var<int> res) => res + 1)
+                            (ParamRef<int> a) => a,  // = a 
+                            (VarRef<int> i) => i < 10, //i<10
+                            (VarRef<int> i) => i + 1, //i+=1
+                                Builder.assign((VarRef<int> res) => Builder.nil, (VarRef<int> res) => res + 1)
                         ),
-                        Builder.@return((Var<int> res) => res)
+                        Builder.@return((VarRef<int> res) => res)
                     )
                 )
                 .AddMethod(
                     Builder.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test1",
                         Builder.declare("res", () => 0),
-                        Builder.@for("i", (Par<int> a) => a, (Var<int> i) => i < 10, () => Builder.Var<int>("i") + 2,
-                            Builder.assignVar("res", () => Builder.Var<int>("res") + 1)
+                        Builder.@for("i", (ParamRef<int> a) => a, (VarRef<int> i) => i < 10, () => Builder.VarRef<int>("i") + 2,
+                            Builder.assignVar("res", () => Builder.VarRef<int>("res") + 1)
                         ),
-                        Builder.@return(() => Builder.Var<int>("res") + 100)
+                        Builder.@return(() => Builder.VarRef<int>("res") + 100)
                     )
                 )
             );
@@ -173,6 +173,7 @@ namespace LinqToCodedomTest
 
             Assert.AreEqual(103, c.Compile().GetType("Samples.TestClass").GetMethod("Test1")
                 .Invoke(null, new object[] { 5 }));
+
         }
 
         [TestMethod]

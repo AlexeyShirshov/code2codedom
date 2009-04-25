@@ -25,8 +25,8 @@ namespace Demo
               c.Class("TestClass")
                 .AddMethod(null, MemberAttributes.Public | MemberAttributes.Static, (int a)=>"Print",
                     Builder.stmt(() => Console.WriteLine("Hello, world!")),
-                    Builder.stmt((Par<int> a) => Console.WriteLine(a)),
-                    Builder.@if((Par<int> a) => a == 10,
+                    Builder.stmt((ParamRef<int> a) => Console.WriteLine(a)),
+                    Builder.@if((ParamRef<int> a) => a == 10,
                         Builder.stmt(() => Console.WriteLine("a equals 10")))
                     //Builder.ifelse((Par<int> a) => a.GetHashCode() == 10 && a < 1 && (2 + 3) < 7,
                     //    Builder.GetStmts(Builder.stmt(() => Console.WriteLine("true"))),

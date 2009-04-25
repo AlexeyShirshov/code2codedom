@@ -27,9 +27,9 @@ namespace LinqToCodedom.Visitors
             {
                 if (p.Type.IsGenericType)
                 {
-                    if (p.Type.GetGenericTypeDefinition() == typeof(Par<>))
+                    if (p.Type.GetGenericTypeDefinition() == typeof(ParamRef<>))
                         _params.Add(new CodeArgumentReferenceExpression(p.Name));
-                    else if (p.Type.GetGenericTypeDefinition() == typeof(Var<>))
+                    else if (p.Type.GetGenericTypeDefinition() == typeof(VarRef<>))
                         _params.Add(new CodeVariableReferenceExpression(p.Name));
                     else
                         throw new NotImplementedException();
