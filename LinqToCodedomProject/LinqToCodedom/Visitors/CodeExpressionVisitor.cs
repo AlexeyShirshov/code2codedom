@@ -75,7 +75,7 @@ namespace LinqToCodedom.Visitors
                 //return this.VisitNew((NewExpression)exp);
                 case ExpressionType.NewArrayInit:
                 case ExpressionType.NewArrayBounds:
-                //return this.VisitNewArray((NewArrayExpression)exp);
+                    return this.VisitNewArray((NewArrayExpression)exp);
                 case ExpressionType.Invoke:
                 //return this.VisitInvocation((InvocationExpression)exp);
                 case ExpressionType.MemberInit:
@@ -85,6 +85,30 @@ namespace LinqToCodedom.Visitors
                 default:
                     throw new NotImplementedException(string.Format("Unhandled expression type: '{0}'", exp.NodeType));
             }
+        }
+
+        private CodeExpressionCollection VisitExpressionList(System.Collections.ObjectModel.ReadOnlyCollection<Expression> original)
+        {
+            CodeExpressionCollection list = new CodeExpressionCollection();
+            for (int i = 0, n = original.Count; i < n; i++)
+            {
+                list.Add(this.Visit(original[i]));
+            }
+            return list;
+        }
+
+        private CodeExpressionCollection VisitSequence(LambdaExpression lambda)
+        {
+            var me = lambda.Body as MethodCallExpression;
+            if (me == null)
+                throw new NotSupportedException();
+
+            return VisitExpressionList((me.Arguments[0] as NewArrayExpression).Expressions);
+        }
+
+        private CodeExpression VisitNewArray(NewArrayExpression newArrayExpression)
+        {
+            throw new NotImplementedException();
         }
 
         private CodeExpression VisitUnary(UnaryExpression unaryExpression)
@@ -115,14 +139,46 @@ namespace LinqToCodedom.Visitors
         private CodeExpression VisitMethodCall(MethodCallExpression methodCallExpression)
         {
             var mr = GetMethodRef(methodCallExpression.Method);
-            if (mr.MethodName == "LinqToCodedom.Generator.Builder.Var")
+            if (methodCallExpression.Object == null)
             {
-                return new CodeVariableReferenceExpression(
-                    Builder.Eval<string>(methodCallExpression.Arguments[0]));
+                if (mr.MethodName == "LinqToCodedom.Generator.Builder.VarRef" ||
+                    mr.MethodName == "LinqToCodedom.Generator.Builder.ParamRef")
+                {
+                    return new CodeVariableReferenceExpression(
+                        Builder.Eval<string>(methodCallExpression.Arguments[0]));
+                }
+                else if (mr.MethodName == "LinqToCodedom.Generator.Builder.get_nil")
+                {
+                    return null;
+                }
             }
-            else if (mr.MethodName == "LinqToCodedom.Generator.Builder.get_nil")
+
+            var to = new CodeExpressionVisitor(_ctx).Visit(methodCallExpression.Object);
+            if (to is Builder.CodeThisExpression || to is Builder.CodeBaseExpression)
             {
-                return null;
+                CodeExpression rto = to is Builder.CodeThisExpression?new CodeThisReferenceExpression():new CodeBaseReferenceExpression() as CodeExpression;
+                switch (mr.MethodName)
+                {
+                    case "Call":
+                        string methodName = Builder.Eval<string>(methodCallExpression.Arguments[0]);
+                        if (methodCallExpression.Arguments.Count > 1)
+                            throw new NotImplementedException();
+                        return new Builder.CodeArgsInvoke(rto, methodName);
+                    case "Property":
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+            else if (to is Builder.CodeArgsInvoke)
+            {
+                var c = to as CodeMethodInvokeExpression;
+                foreach (CodeExpression par in VisitSequence(
+                    new QueryVisitor((e)=> e is LambdaExpression)
+                        .Visit(methodCallExpression.Arguments[0]) as LambdaExpression))
+                {
+                    c.Parameters.Add(par);
+                }
+                return c;
             }
             else
             {
@@ -131,7 +187,7 @@ namespace LinqToCodedom.Visitors
                 {
                     c.Parameters.Add(new CodeExpressionVisitor(_ctx).Visit(par));
                 }
-                c.Method.TargetObject = new CodeExpressionVisitor(_ctx).Visit(methodCallExpression.Object);
+                c.Method.TargetObject = to;
                 return c;
             }
         }
@@ -252,6 +308,15 @@ namespace LinqToCodedom.Visitors
                     {
                         return new Builder.CodeNilExpression();
                     }
+                    else
+                        throw new NotImplementedException();
+                }
+                else if (memberExpression.Type == typeof(This))
+                {
+                    if (memberExpression.Member.Name == "this")
+                        return new Builder.CodeThisExpression();
+                    else if (memberExpression.Member.Name == "base")
+                        return new Builder.CodeBaseExpression();
                     else
                         throw new NotImplementedException();
                 }
