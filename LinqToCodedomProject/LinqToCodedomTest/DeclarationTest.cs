@@ -79,7 +79,7 @@ namespace LinqToCodedomTest
                     Builder.Method(typeof(int), MemberAttributes.Public, (int a) => "Test1",
                         Builder.@return(() => 
                             Builder.VarRef<int>("a") +
-                            Builder.@this.Call<int>("Test").Args(() => Builder.Seq(3,4,5)))
+                            Builder.@this.Call<int>("Test").Args(() => Builder.Seq(3)))
                     )
                 )
             );
@@ -100,15 +100,11 @@ namespace LinqToCodedomTest
 
             Assert.IsNotNull(t);
 
-            Assert.AreEqual(104, TestClass.InvokeMember("Test", System.Reflection.BindingFlags.Default, null, t,
+            Assert.AreEqual(104, TestClass.InvokeMember("Test", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.InvokeMethod, null, t,
                 new object[] { 4 }));
 
-            Assert.AreEqual(104, TestClass.InvokeMember("Test1", System.Reflection.BindingFlags.Default, null, t,
+            Assert.AreEqual(104, TestClass.InvokeMember("Test1", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.InvokeMethod, null, t,
                 new object[] { 1 }));
-
-            Builder.@this.Call("dsfg", () => Builder.Seq(3, 4, 5));
-
-            Builder.@this.Call("dsfg", () => Builder.NamedSeq(new { i = 10, s = ""}));
         }
 
         [TestMethod]

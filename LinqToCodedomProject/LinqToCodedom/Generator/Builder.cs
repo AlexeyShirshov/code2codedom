@@ -13,6 +13,15 @@ namespace LinqToCodedom.Generator
         public class NilClass { }
 
         public class CodeNilExpression : CodeExpression { };
+        public class CodeThisExpression : CodeExpression { };
+        public class CodeBaseExpression : CodeExpression { };
+        public class CodeArgsInvoke : CodeMethodInvokeExpression 
+        {
+            public CodeArgsInvoke(CodeExpression target, string methodName)
+                : base(target, methodName)
+            {
+            }
+        };
 
         public static NilClass nil
         {
@@ -43,10 +52,10 @@ namespace LinqToCodedom.Generator
             return default(T);
         }
 
-        public static T ParamRef<T>(string name)
-        {
-            return default(T);
-        }
+        //public static T ParamRef<T>(string name)
+        //{
+        //    return default(T);
+        //}
 
         private static T GetMethodName<T>(LambdaExpression exp, CodeParameterDeclarationExpressionCollection pars)
         {
