@@ -25,8 +25,23 @@ namespace LinqToCodedom
         }
     }
 
-    public class Mem<T>
+    public class SetValueRef<T>
     {
         public T v;
+
+        public static implicit operator T(SetValueRef<T> d)
+        {
+            return default(T);
+        }
+    }
+
+    public class MemberRef<T>
+    {
+        public T v;
+
+        public static implicit operator T(MemberRef<T> d)
+        {
+            return default(T);
+        }
     }
 }

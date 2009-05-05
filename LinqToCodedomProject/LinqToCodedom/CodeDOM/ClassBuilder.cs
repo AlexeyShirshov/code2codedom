@@ -23,80 +23,70 @@ namespace LinqToCodedom
             };
         }
 
-        public CodeTypeDeclaration Class(string className, MemberAttributes attributes, Type baseType)
+        public CodeTypeDeclaration Class(string className, MemberAttributes attributes, bool partial)
         {
             var c = new CodeTypeDeclaration(className)
             {
                 Attributes = attributes,
+                IsPartial = partial
             };
-
-            c.BaseTypes.Add(baseType);
 
             return c;
         }
 
-        public CodeTypeDeclaration Class(string className, MemberAttributes attributes, string baseType)
+        public CodeTypeDeclaration Struct(string structName)
         {
-            var c = new CodeTypeDeclaration(className)
+            return new CodeTypeDeclaration(structName) { IsStruct = true };
+        }
+
+        public CodeTypeDeclaration Struct(string structName, MemberAttributes attributes)
+        {
+            return new CodeTypeDeclaration(structName)
             {
                 Attributes = attributes,
+                IsStruct = true
             };
-
-            c.BaseTypes.Add(baseType);
-
-            return c;
         }
 
-        public CodeTypeDeclaration Class(string className, MemberAttributes attributes, params Type[] interfaces)
+        public CodeTypeDeclaration Struct(string structName, MemberAttributes attributes, bool partial)
         {
-            var c = new CodeTypeDeclaration(className)
+            var c = new CodeTypeDeclaration(structName)
             {
                 Attributes = attributes,
+                IsPartial = partial,
+                IsStruct = true
             };
-
-            c.BaseTypes.AddRange(interfaces.Select((t) => new CodeTypeReference(t)).ToArray());
 
             return c;
         }
 
-        public CodeTypeDeclaration Class(string className, MemberAttributes attributes, params string[] interfaces)
+        public CodeTypeDeclaration Interface(string interfaceName)
         {
-            var c = new CodeTypeDeclaration(className)
+            return new CodeTypeDeclaration(interfaceName) { IsInterface = true };
+        }
+
+        public CodeTypeDeclaration Interface(string interfaceName, MemberAttributes attributes)
+        {
+            return new CodeTypeDeclaration(interfaceName)
             {
                 Attributes = attributes,
+                IsInterface = true
             };
-
-            c.BaseTypes.AddRange(interfaces.Select((t) => new CodeTypeReference(t)).ToArray());
-
-            return c;
         }
 
-        public CodeTypeDeclaration Class(string className, MemberAttributes attributes, Type baseType, params Type[] interfaces)
+        public CodeTypeDeclaration Enum(string enumName)
         {
-            var c = new CodeTypeDeclaration(className)
+            return new CodeTypeDeclaration(enumName) { IsEnum = true };
+        }
+
+        public CodeTypeDeclaration Enum(string enumName, MemberAttributes attributes)
+        {
+            return new CodeTypeDeclaration(enumName)
             {
                 Attributes = attributes,
+                IsEnum = true
             };
-
-            c.BaseTypes.Add(baseType);
-            c.BaseTypes.AddRange(interfaces.Select((t) => new CodeTypeReference(t)).ToArray());
-
-            return c;
         }
-
-        public CodeTypeDeclaration Class(string className, MemberAttributes attributes, string baseType, params string[] interfaces)
-        {
-            var c = new CodeTypeDeclaration(className)
-            {
-                Attributes = attributes,
-            };
-
-            c.BaseTypes.Add(baseType);
-            c.BaseTypes.AddRange(interfaces.Select((t) => new CodeTypeReference(t)).ToArray());
-
-            return c;
-        }
-
         #endregion
 
     }

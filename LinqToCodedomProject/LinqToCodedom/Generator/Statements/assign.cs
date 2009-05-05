@@ -26,6 +26,62 @@ namespace LinqToCodedom.Generator
                 new CodeExpressionVisitor(new VisitorContext()).Visit(stmt));
         }
 
+        public static CodeAssignStatement assignField<TResult, T>(CodeExpression target, string fieldName,
+            Expression<Func<TResult, T>> stmt)
+        {
+            return new CodeAssignStatement(
+                new CodeFieldReferenceExpression(target, fieldName),
+                new CodeExpressionVisitor(new VisitorContext()).Visit(stmt));
+        }
+
+        public static CodeAssignStatement assignField<TResult>(CodeExpression target, string fieldName,
+            Expression<Func<TResult>> stmt)
+        {
+            return new CodeAssignStatement(
+                new CodeFieldReferenceExpression(target, fieldName),
+                new CodeExpressionVisitor(new VisitorContext()).Visit(stmt));
+        }
+
+        public static CodeAssignStatement assignField<TResult, T>(string fieldName,
+           Expression<Func<TResult, T>> stmt)
+        {
+            return assignField<TResult, T>(new CodeThisReferenceExpression(), fieldName, stmt);
+        }
+
+        public static CodeAssignStatement assignField<TResult>(string fieldName,
+            Expression<Func<TResult>> stmt)
+        {
+            return assignField<TResult>(new CodeThisReferenceExpression(), fieldName, stmt);
+        }
+
+        public static CodeAssignStatement assignProperty<TResult, T>(CodeExpression target, string propertyName,
+            Expression<Func<TResult, T>> stmt)
+        {
+            return new CodeAssignStatement(
+                new CodePropertyReferenceExpression(target, propertyName),
+                new CodeExpressionVisitor(new VisitorContext()).Visit(stmt));
+        }
+
+        public static CodeAssignStatement assignProperty<TResult>(CodeExpression target, string propertyName,
+            Expression<Func<TResult>> stmt)
+        {
+            return new CodeAssignStatement(
+                new CodePropertyReferenceExpression(target, propertyName),
+                new CodeExpressionVisitor(new VisitorContext()).Visit(stmt));
+        }
+
+        public static CodeAssignStatement assignProperty<TResult, T>(string propertyName,
+           Expression<Func<TResult, T>> stmt)
+        {
+            return assignProperty<TResult, T>(new CodeThisReferenceExpression(), propertyName, stmt);
+        }
+
+        public static CodeAssignStatement assignProperty<TResult>(string propertyName,
+            Expression<Func<TResult>> stmt)
+        {
+            return assignProperty<TResult>(new CodeThisReferenceExpression(), propertyName, stmt);
+        }
+
         public static CodeAssignStatement assign<TResult, T>(Expression<Func<TResult, NilClass>> name,
             Expression<Func<TResult, T>> stmt)
         {
