@@ -9,6 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToCodedomTest", "LinqTo
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E46C8D98-9068-4F80-8C9D-6123FCEEDE92}"
 	ProjectSection(SolutionItems) = preProject
+		Default.testrunconfig = Default.testrunconfig
 		LinqToCodedomProject.vsmdi = LinqToCodedomProject.vsmdi
 	EndProjectSection
 EndProject

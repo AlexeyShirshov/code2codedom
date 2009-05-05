@@ -53,8 +53,16 @@
   <ItemGroup>
     <Compile Include="CodeDOM\Member.cs" />
     <Compile Include="CodeDOM\Namespace.cs" />
+    <Compile Include="CodeDOM\TypeMember.cs" />
     <Compile Include="Generator\Builder.cs" />
     <Compile Include="CodeDOM\ClassBuilder.cs" />
+    <Compile Include="Generator\Declarations\Attribute.cs" />
+    <Compile Include="Generator\Declarations\Ctor.cs" />
+    <Compile Include="Generator\Declarations\Delegate.cs" />
+    <Compile Include="Generator\Declarations\Field.cs" />
+    <Compile Include="Generator\Declarations\Method.cs" />
+    <Compile Include="Generator\Declarations\Property.cs" />
+    <Compile Include="Generator\Define.cs" />
     <Compile Include="Generator\Delegates.cs" />
     <Compile Include="Generator\Statements\assign.cs" />
     <Compile Include="Generator\Statements\declare.cs" />
@@ -62,6 +70,7 @@
     <Compile Include="Generator\Statements\if.cs" />
     <Compile Include="Generator\Statements\return.cs" />
     <Compile Include="Generator\Statements\stmt.cs" />
+    <Compile Include="Generator\Statements\throw.cs" />
     <Compile Include="References\LateBinding.cs" />
     <Compile Include="Visitors\CodeDomExpressionVisitor.cs" />
     <Compile Include="CodeDOM\CodeDom.cs" />

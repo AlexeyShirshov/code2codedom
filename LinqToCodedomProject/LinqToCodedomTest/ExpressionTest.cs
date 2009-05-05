@@ -3,6 +3,9 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using LinqToCodedom;
+using LinqToCodedom.Generator;
+using System.CodeDom;
 
 namespace LinqToCodedomTest
 {
@@ -68,13 +71,66 @@ namespace LinqToCodedomTest
         [TestMethod]
         public void ObjectCreate()
         {
-            Assert.Inconclusive();
+            var c = new CodeDom();
+
+            c.AddNamespace("Samples").AddClass(c.Class("TestClass")
+                .AddFields(
+                    Define.Field(typeof(string), MemberAttributes.Private, "_s"),
+                    Define.Field(typeof(int), MemberAttributes.Private, "_i")
+                )
+                .AddCtor(
+                    Define.Ctor((int i, string s) => MemberAttributes.Public,
+                        Builder.assignField("_s", (VarRef<string> s) => s),
+                        Builder.assignField("_i", (VarRef<int> i) => i)
+                    )
+                )
+                .AddMethod("TestClass", MemberAttributes.Static | MemberAttributes.Public, () => "Create",
+                    Builder.@return(() => Builder.@new("TestClass", 100, "yyy"))
+                )
+            );
+
+            Console.WriteLine(c.GenerateCode(CodeDom.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDom.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.TestClass");
+
+            Assert.IsNotNull(TestClass);
         }
 
         [TestMethod]
         public void GenericObjectCreate()
         {
-            Assert.Inconclusive();
+            var c = new CodeDom();
+
+            c.AddNamespace("Samples").AddClass(c.Class("TestClass").Generic("T")
+                .AddFields(
+                    Define.Field("T", MemberAttributes.Private, "_s")
+                )
+                .AddProperty("T", MemberAttributes.Public, "S", "_s")
+            ).AddClass(c.Class("cls")
+                .AddMethod(Builder.TypeRef("TestClass", "T"), MemberAttributes.Public | MemberAttributes.Static, () => "foo",
+                    Builder.declare(Builder.TypeRef("TestClass", "T"), "cc",
+                        () => Builder.@new(Builder.TypeRef("TestClass", "T"))),
+                    Builder.@return((Var cc) => cc)
+                ).Generic("T")
+            );
+
+            Console.WriteLine(c.GenerateCode(CodeDom.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDom.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.TestClass`1");
+
+            Assert.IsNotNull(TestClass);
         }
 
         [TestMethod]
@@ -84,7 +140,7 @@ namespace LinqToCodedomTest
         }
 
         [TestMethod]
-        public void TypeofExpression()
+        public void TypeOfExpression()
         {
             Assert.Inconclusive();
         }
@@ -110,5 +166,10 @@ namespace LinqToCodedomTest
             Assert.Inconclusive();
         }
 
+        [TestMethod]
+        public void ParamByRef()
+        {
+            Assert.Inconclusive();
+        }
     }
 }

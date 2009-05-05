@@ -18,7 +18,7 @@ namespace LinqToCodedom.Visitors
 
         public CodeExpression VisitParameter(ParameterExpression parameterExpression)
         {
-            return _params.Find((p) => p.UserData["name"] == parameterExpression.Name);
+            return _params.Find((p) => (p.UserData["name"] as string) == parameterExpression.Name);
         }
 
         public void VisitParams(System.Collections.ObjectModel.ReadOnlyCollection<ParameterExpression> @params)
@@ -31,11 +31,20 @@ namespace LinqToCodedom.Visitors
                         _params.Add(new CodeArgumentReferenceExpression(p.Name));
                     else if (p.Type.GetGenericTypeDefinition() == typeof(VarRef<>))
                         _params.Add(new CodeVariableReferenceExpression(p.Name));
+                    else if (p.Type.GetGenericTypeDefinition() == typeof(SetValueRef<>))
+                        _params.Add(new CodePropertySetValueReferenceExpression());
                     else
                         throw new NotImplementedException();
 
                     _params[_params.Count - 1].UserData["name"] = p.Name;
                 }
+                else if (p.Type == typeof(Var))
+                {
+                    _params.Add(new LinqToCodedom.Generator.Builder.CodeVarExpression(p.Name));
+                    _params[_params.Count - 1].UserData["name"] = p.Name;
+                }
+                else
+                    throw new NotImplementedException();
             }
         }
 

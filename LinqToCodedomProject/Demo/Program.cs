@@ -23,7 +23,7 @@ namespace Demo
             c.AddNamespace("Samples")
             .AddClass(
               c.Class("TestClass")
-                .AddMethod(null, MemberAttributes.Public | MemberAttributes.Static, (int a)=>"Print",
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, (int a)=>"Print",
                     Builder.stmt(() => Console.WriteLine("Hello, world!")),
                     Builder.stmt((ParamRef<int> a) => Console.WriteLine(a)),
                     Builder.@if((ParamRef<int> a) => a == 10,

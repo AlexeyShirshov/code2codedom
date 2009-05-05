@@ -71,33 +71,33 @@ namespace LinqToCodedomTest
             c.AddNamespace("Samples").AddClass(
               c.Class("TestClass")
                 .AddMethod(
-                    Builder.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test",
+                    Define.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test",
                         Builder.ifelse((ParamRef<int> a) => a.v == 10,
-                            Builder.GetStmts(Builder.@return(() => 1)),
+                            Builder.CombineStmts(Builder.@return(() => 1)),
                             Builder.@return(() => -1)
                         )
                     )
                 )
                 .AddMethod(
-                    Builder.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test2",
+                    Define.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test2",
                         Builder.ifelse((ParamRef<int> a) => a.v < 10,
-                            Builder.GetStmts(Builder.@return(() => 1)),
+                            Builder.CombineStmts(Builder.@return(() => 1)),
                             Builder.@return(() => -1)
                         )
                     )
                 )
                 .AddMethod(
-                    Builder.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test3",
+                    Define.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test3",
                         Builder.ifelse((ParamRef<int> a) => a.v * 3 < 7,
-                            Builder.GetStmts(Builder.@return(() => 1)),
+                            Builder.CombineStmts(Builder.@return(() => 1)),
                             Builder.@return(() => -1)
                         )
                     )
                 )
                 .AddMethod(
-                    Builder.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test4",
+                    Define.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test4",
                         Builder.ifelse((ParamRef<int> a) => Math.Abs(a.v) * 3 < 7 + Math.Min(4, a.v),
-                            Builder.GetStmts(Builder.@return(() => 1)),
+                            Builder.CombineStmts(Builder.@return(() => 1)),
                             Builder.@return(() => -1)
                         )
                     )
@@ -141,7 +141,7 @@ namespace LinqToCodedomTest
             c.AddNamespace("Samples").AddClass(
               c.Class("TestClass")
                 .AddMethod(
-                    Builder.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test",
+                    Define.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test",
                         Builder.declare("res", () => 0),
                         Builder.@for(
                             "i", //int i
@@ -154,7 +154,7 @@ namespace LinqToCodedomTest
                     )
                 )
                 .AddMethod(
-                    Builder.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test1",
+                    Define.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test1",
                         Builder.declare("res", () => 0),
                         Builder.@for("i", (ParamRef<int> a) => a, (VarRef<int> i) => i < 10, () => Builder.VarRef<int>("i") + 2,
                             Builder.assignVar("res", () => Builder.VarRef<int>("res") + 1)

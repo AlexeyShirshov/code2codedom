@@ -20,6 +20,20 @@ namespace LinqToCodedom.Generator
             return new CodeVariableDeclarationStatement(type, varName, Builder.@default(type));
         }
 
+        public static CodeVariableDeclarationStatement declare(CodeTypeReference type, string varName,
+            Expression<Action> exp)
+        {
+            return new CodeVariableDeclarationStatement(type, varName,
+                new CodeExpressionVisitor(new VisitorContext()).Visit(exp));
+        }
+
+        public static CodeVariableDeclarationStatement declare(string type, string varName,
+            Expression<Action> exp)
+        {
+            return new CodeVariableDeclarationStatement(type, varName, 
+                new CodeExpressionVisitor(new VisitorContext()).Visit(exp));
+        }
+
         public static CodeVariableDeclarationStatement declare(Type type, string varName)
         {
             return new CodeVariableDeclarationStatement(type, varName, Builder.@default(type));

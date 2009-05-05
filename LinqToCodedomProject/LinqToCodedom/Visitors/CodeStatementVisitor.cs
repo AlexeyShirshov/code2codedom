@@ -76,7 +76,7 @@ namespace LinqToCodedom.Visitors
                 case ExpressionType.NewArrayBounds:
                     //return this.VisitNewArray((NewArrayExpression)exp);
                 case ExpressionType.Invoke:
-                    //return this.VisitInvocation((InvocationExpression)exp);
+                    return this.VisitInvocation((InvocationExpression)exp);
                 case ExpressionType.MemberInit:
                     //return this.VisitMemberInit((MemberInitExpression)exp);
                 case ExpressionType.ListInit:
@@ -84,6 +84,11 @@ namespace LinqToCodedom.Visitors
                 default:
                     throw new NotImplementedException(string.Format("Unhandled expression type: '{0}'", exp.NodeType));
             }
+        }
+
+        private CodeStatement VisitInvocation(InvocationExpression invocationExpression)
+        {
+            return new CodeExpressionStatement(new CodeExpressionVisitor(_ctx).Visit(invocationExpression));
         }
 
         private CodeStatement VisitUnary(UnaryExpression unaryExpression)

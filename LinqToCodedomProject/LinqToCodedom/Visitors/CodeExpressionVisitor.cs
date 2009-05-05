@@ -19,6 +19,17 @@ namespace LinqToCodedom.Visitors
 
         public CodeExpression Visit(Expression exp)
         {
+            CodeExpression res = _Visit(exp);
+            if (res is Builder.CodeThisExpression)
+                res = new CodeThisReferenceExpression();
+            else if (res is Builder.CodeBaseExpression)
+                res = new CodeBaseReferenceExpression();
+
+            return res;
+        }
+
+        private CodeExpression _Visit(Expression exp)
+        {
             if (exp == null)
                 return null;
 
@@ -72,12 +83,12 @@ namespace LinqToCodedom.Visitors
                 case ExpressionType.Lambda:
                     return this.VisitLambda((LambdaExpression)exp);
                 case ExpressionType.New:
-                //return this.VisitNew((NewExpression)exp);
+                    return this.VisitNew((NewExpression)exp);
                 case ExpressionType.NewArrayInit:
                 case ExpressionType.NewArrayBounds:
                     return this.VisitNewArray((NewArrayExpression)exp);
                 case ExpressionType.Invoke:
-                //return this.VisitInvocation((InvocationExpression)exp);
+                    return this.VisitInvocation((InvocationExpression)exp);
                 case ExpressionType.MemberInit:
                 //return this.VisitMemberInit((MemberInitExpression)exp);
                 case ExpressionType.ListInit:
@@ -87,12 +98,49 @@ namespace LinqToCodedom.Visitors
             }
         }
 
-        private CodeExpressionCollection VisitExpressionList(System.Collections.ObjectModel.ReadOnlyCollection<Expression> original)
+        private CodeExpression VisitNew(NewExpression newExpression)
+        {
+            return new CodeObjectCreateExpression(
+                new CodeTypeReference(newExpression.Type),
+                VisitExpressionList(newExpression.Arguments).ToArray()
+            );
+        }
+
+        private CodeExpression VisitInvocation(InvocationExpression invocationExpression)
+        {
+            CodeExpression to = _Visit(invocationExpression.Expression);
+
+            CodeMethodInvokeExpression mi = null;
+
+            if (typeof(CodeMethodInvokeExpression).IsAssignableFrom(to.GetType()))
+            {
+                mi = to as CodeMethodInvokeExpression;
+                foreach (CodeExpression par in VisitExpressionList((invocationExpression.Arguments[0] as NewArrayExpression).Expressions))
+                {
+                    mi.Parameters.Add(par);
+                }
+            }
+            else
+            {
+                mi = new CodeMethodInvokeExpression(
+                    new CodeMethodReferenceExpression(to, "Method")
+                );
+                foreach (CodeExpression par in VisitExpressionList(invocationExpression.Arguments))
+                {
+                    mi.Parameters.Add(par);
+                }
+            }
+
+            return mi;
+        }
+
+        //public CodeExpressionCollection VisitExpressionList(System.Collections.ObjectModel.ReadOnlyCollection<Expression> original)
+        public CodeExpressionCollection VisitExpressionList(IEnumerable<Expression> original)
         {
             CodeExpressionCollection list = new CodeExpressionCollection();
-            for (int i = 0, n = original.Count; i < n; i++)
+            foreach (Expression e in original)
             {
-                list.Add(this.Visit(original[i]));
+                list.Add(_Visit(e));
             }
             return list;
         }
@@ -117,7 +165,7 @@ namespace LinqToCodedom.Visitors
             {
                 case ExpressionType.Convert:
                 case ExpressionType.Quote:
-                    var c = Visit(unaryExpression.Operand);
+                    var c = _Visit(unaryExpression.Operand);
                     if (c != null)
                         return c;
                     break;
@@ -151,12 +199,84 @@ namespace LinqToCodedom.Visitors
                 {
                     return null;
                 }
+                else if (mr.MethodName == "LinqToCodedom.Generator.Builder.Property")
+                {
+                    return new CodePropertyReferenceExpression(
+                        _Visit(methodCallExpression.Arguments[0]),
+                        Builder.Eval<string>(methodCallExpression.Arguments[1]));
+                }
+                else if (mr.MethodName == "LinqToCodedom.Generator.Builder.Call")
+                {
+                    return new CodeMethodInvokeExpression(
+                        _Visit(methodCallExpression.Arguments[0]),
+                        Builder.Eval<string>(methodCallExpression.Arguments[1]));
+                }
+                else if (mr.MethodName == "LinqToCodedom.Generator.Builder.new")
+                {
+                    object t = Builder.Eval(methodCallExpression.Arguments[0]);
+                    CodeTypeReference type = t as CodeTypeReference;
+                    if (type == null)
+                    {
+                        if (t is string)
+                            type = new CodeTypeReference(t as string);
+                        else if (t is Type)
+                            type = new CodeTypeReference(t as Type);
+                        else
+                            throw new NotSupportedException();
+                    }
+
+                    if (methodCallExpression.Arguments.Count == 2)
+                    {
+                        NewArrayExpression arr = methodCallExpression.Arguments[1] as NewArrayExpression;
+                        return new CodeObjectCreateExpression(type, VisitExpressionList(arr.Expressions).ToArray());
+                    }
+                    else
+                        return new CodeObjectCreateExpression(type);
+                }
+                //else if (mr.MethodName == "LinqToCodedom.Generator.Builder.newOf")
+                //{
+                //    object t = Builder.Eval(methodCallExpression.Arguments[0]);
+                //    CodeTypeReference type = null;
+                //    if (t is string)
+                //        type = new CodeTypeReference(t as string);
+                //    else if (t is Type)
+                //        type = new CodeTypeReference(t as Type);
+                //    else
+                //        throw new NotSupportedException();
+
+                //    NewArrayExpression types = methodCallExpression.Arguments[1] as NewArrayExpression;
+                //    foreach (Expression e in types.Expressions)
+                //    {
+                //        CodeTypeReference gt = null;
+                //        object v = Builder.Eval(e);
+                //        if (v is string)
+                //            gt = new CodeTypeReference(v as string);
+                //        else if (v is Type)
+                //            gt = new CodeTypeReference(v as Type);
+                //        else
+                //            throw new NotSupportedException();
+                //        type.TypeArguments.Add(gt);
+                //    }
+
+                //    if (methodCallExpression.Arguments.Count == 3)
+                //    {
+                //        NewArrayExpression arr = methodCallExpression.Arguments[2] as NewArrayExpression;
+                //        return new CodeObjectCreateExpression(type, VisitExpressionList(arr.Expressions).ToArray());
+                //    }
+                //    else
+                //        return new CodeObjectCreateExpression(type);
+                //}
             }
 
-            var to = new CodeExpressionVisitor(_ctx).Visit(methodCallExpression.Object);
-            if (to is Builder.CodeThisExpression || to is Builder.CodeBaseExpression)
+            var to = _Visit(methodCallExpression.Object);
+            if (to is Builder.CodeThisExpression || to is Builder.CodeBaseExpression || to is Builder.CodeVarExpression)
             {
-                CodeExpression rto = to is Builder.CodeThisExpression?new CodeThisReferenceExpression():new CodeBaseReferenceExpression() as CodeExpression;
+                CodeExpression rto = to is Builder.CodeThisExpression?
+                    new CodeThisReferenceExpression():
+                    to is Builder.CodeBaseExpression?
+                        new CodeBaseReferenceExpression() as CodeExpression :
+                        to as CodeVariableReferenceExpression;
+                
                 switch (mr.MethodName)
                 {
                     case "Call":
@@ -165,8 +285,17 @@ namespace LinqToCodedom.Visitors
                             throw new NotImplementedException();
                         return new Builder.CodeArgsInvoke(rto, methodName);
                     case "Property":
+                        string propertyName = Builder.Eval<string>(methodCallExpression.Arguments[0]);
+                        if (methodCallExpression.Arguments.Count > 1)
+                            throw new NotImplementedException();
+                        return new CodePropertyReferenceExpression(rto, propertyName);
+                    case "Field":
+                        string fieldName = Builder.Eval<string>(methodCallExpression.Arguments[0]);
+                        if (methodCallExpression.Arguments.Count > 1)
+                            throw new NotImplementedException();
+                        return new CodeFieldReferenceExpression(rto, fieldName);
                     default:
-                        throw new NotImplementedException();
+                        throw new NotImplementedException(mr.MethodName);
                 }
             }
             else if (to is Builder.CodeArgsInvoke)
@@ -185,7 +314,7 @@ namespace LinqToCodedom.Visitors
                 var c = new CodeMethodInvokeExpression(mr);
                 foreach (var par in methodCallExpression.Arguments)
                 {
-                    c.Parameters.Add(new CodeExpressionVisitor(_ctx).Visit(par));
+                    c.Parameters.Add(_Visit(par));
                 }
                 c.Method.TargetObject = to;
                 return c;
@@ -274,18 +403,17 @@ namespace LinqToCodedom.Visitors
 				case ExpressionType.UnaryPlus:
 				default:
 					throw new NotImplementedException();
-					break;
 			}
 
             return new CodeBinaryOperatorExpression(
-                        Visit(binaryExpression.Left), operType, Visit(binaryExpression.Right));
+                        _Visit(binaryExpression.Left), operType, _Visit(binaryExpression.Right));
         }
 
         private CodeExpression VisitLambda(LambdaExpression lambdaExpression)
         {
             _ctx.VisitParams(lambdaExpression.Parameters);
 
-            var c = Visit(lambdaExpression.Body);
+            var c = _Visit(lambdaExpression.Body);
 
             if (c.GetType() == typeof(Builder.CodeNilExpression))
                 return _ctx.Params[0];
@@ -295,7 +423,17 @@ namespace LinqToCodedom.Visitors
 
         private CodeExpression VisitConstant(ConstantExpression constantExpression)
         {
-            return new CodePrimitiveExpression(constantExpression.Value);
+            if (constantExpression.Value == null)
+                return new CodePrimitiveExpression(null);
+            else
+            {
+                Type t = constantExpression.Value.GetType();
+                if (t.IsEnum)
+                    return new CodeFieldReferenceExpression(new CodeTypeReferenceExpression(t), 
+                        constantExpression.Value.ToString());
+                else
+                    return new CodePrimitiveExpression(constantExpression.Value);
+            }
         }
 
         private CodeExpression VisitMemberAccess(MemberExpression memberExpression)
@@ -325,7 +463,7 @@ namespace LinqToCodedom.Visitors
             }
             else
             {
-                var c = Visit(memberExpression.Expression);
+                var c = _Visit(memberExpression.Expression);
                 if (c is CodeSnippetExpression)
                     throw new NotImplementedException();
                 else
