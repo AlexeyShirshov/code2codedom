@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using LinqToCodedom;
 using LinqToCodedom.Generator;
 using System.CodeDom;
+using LinqToCodedom.Extensions;
 
 namespace LinqToCodedomTest
 {
@@ -155,7 +156,11 @@ namespace LinqToCodedomTest
         [TestMethod]
         public void DelegateCreate()
         {
-            Assert.Inconclusive();
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .
+            ;
         }
 
         [TestMethod]

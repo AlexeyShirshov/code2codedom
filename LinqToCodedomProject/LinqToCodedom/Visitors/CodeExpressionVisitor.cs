@@ -189,29 +189,29 @@ namespace LinqToCodedom.Visitors
             var mr = GetMethodRef(methodCallExpression.Method);
             if (methodCallExpression.Object == null)
             {
-                if (mr.MethodName == "LinqToCodedom.Generator.Builder.VarRef" ||
-                    mr.MethodName == "LinqToCodedom.Generator.Builder.ParamRef")
+                if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.VarRef" ||
+                    mr.MethodName == "LinqToCodedom.Generator.CodeDom.ParamRef")
                 {
                     return new CodeVariableReferenceExpression(
                         CodeDom.Eval<string>(methodCallExpression.Arguments[0]));
                 }
-                else if (mr.MethodName == "LinqToCodedom.Generator.Builder.get_nil")
+                else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.get_nil")
                 {
                     return null;
                 }
-                else if (mr.MethodName == "LinqToCodedom.Generator.Builder.Property")
+                else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.Property")
                 {
                     return new CodePropertyReferenceExpression(
                         _Visit(methodCallExpression.Arguments[0]),
                         CodeDom.Eval<string>(methodCallExpression.Arguments[1]));
                 }
-                else if (mr.MethodName == "LinqToCodedom.Generator.Builder.Call")
+                else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.Call")
                 {
                     return new CodeMethodInvokeExpression(
                         _Visit(methodCallExpression.Arguments[0]),
                         CodeDom.Eval<string>(methodCallExpression.Arguments[1]));
                 }
-                else if (mr.MethodName == "LinqToCodedom.Generator.Builder.new")
+                else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.new")
                 {
                     object t = CodeDom.Eval(methodCallExpression.Arguments[0]);
                     CodeTypeReference type = t as CodeTypeReference;

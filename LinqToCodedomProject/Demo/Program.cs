@@ -10,6 +10,7 @@ using System.IO;
 using LinqToCodedom;
 using LinqToCodedom.Visitors;
 using LinqToCodedom.Generator;
+using LinqToCodedom.Extensions;
 
 namespace Demo
 {
