@@ -19,7 +19,7 @@ namespace LinqToCodedom.Generator
                 Attributes = ma
             };
 
-            method.Name = Builder.GetMethodName<string>(paramsAndName, method.Parameters);
+            method.Name = CodeDom.GetMethodName<string>(paramsAndName, method.Parameters);
             method.Statements.AddRange(statements);
 
             return method;
@@ -34,7 +34,7 @@ namespace LinqToCodedom.Generator
                 Attributes = ma
             };
 
-            method.Name = Builder.GetMethodName<string>(paramsAndName, method.Parameters);
+            method.Name = CodeDom.GetMethodName<string>(paramsAndName, method.Parameters);
             method.Statements.AddRange(statements);
 
             return method;
@@ -49,7 +49,7 @@ namespace LinqToCodedom.Generator
                 Attributes = ma
             };
 
-            method.Name = Builder.GetMethodName<string>(paramsAndName, method.Parameters);
+            method.Name = CodeDom.GetMethodName<string>(paramsAndName, method.Parameters);
             method.Statements.AddRange(statements);
 
             return method;
@@ -63,7 +63,7 @@ namespace LinqToCodedom.Generator
                 Attributes = ma
             };
 
-            method.Name = Builder.GetMethodName<string>(paramsAndName, method.Parameters);
+            method.Name = CodeDom.GetMethodName<string>(paramsAndName, method.Parameters);
             method.Statements.AddRange(statements);
 
             return method;
@@ -78,7 +78,7 @@ namespace LinqToCodedom.Generator
                 Attributes = ma
             };
 
-            method.Name = Builder.GetMethodName<string>(paramsAndName, method.Parameters);
+            method.Name = CodeDom.GetMethodName<string>(paramsAndName, method.Parameters);
             method.Statements.AddRange(statements);
 
             return method;
@@ -93,7 +93,7 @@ namespace LinqToCodedom.Generator
                 Attributes = ma
             };
 
-            method.Name = Builder.GetMethodName<string>(paramsAndName, method.Parameters);
+            method.Name = CodeDom.GetMethodName<string>(paramsAndName, method.Parameters);
             method.Statements.AddRange(statements);
 
             return method;
@@ -108,7 +108,7 @@ namespace LinqToCodedom.Generator
                 Attributes = ma
             };
 
-            method.Name = Builder.GetMethodName<string>(paramsAndName, method.Parameters);
+            method.Name = CodeDom.GetMethodName<string>(paramsAndName, method.Parameters);
             method.Statements.AddRange(statements);
 
             return method;
@@ -122,7 +122,7 @@ namespace LinqToCodedom.Generator
                 Attributes = ma
             };
 
-            method.Name = Builder.GetMethodName<string>(paramsAndName, method.Parameters);
+            method.Name = CodeDom.GetMethodName<string>(paramsAndName, method.Parameters);
             method.Statements.AddRange(statements);
 
             return method;

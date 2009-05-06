@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.CodeDom;
-using System.Linq.Expressions;
-using LinqToCodedom.Visitors;
 
 namespace LinqToCodedom.Generator
 {
     public static partial class Define
     {
-
         #region Event
 
         public static CodeMemberEvent Event(Type delegateType, MemberAttributes ma, string name)
@@ -38,6 +35,5 @@ namespace LinqToCodedom.Generator
         }
 
         #endregion
-
     }
 }

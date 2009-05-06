@@ -20,9 +20,9 @@ namespace LinqToCodedom.Visitors
         public CodeExpression Visit(Expression exp)
         {
             CodeExpression res = _Visit(exp);
-            if (res is Builder.CodeThisExpression)
+            if (res is CodeDom.CodeThisExpression)
                 res = new CodeThisReferenceExpression();
-            else if (res is Builder.CodeBaseExpression)
+            else if (res is CodeDom.CodeBaseExpression)
                 res = new CodeBaseReferenceExpression();
 
             return res;
@@ -193,7 +193,7 @@ namespace LinqToCodedom.Visitors
                     mr.MethodName == "LinqToCodedom.Generator.Builder.ParamRef")
                 {
                     return new CodeVariableReferenceExpression(
-                        Builder.Eval<string>(methodCallExpression.Arguments[0]));
+                        CodeDom.Eval<string>(methodCallExpression.Arguments[0]));
                 }
                 else if (mr.MethodName == "LinqToCodedom.Generator.Builder.get_nil")
                 {
@@ -203,17 +203,17 @@ namespace LinqToCodedom.Visitors
                 {
                     return new CodePropertyReferenceExpression(
                         _Visit(methodCallExpression.Arguments[0]),
-                        Builder.Eval<string>(methodCallExpression.Arguments[1]));
+                        CodeDom.Eval<string>(methodCallExpression.Arguments[1]));
                 }
                 else if (mr.MethodName == "LinqToCodedom.Generator.Builder.Call")
                 {
                     return new CodeMethodInvokeExpression(
                         _Visit(methodCallExpression.Arguments[0]),
-                        Builder.Eval<string>(methodCallExpression.Arguments[1]));
+                        CodeDom.Eval<string>(methodCallExpression.Arguments[1]));
                 }
                 else if (mr.MethodName == "LinqToCodedom.Generator.Builder.new")
                 {
-                    object t = Builder.Eval(methodCallExpression.Arguments[0]);
+                    object t = CodeDom.Eval(methodCallExpression.Arguments[0]);
                     CodeTypeReference type = t as CodeTypeReference;
                     if (type == null)
                     {
@@ -269,28 +269,28 @@ namespace LinqToCodedom.Visitors
             }
 
             var to = _Visit(methodCallExpression.Object);
-            if (to is Builder.CodeThisExpression || to is Builder.CodeBaseExpression || to is Builder.CodeVarExpression)
+            if (to is CodeDom.CodeThisExpression || to is CodeDom.CodeBaseExpression || to is CodeDom.CodeVarExpression)
             {
-                CodeExpression rto = to is Builder.CodeThisExpression?
+                CodeExpression rto = to is CodeDom.CodeThisExpression ?
                     new CodeThisReferenceExpression():
-                    to is Builder.CodeBaseExpression?
+                    to is CodeDom.CodeBaseExpression ?
                         new CodeBaseReferenceExpression() as CodeExpression :
                         to as CodeVariableReferenceExpression;
                 
                 switch (mr.MethodName)
                 {
                     case "Call":
-                        string methodName = Builder.Eval<string>(methodCallExpression.Arguments[0]);
+                        string methodName = CodeDom.Eval<string>(methodCallExpression.Arguments[0]);
                         if (methodCallExpression.Arguments.Count > 1)
                             throw new NotImplementedException();
-                        return new Builder.CodeArgsInvoke(rto, methodName);
+                        return new CodeDom.CodeArgsInvoke(rto, methodName);
                     case "Property":
-                        string propertyName = Builder.Eval<string>(methodCallExpression.Arguments[0]);
+                        string propertyName = CodeDom.Eval<string>(methodCallExpression.Arguments[0]);
                         if (methodCallExpression.Arguments.Count > 1)
                             throw new NotImplementedException();
                         return new CodePropertyReferenceExpression(rto, propertyName);
                     case "Field":
-                        string fieldName = Builder.Eval<string>(methodCallExpression.Arguments[0]);
+                        string fieldName = CodeDom.Eval<string>(methodCallExpression.Arguments[0]);
                         if (methodCallExpression.Arguments.Count > 1)
                             throw new NotImplementedException();
                         return new CodeFieldReferenceExpression(rto, fieldName);
@@ -298,7 +298,7 @@ namespace LinqToCodedom.Visitors
                         throw new NotImplementedException(mr.MethodName);
                 }
             }
-            else if (to is Builder.CodeArgsInvoke)
+            else if (to is CodeDom.CodeArgsInvoke)
             {
                 var c = to as CodeMethodInvokeExpression;
                 foreach (CodeExpression par in VisitSequence(
@@ -415,7 +415,7 @@ namespace LinqToCodedom.Visitors
 
             var c = _Visit(lambdaExpression.Body);
 
-            if (c.GetType() == typeof(Builder.CodeNilExpression))
+            if (c.GetType() == typeof(CodeDom.CodeNilExpression))
                 return _ctx.Params[0];
 
             return c;
@@ -440,11 +440,11 @@ namespace LinqToCodedom.Visitors
         {
             if (memberExpression.Expression == null)
             {
-                if (memberExpression.Type == typeof(Builder.NilClass))
+                if (memberExpression.Type == typeof(CodeDom.NilClass))
                 {
                     if (memberExpression.Member.Name == "nil")
                     {
-                        return new Builder.CodeNilExpression();
+                        return new CodeDom.CodeNilExpression();
                     }
                     else
                         throw new NotImplementedException();
@@ -452,9 +452,9 @@ namespace LinqToCodedom.Visitors
                 else if (memberExpression.Type == typeof(This))
                 {
                     if (memberExpression.Member.Name == "this")
-                        return new Builder.CodeThisExpression();
+                        return new CodeDom.CodeThisExpression();
                     else if (memberExpression.Member.Name == "base")
-                        return new Builder.CodeBaseExpression();
+                        return new CodeDom.CodeBaseExpression();
                     else
                         throw new NotImplementedException();
                 }

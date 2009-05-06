@@ -72,6 +72,7 @@ namespace LinqToCodedom
             method.TypeParameters.Add(p);
             return method;
         }
+
         #endregion
 
         #region Class
@@ -98,6 +99,7 @@ namespace LinqToCodedom
             @class.TypeParameters.Add(p);
             return @class;
         }
+
         #endregion
 
         #region Property

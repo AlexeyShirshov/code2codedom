@@ -66,47 +66,46 @@ namespace LinqToCodedomTest
         [TestMethod]
         public void Builder_If()
         {
-            var c = new CodeDom();
+            var c = new CodeDomGenerator();
 
-            c.AddNamespace("Samples").AddClass(
-              c.Class("TestClass")
+            c.AddNamespace("Samples").AddClass(Define.Class("TestClass")
                 .AddMethod(
                     Define.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test",
-                        Builder.ifelse((ParamRef<int> a) => a.v == 10,
-                            Builder.CombineStmts(Builder.@return(() => 1)),
-                            Builder.@return(() => -1)
+                        Emit.ifelse((ParamRef<int> a) => a.v == 10,
+                            CodeDom.CombineStmts(Emit.@return(() => 1)),
+                            Emit.@return(() => -1)
                         )
                     )
                 )
                 .AddMethod(
                     Define.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test2",
-                        Builder.ifelse((ParamRef<int> a) => a.v < 10,
-                            Builder.CombineStmts(Builder.@return(() => 1)),
-                            Builder.@return(() => -1)
+                        Emit.ifelse((ParamRef<int> a) => a.v < 10,
+                            CodeDom.CombineStmts(Emit.@return(() => 1)),
+                            Emit.@return(() => -1)
                         )
                     )
                 )
                 .AddMethod(
                     Define.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test3",
-                        Builder.ifelse((ParamRef<int> a) => a.v * 3 < 7,
-                            Builder.CombineStmts(Builder.@return(() => 1)),
-                            Builder.@return(() => -1)
+                        Emit.ifelse((ParamRef<int> a) => a.v * 3 < 7,
+                            CodeDom.CombineStmts(Emit.@return(() => 1)),
+                            Emit.@return(() => -1)
                         )
                     )
                 )
                 .AddMethod(
                     Define.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test4",
-                        Builder.ifelse((ParamRef<int> a) => Math.Abs(a.v) * 3 < 7 + Math.Min(4, a.v),
-                            Builder.CombineStmts(Builder.@return(() => 1)),
-                            Builder.@return(() => -1)
+                        Emit.ifelse((ParamRef<int> a) => Math.Abs(a.v) * 3 < 7 + Math.Min(4, a.v),
+                            CodeDom.CombineStmts(Emit.@return(() => 1)),
+                            Emit.@return(() => -1)
                         )
                     )
                 )
             );
 
-            Console.WriteLine(c.GenerateCode(CodeDom.Language.CSharp));
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
 
-            Console.WriteLine(c.GenerateCode(CodeDom.Language.VB));
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
 
             Assert.AreEqual(1, c.Compile().GetType("Samples.TestClass").GetMethod("Test")
                 .Invoke(null, new object[] { 10 }));
@@ -136,37 +135,36 @@ namespace LinqToCodedomTest
         [TestMethod]
         public void Builder_Loop()
         {
-            var c = new CodeDom();
+            var c = new CodeDomGenerator();
 
-            c.AddNamespace("Samples").AddClass(
-              c.Class("TestClass")
+            c.AddNamespace("Samples").AddClass(Define.Class("TestClass")
                 .AddMethod(
                     Define.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test",
-                        Builder.declare("res", () => 0),
-                        Builder.@for(
+                        Emit.declare("res", () => 0),
+                        Emit.@for(
                             "i", //int i
                             (ParamRef<int> a) => a,  // = a 
                             (VarRef<int> i) => i < 10, //i<10
                             (VarRef<int> i) => i + 1, //i+=1
-                                Builder.assign((VarRef<int> res) => Builder.nil, (VarRef<int> res) => res + 1)
+                                Emit.assign((VarRef<int> res) => CodeDom.nil, (VarRef<int> res) => res + 1)
                         ),
-                        Builder.@return((VarRef<int> res) => res)
+                        Emit.@return((VarRef<int> res) => res)
                     )
                 )
                 .AddMethod(
                     Define.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test1",
-                        Builder.declare("res", () => 0),
-                        Builder.@for("i", (ParamRef<int> a) => a, (VarRef<int> i) => i < 10, () => Builder.VarRef<int>("i") + 2,
-                            Builder.assignVar("res", () => Builder.VarRef<int>("res") + 1)
+                        Emit.declare("res", () => 0),
+                        Emit.@for("i", (ParamRef<int> a) => a, (VarRef<int> i) => i < 10, () => CodeDom.VarRef<int>("i") + 2,
+                            Emit.assignVar("res", () => CodeDom.VarRef<int>("res") + 1)
                         ),
-                        Builder.@return(() => Builder.VarRef<int>("res") + 100)
+                        Emit.@return(() => CodeDom.VarRef<int>("res") + 100)
                     )
                 )
             );
 
-            Console.WriteLine(c.GenerateCode(CodeDom.Language.CSharp));
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
 
-            Console.WriteLine(c.GenerateCode(CodeDom.Language.VB));
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
 
             Assert.AreEqual(5, c.Compile().GetType("Samples.TestClass").GetMethod("Test")
                 .Invoke(null, new object[] { 5 }));

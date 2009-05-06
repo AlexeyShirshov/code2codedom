@@ -46,14 +46,14 @@ namespace LinqToCodedom.Generator
             string fieldName)
         {
             return GetProperty(propertyType, ma, name,
-                Builder.@return(() => Builder.@this.Field<object>(fieldName)));
+                Emit.@return(() => CodeDom.@this.Field<object>(fieldName)));
         }
 
         public static CodeMemberProperty GetProperty(string propertyType, MemberAttributes ma, string name,
             string fieldName)
         {
             return GetProperty(propertyType, ma, name,
-                Builder.@return(() => Builder.@this.Field<object>(fieldName)));
+                Emit.@return(() => CodeDom.@this.Field<object>(fieldName)));
         }
 
         public static CodeMemberProperty Property(Type propertyType, MemberAttributes ma, string name,
@@ -80,9 +80,9 @@ namespace LinqToCodedom.Generator
         public static CodeMemberProperty Property(Type propertyType, MemberAttributes ma, string name,
             string fieldName)
         {
-            return Property(propertyType,ma, name, 
-                Builder.CombineStmts(Builder.@return(() => Builder.@this.Field<object>(fieldName))),
-                Builder.assignField(fieldName, (SetValueRef<object> value) => value));
+            return Property(propertyType,ma, name,
+                CodeDom.CombineStmts(Emit.@return(() => CodeDom.@this.Field<object>(fieldName))),
+                Emit.assignField(fieldName, (SetValueRef<object> value) => value));
         }
 
         public static CodeMemberProperty Property(Type propertyType, MemberAttributes ma, string name)
@@ -120,8 +120,8 @@ namespace LinqToCodedom.Generator
             string fieldName)
         {
             return Property(propertyType, ma, name,
-                Builder.CombineStmts(Builder.@return(() => Builder.@this.Field<object>(fieldName))),
-                Builder.assignField(fieldName, (SetValueRef<object> value) => value));
+                CodeDom.CombineStmts(Emit.@return(() => CodeDom.@this.Field<object>(fieldName))),
+                Emit.assignField(fieldName, (SetValueRef<object> value) => value));
         }
 
     }

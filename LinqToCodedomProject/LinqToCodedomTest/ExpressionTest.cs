@@ -71,27 +71,27 @@ namespace LinqToCodedomTest
         [TestMethod]
         public void ObjectCreate()
         {
-            var c = new CodeDom();
+            var c = new CodeDomGenerator();
 
-            c.AddNamespace("Samples").AddClass(c.Class("TestClass")
+            c.AddNamespace("Samples").AddClass(Define.Class("TestClass")
                 .AddFields(
                     Define.Field(typeof(string), MemberAttributes.Private, "_s"),
                     Define.Field(typeof(int), MemberAttributes.Private, "_i")
                 )
                 .AddCtor(
                     Define.Ctor((int i, string s) => MemberAttributes.Public,
-                        Builder.assignField("_s", (VarRef<string> s) => s),
-                        Builder.assignField("_i", (VarRef<int> i) => i)
+                        Emit.assignField("_s", (VarRef<string> s) => s),
+                        Emit.assignField("_i", (VarRef<int> i) => i)
                     )
                 )
                 .AddMethod("TestClass", MemberAttributes.Static | MemberAttributes.Public, () => "Create",
-                    Builder.@return(() => Builder.@new("TestClass", 100, "yyy"))
+                    Emit.@return(() => CodeDom.@new("TestClass", 100, "yyy"))
                 )
             );
 
-            Console.WriteLine(c.GenerateCode(CodeDom.Language.CSharp));
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
 
-            Console.WriteLine(c.GenerateCode(CodeDom.Language.VB));
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
 
             var ass = c.Compile();
 
@@ -105,24 +105,25 @@ namespace LinqToCodedomTest
         [TestMethod]
         public void GenericObjectCreate()
         {
-            var c = new CodeDom();
+            var c = new CodeDomGenerator();
 
-            c.AddNamespace("Samples").AddClass(c.Class("TestClass").Generic("T")
+            c.AddNamespace("Samples")
+            .AddClass(Define.Class("TestClass").Generic("T")
                 .AddFields(
                     Define.Field("T", MemberAttributes.Private, "_s")
                 )
                 .AddProperty("T", MemberAttributes.Public, "S", "_s")
-            ).AddClass(c.Class("cls")
-                .AddMethod(Builder.TypeRef("TestClass", "T"), MemberAttributes.Public | MemberAttributes.Static, () => "foo",
-                    Builder.declare(Builder.TypeRef("TestClass", "T"), "cc",
-                        () => Builder.@new(Builder.TypeRef("TestClass", "T"))),
-                    Builder.@return((Var cc) => cc)
+            ).AddClass(Define.Class("cls")
+                .AddMethod(CodeDom.TypeRef("TestClass", "T"), MemberAttributes.Public | MemberAttributes.Static, () => "foo",
+                    Emit.declare(CodeDom.TypeRef("TestClass", "T"), "cc",
+                        () => CodeDom.@new(CodeDom.TypeRef("TestClass", "T"))),
+                    Emit.@return((Var cc) => cc)
                 ).Generic("T")
             );
 
-            Console.WriteLine(c.GenerateCode(CodeDom.Language.CSharp));
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
 
-            Console.WriteLine(c.GenerateCode(CodeDom.Language.VB));
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
 
             var ass = c.Compile();
 

@@ -4,18 +4,18 @@ using System.Linq;
 using System.Text;
 using System.CodeDom;
 
-namespace LinqToCodedom
+namespace LinqToCodedom.Generator
 {
-    public partial class CodeDom
+    public static partial class Define
     {
         #region Class declaration
 
-        public CodeTypeDeclaration Class(string className)
+        public static CodeTypeDeclaration Class(string className)
         {
             return new CodeTypeDeclaration(className);
         }
 
-        public CodeTypeDeclaration Class(string className, MemberAttributes attributes)
+        public static CodeTypeDeclaration Class(string className, MemberAttributes attributes)
         {
             return new CodeTypeDeclaration(className)
             {
@@ -23,7 +23,7 @@ namespace LinqToCodedom
             };
         }
 
-        public CodeTypeDeclaration Class(string className, MemberAttributes attributes, bool partial)
+        public static CodeTypeDeclaration Class(string className, MemberAttributes attributes, bool partial)
         {
             var c = new CodeTypeDeclaration(className)
             {
@@ -34,12 +34,16 @@ namespace LinqToCodedom
             return c;
         }
 
-        public CodeTypeDeclaration Struct(string structName)
+        #endregion
+
+        #region Struct
+
+        public static CodeTypeDeclaration Struct(string structName)
         {
             return new CodeTypeDeclaration(structName) { IsStruct = true };
         }
 
-        public CodeTypeDeclaration Struct(string structName, MemberAttributes attributes)
+        public static CodeTypeDeclaration Struct(string structName, MemberAttributes attributes)
         {
             return new CodeTypeDeclaration(structName)
             {
@@ -48,7 +52,7 @@ namespace LinqToCodedom
             };
         }
 
-        public CodeTypeDeclaration Struct(string structName, MemberAttributes attributes, bool partial)
+        public static CodeTypeDeclaration Struct(string structName, MemberAttributes attributes, bool partial)
         {
             var c = new CodeTypeDeclaration(structName)
             {
@@ -60,12 +64,16 @@ namespace LinqToCodedom
             return c;
         }
 
-        public CodeTypeDeclaration Interface(string interfaceName)
+        #endregion
+
+        #region Interface
+
+        public static CodeTypeDeclaration Interface(string interfaceName)
         {
             return new CodeTypeDeclaration(interfaceName) { IsInterface = true };
         }
 
-        public CodeTypeDeclaration Interface(string interfaceName, MemberAttributes attributes)
+        public static CodeTypeDeclaration Interface(string interfaceName, MemberAttributes attributes)
         {
             return new CodeTypeDeclaration(interfaceName)
             {
@@ -74,12 +82,16 @@ namespace LinqToCodedom
             };
         }
 
-        public CodeTypeDeclaration Enum(string enumName)
+        #endregion
+
+        #region Enum
+
+        public static CodeTypeDeclaration Enum(string enumName)
         {
             return new CodeTypeDeclaration(enumName) { IsEnum = true };
         }
 
-        public CodeTypeDeclaration Enum(string enumName, MemberAttributes attributes)
+        public static CodeTypeDeclaration Enum(string enumName, MemberAttributes attributes)
         {
             return new CodeTypeDeclaration(enumName)
             {
@@ -87,6 +99,7 @@ namespace LinqToCodedom
                 IsEnum = true
             };
         }
+
         #endregion
 
     }
