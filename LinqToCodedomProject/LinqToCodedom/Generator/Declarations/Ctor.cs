@@ -15,7 +15,7 @@ namespace LinqToCodedom.Generator
         {
             var c = new CodeConstructor();
 
-            c.Attributes = Builder.GetMethodName<MemberAttributes>(paramsAndAccessLevel, c.Parameters);
+            c.Attributes = CodeDom.GetMethodName<MemberAttributes>(paramsAndAccessLevel, c.Parameters);
             c.Statements.AddRange(statements);
 
             return c;
@@ -26,7 +26,7 @@ namespace LinqToCodedom.Generator
         {
             var c = new CodeConstructor();
 
-            c.Attributes = Builder.GetMethodName<MemberAttributes>(paramsAndAccessLevel, c.Parameters);
+            c.Attributes = CodeDom.GetMethodName<MemberAttributes>(paramsAndAccessLevel, c.Parameters);
             c.Statements.AddRange(statements);
 
             return c;
@@ -37,7 +37,7 @@ namespace LinqToCodedom.Generator
         {
             var c = new CodeConstructor();
 
-            c.Attributes = Builder.GetMethodName<MemberAttributes>(paramsAndAccessLevel, c.Parameters);
+            c.Attributes = CodeDom.GetMethodName<MemberAttributes>(paramsAndAccessLevel, c.Parameters);
             c.Statements.AddRange(statements);
 
             return c;

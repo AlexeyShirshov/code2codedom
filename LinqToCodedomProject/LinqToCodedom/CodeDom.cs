@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace LinqToCodedom
 {
-    public partial class CodeDom
+    public class CodeDomGenerator
     {
         private List<CodeNamespace> _namespaces = new List<CodeNamespace>();
 
@@ -18,7 +18,7 @@ namespace LinqToCodedom
 
         public enum Language { CSharp, VB };
 
-        public CodeDom()
+        public CodeDomGenerator()
         {
         }
 
@@ -45,7 +45,7 @@ namespace LinqToCodedom
             return codeNamespace;
         }
 
-        public CodeDom AddReference(string referencedAssembly)
+        public CodeDomGenerator AddReference(string referencedAssembly)
         {
             _assemblies.Add(referencedAssembly);
 
@@ -85,7 +85,9 @@ namespace LinqToCodedom
                     }
                     if (toReplace.Count > 0)
                     {
-                        ns2add = ns.Clone() as CodeNamespace;
+                        if (ns2add == ns)
+                            ns2add = ns.Clone() as CodeNamespace;
+                        
                         c = ns2add.Types[j];
                         foreach (Pair<int, CodeTypeMember> p in toReplace)
                         {

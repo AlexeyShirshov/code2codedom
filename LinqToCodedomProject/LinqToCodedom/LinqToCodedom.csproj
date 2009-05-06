@@ -51,18 +51,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CodeDOM\Member.cs" />
-    <Compile Include="CodeDOM\Namespace.cs" />
-    <Compile Include="CodeDOM\TypeMember.cs" />
+    <Compile Include="CodeDomExtensions\Member.cs" />
+    <Compile Include="CodeDomExtensions\Namespace.cs" />
+    <Compile Include="CodeDomExtensions\TypeMember.cs" />
     <Compile Include="Generator\Builder.cs" />
-    <Compile Include="CodeDOM\ClassBuilder.cs" />
+    <Compile Include="Generator\Declarations\Class.cs" />
     <Compile Include="Generator\Declarations\Attribute.cs" />
     <Compile Include="Generator\Declarations\Ctor.cs" />
     <Compile Include="Generator\Declarations\Delegate.cs" />
+    <Compile Include="Generator\Declarations\Event.cs" />
     <Compile Include="Generator\Declarations\Field.cs" />
     <Compile Include="Generator\Declarations\Method.cs" />
     <Compile Include="Generator\Declarations\Property.cs" />
-    <Compile Include="Generator\Define.cs" />
     <Compile Include="Generator\Delegates.cs" />
     <Compile Include="Generator\Statements\assign.cs" />
     <Compile Include="Generator\Statements\declare.cs" />
@@ -73,8 +73,8 @@
     <Compile Include="Generator\Statements\throw.cs" />
     <Compile Include="References\LateBinding.cs" />
     <Compile Include="Visitors\CodeDomExpressionVisitor.cs" />
-    <Compile Include="CodeDOM\CodeDom.cs" />
-    <Compile Include="CodeDOM\TypeDeclaration.cs" />
+    <Compile Include="CodeDom.cs" />
+    <Compile Include="CodeDomExtensions\TypeDeclaration.cs" />
     <Compile Include="Visitors\CodeExpressionVisitor.cs" />
     <Compile Include="Visitors\CodeStatementVisitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -8,7 +8,7 @@ using LinqToCodedom.Visitors;
 
 namespace LinqToCodedom.Generator
 {
-    public static partial class Builder
+    public static partial class Emit
     {
         public static CodeAssignStatement assignVar<TResult, T>(string varName,
             Expression<Func<TResult, T>> stmt)
@@ -82,7 +82,7 @@ namespace LinqToCodedom.Generator
             return assignProperty<TResult>(new CodeThisReferenceExpression(), propertyName, stmt);
         }
 
-        public static CodeAssignStatement assign<TResult, T>(Expression<Func<TResult, NilClass>> name,
+        public static CodeAssignStatement assign<TResult, T>(Expression<Func<TResult, LinqToCodedom.Generator.CodeDom.NilClass>> name,
             Expression<Func<TResult, T>> stmt)
         {
             return new CodeAssignStatement(

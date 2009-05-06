@@ -64,7 +64,7 @@ namespace LinqToCodedom.Generator
 
         private static void InitAttributeArgs(Expression anonymType, CodeAttributeDeclaration c)
         {
-            object o = Builder.Eval<object>(anonymType);
+            object o = CodeDom.Eval<object>(anonymType);
 
             foreach (System.Reflection.PropertyInfo pi in
                 o.GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance))

@@ -18,7 +18,7 @@ namespace LinqToCodedom.Generator
                 ReturnType = new CodeTypeReference(returnType),
             };
 
-            c.Name = Builder.GetMethodName<string>(paramsAndName, c.Parameters);
+            c.Name = CodeDom.GetMethodName<string>(paramsAndName, c.Parameters);
 
             return c;
         }
@@ -32,7 +32,7 @@ namespace LinqToCodedom.Generator
                 ReturnType = new CodeTypeReference(returnType),
             };
 
-            c.Name = Builder.GetMethodName<string>(paramsAndName, c.Parameters);
+            c.Name = CodeDom.GetMethodName<string>(paramsAndName, c.Parameters);
 
             return c;
         }
@@ -46,7 +46,7 @@ namespace LinqToCodedom.Generator
                 ReturnType = new CodeTypeReference(returnType),
             };
 
-            c.Name = Builder.GetMethodName<string>(paramsAndName, c.Parameters);
+            c.Name = CodeDom.GetMethodName<string>(paramsAndName, c.Parameters);
 
             return c;
         }
@@ -60,7 +60,7 @@ namespace LinqToCodedom.Generator
                 ReturnType = new CodeTypeReference(returnType),
             };
 
-            c.Name = Builder.GetMethodName<string>(paramsAndName, c.Parameters);
+            c.Name = CodeDom.GetMethodName<string>(paramsAndName, c.Parameters);
 
             return c;
         }
@@ -74,7 +74,7 @@ namespace LinqToCodedom.Generator
                 ReturnType = returnType,
             };
 
-            c.Name = Builder.GetMethodName<string>(paramsAndName, c.Parameters);
+            c.Name = CodeDom.GetMethodName<string>(paramsAndName, c.Parameters);
 
             return c;
         }
@@ -87,7 +87,7 @@ namespace LinqToCodedom.Generator
                 Attributes = ma
             };
 
-            c.Name = Builder.GetMethodName<string>(paramsAndName, c.Parameters);
+            c.Name = CodeDom.GetMethodName<string>(paramsAndName, c.Parameters);
 
             return c;
         }

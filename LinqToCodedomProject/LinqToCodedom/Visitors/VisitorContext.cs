@@ -40,7 +40,7 @@ namespace LinqToCodedom.Visitors
                 }
                 else if (p.Type == typeof(Var))
                 {
-                    _params.Add(new LinqToCodedom.Generator.Builder.CodeVarExpression(p.Name));
+                    _params.Add(new LinqToCodedom.Generator.CodeDom.CodeVarExpression(p.Name));
                     _params[_params.Count - 1].UserData["name"] = p.Name;
                 }
                 else

@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 
 namespace LinqToCodedom.Generator
 {
-    public static partial class Builder
+    public static partial class Emit
     {
         public static CodeStatement stmt(Expression<Action> exp)
         {

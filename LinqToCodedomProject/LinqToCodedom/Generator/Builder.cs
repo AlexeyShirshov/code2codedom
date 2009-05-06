@@ -9,7 +9,7 @@ using System.ComponentModel;
 
 namespace LinqToCodedom.Generator
 {
-    public static partial class Builder
+    public static class CodeDom
     {
         public class NilClass { }
 
@@ -233,7 +233,7 @@ namespace LinqToCodedom.Generator
                 types.Select((t) => new CodeTypeReference(t)).ToArray());
         }
 
-        public static CodeTypeReference generic(Type type, params Type[] types)
+        public static CodeTypeReference TypeRef(Type type, params Type[] types)
         {
             var d = new CodeTypeReference(type);
             d.TypeArguments.AddRange(types.Select((t) => new CodeTypeReference(t)).ToArray());

@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 
 namespace LinqToCodedom.Generator
 {
-    public static partial class Builder
+    public static partial class Emit
     {
         public static CodeIterationStatement @for<TResult, T, T2, T3>(string varName,
             Expression<Func<T, TResult>> initStmt,
@@ -17,7 +17,7 @@ namespace LinqToCodedom.Generator
         {
             return new CodeIterationStatement(declare(varName, initStmt),
                 new CodeExpressionVisitor(new VisitorContext()).Visit(testStmt),
-                Builder.assignVar(varName, incStmt),
+                Emit.assignVar(varName, incStmt),
                 statements);
         }
 
@@ -28,7 +28,7 @@ namespace LinqToCodedom.Generator
         {
             return new CodeIterationStatement(declare(varName, initStmt),
                 new CodeExpressionVisitor(new VisitorContext()).Visit(testStmt),
-                Builder.assignVar(varName, incStmt),
+                Emit.assignVar(varName, incStmt),
                 statements);
         }
 
