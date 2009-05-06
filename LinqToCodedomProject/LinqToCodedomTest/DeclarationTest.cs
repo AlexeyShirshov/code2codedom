@@ -7,6 +7,7 @@ using LinqToCodedom;
 using LinqToCodedom.Visitors;
 using System.CodeDom;
 using LinqToCodedom.Generator;
+using LinqToCodedom.Extensions;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
@@ -500,7 +501,24 @@ namespace LinqToCodedomTest
                 .AddProperty("TestClass", MemberAttributes.Public, "Third")
                 .AddGetProperty("TestClass", MemberAttributes.Public, "Fifth")
                 .AddEvent(typeof(EventHandler), MemberAttributes.Public, "Fourth")
-            );
+            ).AddClass("xxx").Implements("Ixxx")
+                .AddMethod(MemberAttributes.Public, ()=>"First",
+                    Emit.@throw(()=>new NotImplementedException())
+                ).Implements("Ixxx")
+                .AddMethod(typeof(DateTime), MemberAttributes.Public, () => "Second",
+                    Emit.@throw(() => new NotImplementedException())
+                ).Implements("Ixxx")
+                .AddProperty("TestClass", MemberAttributes.Public, "Third",
+                    CodeDom.CombineStmts(Emit.@throw(() => new NotImplementedException())),
+                    Emit.@throw(() => new NotImplementedException())
+                ).Implements("Ixxx")
+                .AddGetProperty("TestClass", MemberAttributes.Public, "Fifth",
+                    Emit.@throw(() => new NotImplementedException())
+                ).Implements("Ixxx")
+                .AddEvent(typeof(EventHandler), MemberAttributes.Public, "Fourth"
+                ).Implements("Ixxx")
+                .AddField(typeof(int), "_z", () => 100)
+            ;
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
 
@@ -521,7 +539,34 @@ namespace LinqToCodedomTest
         {
             var c = new CodeDomGenerator();
 
-            Assert.Inconclusive();
+            c.AddNamespace("Samples").AddStruct(Define.Struct("xxx")
+                .AddField(typeof(bool), "_x")
+                .AddField(typeof(int), "_y")
+                .AddCtor((bool x) => MemberAttributes.Public,
+                    Emit.assignField("_x", (VarRef<bool> x) => x),
+                    Emit.assignField("_y", ()=> 100)
+                )
+                .AddGetProperty(typeof(int), MemberAttributes.Public, "Z", "_y")
+            );
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.xxx");
+
+            Assert.IsNotNull(TestClass);
+
+            object t = TestClass.InvokeMember(null, System.Reflection.BindingFlags.CreateInstance, null, null,
+                new object[] { false });
+
+            Assert.IsNotNull(t);
+
+            Assert.AreEqual(100, TestClass.InvokeMember("Z", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.GetProperty, null, t, null));
         }
 
         [TestMethod]
@@ -529,7 +574,34 @@ namespace LinqToCodedomTest
         {
             var c = new CodeDomGenerator();
 
-            Assert.Inconclusive();
+            c.AddNamespace("Samples").AddEnum(Define.Enum("ee")
+                .AddFields(
+                    Define.StructField("Xx"),
+                    Define.StructField("Yy"),
+                    Define.StructField("Zz", ()=>100)
+                )
+            ).AddEnum("rr").AddAttribute(typeof(FlagsAttribute))
+                .AddFields(
+                    Define.StructField("Xx"),
+                    Define.StructField("Yy"),
+                    Define.StructField("Zz")
+            );
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type eeClass = ass.GetType("Samples.ee");
+
+            Assert.IsNotNull(eeClass);
+
+            Type rrClass = ass.GetType("Samples.rr");
+
+            Assert.IsNotNull(rrClass);
         }
     }
 }

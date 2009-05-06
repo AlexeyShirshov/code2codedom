@@ -34,6 +34,20 @@ namespace LinqToCodedom.Generator
             return c;
         }
 
+        public static CodeMemberField Field<TResult>(Type fieldType, MemberAttributes ma, string name,
+            Expression<Func<TResult>> exp)
+        {
+            var c = new CodeMemberField()
+            {
+                Name = name,
+                Attributes = ma,
+                Type = new CodeTypeReference(fieldType),
+                InitExpression = new CodeExpressionVisitor(new VisitorContext()).Visit(exp),
+            };
+
+            return c;
+        }
+
         public static CodeMemberField Field(string fieldType, MemberAttributes ma, string name)
         {
             return new CodeMemberField()

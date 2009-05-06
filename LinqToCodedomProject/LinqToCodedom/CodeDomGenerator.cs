@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System;
 using System.Linq;
+using LinqToCodedom.Extensions;
 
 namespace LinqToCodedom
 {

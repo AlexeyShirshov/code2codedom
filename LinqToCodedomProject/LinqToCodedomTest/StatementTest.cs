@@ -7,6 +7,7 @@ using System.CodeDom;
 using LinqToCodedom;
 using LinqToCodedom.Generator;
 using System.Linq.Expressions;
+using LinqToCodedom.Extensions;
 
 namespace LinqToCodedomTest
 {
