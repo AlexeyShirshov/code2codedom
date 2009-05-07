@@ -212,6 +212,40 @@ namespace LinqToCodedomTest
         }
 
         [TestMethod]
+        public void Builder_AccessProperty()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls1")
+                .AddField(typeof(int), "_i", () => 10)
+                .AddProperty(typeof(int), MemberAttributes.Public, "I", "_i")
+            .AddClass("cls2")
+                .AddMethod(typeof(int), MemberAttributes.Public | MemberAttributes.Static, () => "foo",
+                    Emit.declare("cls1", "cc", () => CodeDom.@new("cls1")),
+                    Emit.@return((Var cc) => cc.Property<int>("I"))
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls2");
+
+            Assert.IsNotNull(TestClass);
+
+            int s = (int)TestClass.InvokeMember("foo", 
+                System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.InvokeMethod, 
+                null, null, null);
+
+            Assert.AreEqual(10, s);
+        }
+
+        [TestMethod]
         public void Builder_GenericMethod()
         {
             var c = new CodeDomGenerator();

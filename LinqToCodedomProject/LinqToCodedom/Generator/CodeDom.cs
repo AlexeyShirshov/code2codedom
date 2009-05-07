@@ -40,12 +40,12 @@ namespace LinqToCodedom.Generator
 
         public static This @this
         {
-            get { return default(This); }
+            get { return new This(); }
         }
 
-        public static This @base
+        public static Base @base
         {
-            get { return default(This); }
+            get { return new Base(); }
         }
 
         public static void Seq(params object[] args)
@@ -64,7 +64,7 @@ namespace LinqToCodedom.Generator
 
         public static Var VarRef(string name)
         {
-            return null;
+            return new Var(name);
         }
 
         //public static T ParamRef<T>(string name)
@@ -79,7 +79,7 @@ namespace LinqToCodedom.Generator
                 var par = new CodeParameterDeclarationExpression(p.Type, p.Name);
                 pars.Add(par);
             }
-            return Eval<T>(exp.Body);
+            return Eval<T>(exp, pars);
         }
 
         public static CodeStatement[] CombineStmts(params CodeStatement[] stmts)
@@ -108,9 +108,54 @@ namespace LinqToCodedom.Generator
             }
         }
 
+        public static T Eval<T>(LambdaExpression le, CodeParameterDeclarationExpressionCollection pars)
+        {
+            List<object> o = new List<object>();
+            foreach (var e in le.Parameters)
+            {
+                o.Add(null);
+            }
+
+            var exp = new QueryVisitor((e) => (e is MethodCallExpression &&
+                (e as MethodCallExpression).Object is ParameterExpression &&
+                ((e as MethodCallExpression).Object as ParameterExpression).Type == typeof(DynType))).Visit(le);
+
+            if (exp != null)
+            {
+                MethodCallExpression mc = (exp as MethodCallExpression);
+                ParameterExpression pe = mc.Object as ParameterExpression;
+
+                foreach (CodeParameterDeclarationExpression p in pars)
+                {
+                    if (pe.Name == p.Name)
+                    {
+                        object t = Eval(mc.Arguments[0]);
+                        p.Type = GetTypeReference(t);
+                    }
+                }
+            }
+
+            return (T)le.Compile().DynamicInvoke(o.ToArray());
+        }
+
         public static object Eval(Expression exp)
         {
             return Eval<object>(exp);
+        }
+
+        public static CodeTypeReference GetTypeReference(object t)
+        {
+            CodeTypeReference type = t as CodeTypeReference;
+            if (type == null)
+            {
+                if (t is string)
+                    type = new CodeTypeReference(t as string);
+                else if (t is Type)
+                    type = new CodeTypeReference(t as Type);
+                else
+                    throw new NotSupportedException();
+            }
+            return type;
         }
 
         #region Default
@@ -251,5 +296,32 @@ namespace LinqToCodedom.Generator
         //{
         //    return new System.Collections.ObjectModel.ReadOnlyCollection<Expression>(col.ToList());
         //}
+
+        public static ParamsDelegate<TReturn> CallDelegate<TReturn>(string varName)
+        {
+            return default(ParamsDelegate<TReturn>);
+        }
+
+        public static ParamsDelegate CallDelegate(string varName)
+        {
+            return default(ParamsDelegate);
+        }
+
+        public static CodeExpression GetTargetObject(Base o)
+        {
+            Type t = o.GetType();
+
+            if (t == typeof(This))
+                return new CodeThisReferenceExpression();
+            else if (t == typeof(Base))
+                return new CodeBaseReferenceExpression();
+            else if (t == typeof(Var))
+            {
+                Var v = o as Var;
+                return new CodeVariableReferenceExpression(v.Name);
+            }
+            else
+                throw new NotSupportedException();
+        }
     }
 }

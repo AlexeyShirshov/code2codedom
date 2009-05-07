@@ -76,9 +76,10 @@ namespace LinqToCodedom
             return default(ParamsDelegate);
         }
 
-        //public void Call(string name)
-        //{
-        //}
+        public ParamsDelegate Call()
+        {
+            return default(ParamsDelegate);
+        }
 
         //public void Call(string name, params object[] param)
         //{
@@ -100,9 +101,16 @@ namespace LinqToCodedom
         #endregion
     }
 
-    public class Var : Base { }
+    public class Var : Base { public Var(string name) { Name = name; } public string Name { get; protected set; } }
 
-    public class Par : Base { }
+    //public class Par : Base { }
 
     public class This : Base { }
+
+    public struct DynType
+    {
+        public string SetType(string type) { return string.Empty; }
+        public string SetType(Type type) { return string.Empty; }
+        public string SetType(System.CodeDom.CodeTypeReference type) { return string.Empty; }
+    }
 }

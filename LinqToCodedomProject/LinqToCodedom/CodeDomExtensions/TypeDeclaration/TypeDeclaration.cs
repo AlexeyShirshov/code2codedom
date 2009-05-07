@@ -41,6 +41,11 @@ namespace LinqToCodedom.Extensions
             return member;
         }
 
+        public static CodeNamespace GetNamespace(this CodeTypeDeclaration type)
+        {
+            return type.UserData["ns"] as CodeNamespace;
+        }
+
         public static CodeTypeDeclaration AddClass(this CodeTypeDeclaration classCode, CodeTypeDeclaration codeType)
         {
             classCode.Members_Add(codeType);
@@ -122,6 +127,15 @@ namespace LinqToCodedom.Extensions
             p.Constraints.AddRange(constraints.Select((t) => new CodeTypeReference(t)).ToArray());
             @class.TypeParameters.Add(p);
             return @class;
+        }
+
+        public static CodeTypeDeclaration AddClass(this CodeTypeDeclaration @class, string className)
+        {
+            var c = Define.Class(className);
+
+            @class.GetNamespace().Types.Add(c);
+
+            return c;
         }
 
         #endregion
