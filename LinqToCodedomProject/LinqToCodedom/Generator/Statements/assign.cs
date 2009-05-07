@@ -89,5 +89,21 @@ namespace LinqToCodedom.Generator
                 new CodeExpressionVisitor(new VisitorContext()).Visit(name),
                 new CodeExpressionVisitor(new VisitorContext()).Visit(stmt));
         }
+
+        public static CodeAssignStatement assignDelegate(string varName, Base target, string methodName)
+        {
+            return new CodeAssignStatement(
+                new CodeVariableReferenceExpression(varName),
+                new CodeMethodReferenceExpression(CodeDom.GetTargetObject(target), methodName)
+            );
+        }
+
+        public static CodeAssignStatement assignDelegate(string varName, string methodName)
+        {
+            return new CodeAssignStatement(
+                new CodeVariableReferenceExpression(varName),
+                new CodeMethodReferenceExpression(null, methodName)
+            );
+        }
     }
 }

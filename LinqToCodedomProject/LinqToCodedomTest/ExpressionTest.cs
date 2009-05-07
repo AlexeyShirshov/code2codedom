@@ -154,13 +154,125 @@ namespace LinqToCodedomTest
         }
 
         [TestMethod]
-        public void DelegateCreate()
+        public void StaticDelegate()
         {
             var c = new CodeDomGenerator();
 
             c.AddNamespace("Samples").AddClass("cls")
-                .
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public,
+                    ()=>"foo",
+                    Emit.declare(typeof(EventHandler), "h"),
+                    Emit.assignDelegate("h", "zoo"),
+                    Emit.stmt((Var h)=>h.Call()(null, null))
+                )
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Private,(object sender, EventArgs args)=>"zoo")                    
             ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+        }
+
+        [TestMethod]
+        public void InstanceDelegate()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddReference("System.Core.dll").AddNamespace("Samples").AddClass("cls")
+                .AddMethod(typeof(string), MemberAttributes.Static | MemberAttributes.Public,
+                    () => "foo",
+                    Emit.declare("h2", () => new Func<string>("aaa".ToString)),
+                    Emit.@return((VarRef<Func<string>> h2) => h2.v())
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+
+            string s = (string)TestClass.InvokeMember("foo",
+                System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.InvokeMethod,
+                null, null, null);
+
+            Assert.AreEqual("aaa", s);
+
+        }
+
+        [TestMethod]
+        public void InstanceClassDelegate()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddReference("System.Core.dll").AddNamespace("Samples").AddClass("cls")
+                .AddMethod(typeof(string), MemberAttributes.Public,
+                    () => "foo",
+                    Emit.declare(typeof(Func<int, string>), "h2"),
+                    Emit.assignDelegate("h2", CodeDom.@this, "zoo"),
+                    Emit.@return((VarRef<Func<int, string>> h2) => h2.v(10))
+                )
+                .AddMethod(typeof(string), MemberAttributes.Public, (int i) => "zoo",
+                    Emit.@return((VarRef<int> i)=>i.ToString())
+                )
+            .AddClass("cls2")
+                .AddMethod(typeof(string), MemberAttributes.Public | MemberAttributes.Static, 
+                    (DynType cc) => "foo"+cc.SetType("cls"),
+                    Emit.declare(typeof(Func<int, string>), "h2"),
+                    Emit.assignDelegate("h2", CodeDom.VarRef("cc"), "zoo"),
+                    Emit.@return((VarRef<Func<int, string>> h2) => h2.v(100))
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type cls = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(cls);
+
+            object t = cls.InvokeMember(null, System.Reflection.BindingFlags.CreateInstance, null, null, null);
+
+            Assert.IsNotNull(t);
+
+            string s = (string)cls.InvokeMember("foo",
+                System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Instance,
+                null, t, null);
+
+            Assert.AreEqual("10", s);
+
+            Type cls2 = ass.GetType("Samples.cls2");
+
+            Assert.IsNotNull(cls2);
+
+            object t2 = cls2.InvokeMember(null, System.Reflection.BindingFlags.CreateInstance, null, null, null);
+
+            Assert.IsNotNull(t2);
+
+            string s2 = (string)cls2.InvokeMember("foo",
+                System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Static,
+                null, t2, new object[]{t});
+
+            Assert.AreEqual("100", s2);
         }
 
         [TestMethod]

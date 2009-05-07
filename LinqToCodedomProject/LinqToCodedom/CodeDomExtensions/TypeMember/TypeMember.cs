@@ -56,6 +56,15 @@ namespace LinqToCodedom.Extensions
             return member;
         }
 
+        public static CodeTypeDeclaration AddClass(this CodeTypeMember member, string className)
+        {
+            var c = Define.Class(className);
+
+            member.GetDeclaration().GetNamespace().Types.Add(c);
+
+            return c;
+        }
+
         #endregion
 
     }

@@ -110,28 +110,36 @@ namespace LinqToCodedom.Visitors
         {
             CodeExpression to = _Visit(invocationExpression.Expression);
 
-            CodeMethodInvokeExpression mi = null;
-
             if (typeof(CodeMethodInvokeExpression).IsAssignableFrom(to.GetType()))
             {
-                mi = to as CodeMethodInvokeExpression;
-                foreach (CodeExpression par in VisitExpressionList((invocationExpression.Arguments[0] as NewArrayExpression).Expressions))
-                {
-                    mi.Parameters.Add(par);
-                }
+                CodeMethodInvokeExpression mi = to as CodeMethodInvokeExpression;
+                if (invocationExpression.Arguments.Count > 0)
+                    foreach (CodeExpression par in VisitExpressionList((invocationExpression.Arguments[0] as NewArrayExpression).Expressions))
+                    {
+                        mi.Parameters.Add(par);
+                    }
+                return mi;
+            }
+            else if (to is CodeDelegateInvokeExpression)
+            {
+                if (invocationExpression.Arguments.Count > 0)
+                    foreach (CodeExpression par in VisitExpressionList((invocationExpression.Arguments[0] as NewArrayExpression).Expressions))
+                    {
+                        (to as CodeDelegateInvokeExpression).Parameters.Add(par);
+                    }
+                return to;
             }
             else
             {
-                mi = new CodeMethodInvokeExpression(
-                    new CodeMethodReferenceExpression(to, "Method")
-                );
-                foreach (CodeExpression par in VisitExpressionList(invocationExpression.Arguments))
-                {
-                    mi.Parameters.Add(par);
-                }
+                var mi = new CodeDelegateInvokeExpression(to);
+                if (invocationExpression.Arguments.Count > 0)
+                    foreach (CodeExpression par in VisitExpressionList(invocationExpression.Arguments))
+                    {
+                        mi.Parameters.Add(par);
+                    }
+                return mi;
             }
 
-            return mi;
         }
 
         //public CodeExpressionCollection VisitExpressionList(System.Collections.ObjectModel.ReadOnlyCollection<Expression> original)
@@ -161,11 +169,16 @@ namespace LinqToCodedom.Visitors
 
         private CodeExpression VisitUnary(UnaryExpression unaryExpression)
         {
+            var c = _Visit(unaryExpression.Operand);
             switch (unaryExpression.NodeType)
             {
                 case ExpressionType.Convert:
+                    if (unaryExpression.Type != typeof(Object))
+                        return new CodeCastExpression(unaryExpression.Type, c);
+                    if (c != null)
+                        return c;
+                    break;
                 case ExpressionType.Quote:
-                    var c = _Visit(unaryExpression.Operand);
                     if (c != null)
                         return c;
                     break;
@@ -214,16 +227,7 @@ namespace LinqToCodedom.Visitors
                 else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.new")
                 {
                     object t = CodeDom.Eval(methodCallExpression.Arguments[0]);
-                    CodeTypeReference type = t as CodeTypeReference;
-                    if (type == null)
-                    {
-                        if (t is string)
-                            type = new CodeTypeReference(t as string);
-                        else if (t is Type)
-                            type = new CodeTypeReference(t as Type);
-                        else
-                            throw new NotSupportedException();
-                    }
+                    CodeTypeReference type = CodeDom.GetTypeReference(t);
 
                     if (methodCallExpression.Arguments.Count == 2)
                     {
@@ -272,18 +276,25 @@ namespace LinqToCodedom.Visitors
             if (to is CodeDom.CodeThisExpression || to is CodeDom.CodeBaseExpression || to is CodeDom.CodeVarExpression)
             {
                 CodeExpression rto = to is CodeDom.CodeThisExpression ?
-                    new CodeThisReferenceExpression():
+                    new CodeThisReferenceExpression() :
                     to is CodeDom.CodeBaseExpression ?
                         new CodeBaseReferenceExpression() as CodeExpression :
                         to as CodeVariableReferenceExpression;
-                
+
                 switch (mr.MethodName)
                 {
                     case "Call":
-                        string methodName = CodeDom.Eval<string>(methodCallExpression.Arguments[0]);
-                        if (methodCallExpression.Arguments.Count > 1)
-                            throw new NotImplementedException();
-                        return new CodeDom.CodeArgsInvoke(rto, methodName);
+                        if (methodCallExpression.Arguments.Count > 0)
+                        {
+                            string methodName = CodeDom.Eval<string>(methodCallExpression.Arguments[0]);
+                            if (methodCallExpression.Arguments.Count > 1)
+                                throw new NotImplementedException();
+                            return new CodeDom.CodeArgsInvoke(rto, methodName);
+                        }
+                        else
+                        {
+                            return new CodeDelegateInvokeExpression(rto);
+                        }
                     case "Property":
                         string propertyName = CodeDom.Eval<string>(methodCallExpression.Arguments[0]);
                         if (methodCallExpression.Arguments.Count > 1)
@@ -302,7 +313,7 @@ namespace LinqToCodedom.Visitors
             {
                 var c = to as CodeMethodInvokeExpression;
                 foreach (CodeExpression par in VisitSequence(
-                    new QueryVisitor((e)=> e is LambdaExpression)
+                    new QueryVisitor((e) => e is LambdaExpression)
                         .Visit(methodCallExpression.Arguments[0]) as LambdaExpression))
                 {
                     c.Parameters.Add(par);
@@ -323,87 +334,87 @@ namespace LinqToCodedom.Visitors
 
         private CodeExpression VisitBinary(BinaryExpression binaryExpression)
         {
-			CodeBinaryOperatorType operType;
-            
-			switch (binaryExpression.NodeType)
-			{
-				case ExpressionType.Add:
-					operType = CodeBinaryOperatorType.Add;
-					break;
-				case ExpressionType.AddChecked:
-					operType = CodeBinaryOperatorType.Add;
-					break;
-				case ExpressionType.And:
-					operType = CodeBinaryOperatorType.BooleanAnd;
-					break;
-				case ExpressionType.AndAlso:
-					operType = CodeBinaryOperatorType.BooleanAnd;
-					break;
-				case ExpressionType.Divide:
-					operType = CodeBinaryOperatorType.Divide;
-					break;
-				case ExpressionType.Equal:
-					operType = CodeBinaryOperatorType.ValueEquality;
-					break;
-				case ExpressionType.ExclusiveOr:
-					operType = CodeBinaryOperatorType.BooleanOr;
-					break;
-				case ExpressionType.GreaterThan:
-					operType = CodeBinaryOperatorType.GreaterThan;
-					break;
-				case ExpressionType.GreaterThanOrEqual:
-					operType = CodeBinaryOperatorType.GreaterThanOrEqual;
-					break;
-				case ExpressionType.Invoke:
-					
-				case ExpressionType.Lambda:
-					
-				case ExpressionType.LeftShift:
-					
-				case ExpressionType.LessThan:
-					operType = CodeBinaryOperatorType.LessThan;
-					break;
-				case ExpressionType.LessThanOrEqual:
-					operType = CodeBinaryOperatorType.LessThanOrEqual;
-					break;
-				case ExpressionType.Modulo:
-					operType = CodeBinaryOperatorType.Modulus;
-					break;
-				case ExpressionType.Multiply:
-					operType = CodeBinaryOperatorType.Multiply;
-					break;
-				case ExpressionType.MultiplyChecked:
-					operType = CodeBinaryOperatorType.Multiply;
-					break;
-				case ExpressionType.Negate:
-				
-				case ExpressionType.NegateChecked:
-				
-				case ExpressionType.Not:
-					
-				case ExpressionType.NotEqual:
-					operType = CodeBinaryOperatorType.IdentityInequality;
-					break;
-				case ExpressionType.Or:
-					operType = CodeBinaryOperatorType.BooleanOr;
-					break;
-				case ExpressionType.OrElse:
-					operType = CodeBinaryOperatorType.BooleanOr;
-					break;
-				case ExpressionType.Power:					
+            CodeBinaryOperatorType operType;
+
+            switch (binaryExpression.NodeType)
+            {
+                case ExpressionType.Add:
+                    operType = CodeBinaryOperatorType.Add;
+                    break;
+                case ExpressionType.AddChecked:
+                    operType = CodeBinaryOperatorType.Add;
+                    break;
+                case ExpressionType.And:
+                    operType = CodeBinaryOperatorType.BooleanAnd;
+                    break;
+                case ExpressionType.AndAlso:
+                    operType = CodeBinaryOperatorType.BooleanAnd;
+                    break;
+                case ExpressionType.Divide:
+                    operType = CodeBinaryOperatorType.Divide;
+                    break;
+                case ExpressionType.Equal:
+                    operType = CodeBinaryOperatorType.ValueEquality;
+                    break;
+                case ExpressionType.ExclusiveOr:
+                    operType = CodeBinaryOperatorType.BooleanOr;
+                    break;
+                case ExpressionType.GreaterThan:
+                    operType = CodeBinaryOperatorType.GreaterThan;
+                    break;
+                case ExpressionType.GreaterThanOrEqual:
+                    operType = CodeBinaryOperatorType.GreaterThanOrEqual;
+                    break;
+                case ExpressionType.Invoke:
+
+                case ExpressionType.Lambda:
+
+                case ExpressionType.LeftShift:
+
+                case ExpressionType.LessThan:
+                    operType = CodeBinaryOperatorType.LessThan;
+                    break;
+                case ExpressionType.LessThanOrEqual:
+                    operType = CodeBinaryOperatorType.LessThanOrEqual;
+                    break;
+                case ExpressionType.Modulo:
+                    operType = CodeBinaryOperatorType.Modulus;
+                    break;
+                case ExpressionType.Multiply:
+                    operType = CodeBinaryOperatorType.Multiply;
+                    break;
+                case ExpressionType.MultiplyChecked:
+                    operType = CodeBinaryOperatorType.Multiply;
+                    break;
+                case ExpressionType.Negate:
+
+                case ExpressionType.NegateChecked:
+
+                case ExpressionType.Not:
+
+                case ExpressionType.NotEqual:
+                    operType = CodeBinaryOperatorType.IdentityInequality;
+                    break;
+                case ExpressionType.Or:
+                    operType = CodeBinaryOperatorType.BooleanOr;
+                    break;
+                case ExpressionType.OrElse:
+                    operType = CodeBinaryOperatorType.BooleanOr;
+                    break;
+                case ExpressionType.Power:
 
                 case ExpressionType.RightShift:
-					
-				case ExpressionType.Subtract:
-					operType = CodeBinaryOperatorType.Subtract;
-					break;
-				case ExpressionType.SubtractChecked:
-					operType = CodeBinaryOperatorType.Subtract;
-					break;
-				case ExpressionType.UnaryPlus:
-				default:
-					throw new NotImplementedException();
-			}
+
+                case ExpressionType.Subtract:
+                    operType = CodeBinaryOperatorType.Subtract;
+                    break;
+                case ExpressionType.SubtractChecked:
+                    operType = CodeBinaryOperatorType.Subtract;
+                    break;
+                case ExpressionType.UnaryPlus:
+                default:
+                    throw new NotImplementedException();
+            }
 
             return new CodeBinaryOperatorExpression(
                         _Visit(binaryExpression.Left), operType, _Visit(binaryExpression.Right));
@@ -429,8 +440,15 @@ namespace LinqToCodedom.Visitors
             {
                 Type t = constantExpression.Value.GetType();
                 if (t.IsEnum)
-                    return new CodeFieldReferenceExpression(new CodeTypeReferenceExpression(t), 
+                    return new CodeFieldReferenceExpression(new CodeTypeReferenceExpression(t),
                         constantExpression.Value.ToString());
+                else if (typeof(Type).IsAssignableFrom(t))
+                    return new CodeTypeOfExpression(constantExpression.Value as Type);
+                else if (typeof(System.Reflection.MemberInfo).IsAssignableFrom(t))
+                {
+                    System.Reflection.MemberInfo mi = constantExpression.Value as System.Reflection.MemberInfo;
+                    return new CodePrimitiveExpression(mi.Name);
+                }
                 else
                     return new CodePrimitiveExpression(constantExpression.Value);
             }

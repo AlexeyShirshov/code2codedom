@@ -18,18 +18,25 @@ namespace LinqToCodedom.Extensions
             return codeNamespace;
         }
 
+        private static void Types_Add(this CodeNamespace codeNamespace, CodeTypeDeclaration codeType)
+        {
+            codeType.UserData["ns"] = codeNamespace;
+
+            codeNamespace.Types.Add(codeType);
+        }
+
         #region Class
 
         public static CodeNamespace AddClass(this CodeNamespace codeNamespace, CodeTypeDeclaration codeType)
         {
-            codeNamespace.Types.Add(codeType);
+            codeNamespace.Types_Add(codeType);
 
             return codeNamespace;
         }
 
         public static CodeNamespace AddClass(this CodeNamespace codeNamespace, CodeTypeMember member)
         {
-            codeNamespace.Types.Add(member.GetDeclaration());
+            codeNamespace.Types_Add(member.GetDeclaration());
 
             return codeNamespace;
         }
@@ -38,7 +45,7 @@ namespace LinqToCodedom.Extensions
         {
             var c = Define.Class(className);
 
-            codeNamespace.Types.Add(c);
+            codeNamespace.Types_Add(c);
 
             return c;
         }
@@ -48,7 +55,7 @@ namespace LinqToCodedom.Extensions
         {
             var c = Define.Class(className, ma);
 
-            codeNamespace.Types.Add(c);
+            codeNamespace.Types_Add(c);
 
             return c;
         }
@@ -59,14 +66,14 @@ namespace LinqToCodedom.Extensions
 
         public static CodeNamespace AddInterface(this CodeNamespace codeNamespace, CodeTypeDeclaration codeType)
         {
-            codeNamespace.Types.Add(codeType);
+            codeNamespace.Types_Add(codeType);
 
             return codeNamespace;
         }
 
         public static CodeNamespace AddInterface(this CodeNamespace codeNamespace, CodeTypeMember member)
         {
-            codeNamespace.Types.Add(member.GetDeclaration());
+            codeNamespace.Types_Add(member.GetDeclaration());
 
             return codeNamespace;
         }
@@ -77,14 +84,14 @@ namespace LinqToCodedom.Extensions
 
         public static CodeNamespace AddStruct(this CodeNamespace codeNamespace, CodeTypeDeclaration codeType)
         {
-            codeNamespace.Types.Add(codeType);
+            codeNamespace.Types_Add(codeType);
 
             return codeNamespace;
         }
 
         public static CodeNamespace AddStruct(this CodeNamespace codeNamespace, CodeTypeMember member)
         {
-            codeNamespace.Types.Add(member.GetDeclaration());
+            codeNamespace.Types_Add(member.GetDeclaration());
 
             return codeNamespace;
         }
@@ -95,7 +102,7 @@ namespace LinqToCodedom.Extensions
 
         public static CodeNamespace AddEnum(this CodeNamespace codeNamespace, CodeTypeDeclaration codeType)
         {
-            codeNamespace.Types.Add(codeType);
+            codeNamespace.Types_Add(codeType);
 
             return codeNamespace;
         }
@@ -104,7 +111,7 @@ namespace LinqToCodedom.Extensions
         {
             var e = Define.Enum(enumName);
 
-            codeNamespace.Types.Add(e);
+            codeNamespace.Types_Add(e);
 
             return e;
         }
