@@ -30,6 +30,17 @@ namespace LinqToCodedom.Extensions
             return meth;
         }
 
+        public static CodeMemberMethod AddMethod<T, T2>(this CodeTypeDeclaration classCode,
+            Type returnType, MemberAttributes ma,
+            Expression<Func<T, T2, string>> paramsAndName, params CodeStatement[] statements)
+        {
+            var meth = Define.Method(returnType, CorrectAttributes(classCode, ma), paramsAndName, statements);
+
+            classCode.Members_Add(meth);
+
+            return meth;
+        }
+
         public static CodeMemberMethod AddMethod<T>(this CodeTypeDeclaration classCode,
             string returnType, MemberAttributes ma,
             Expression<Func<T, string>> paramsAndName, params CodeStatement[] statements)

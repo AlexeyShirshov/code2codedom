@@ -116,21 +116,24 @@ namespace LinqToCodedom.Generator
                 o.Add(null);
             }
 
-            var exp = new QueryVisitor((e) => (e is MethodCallExpression &&
+            foreach (var exp in new QueryVisitor((e) => (e is MethodCallExpression &&
                 (e as MethodCallExpression).Object is ParameterExpression &&
-                ((e as MethodCallExpression).Object as ParameterExpression).Type == typeof(DynType))).Visit(le);
-
-            if (exp != null)
+                ((e as MethodCallExpression).Object as ParameterExpression).Type == typeof(DynType)))
+                .VisitMulti(le))
             {
-                MethodCallExpression mc = (exp as MethodCallExpression);
-                ParameterExpression pe = mc.Object as ParameterExpression;
 
-                foreach (CodeParameterDeclarationExpression p in pars)
+                if (exp != null)
                 {
-                    if (pe.Name == p.Name)
+                    MethodCallExpression mc = (exp as MethodCallExpression);
+                    ParameterExpression pe = mc.Object as ParameterExpression;
+
+                    foreach (CodeParameterDeclarationExpression p in pars)
                     {
-                        object t = Eval(mc.Arguments[0]);
-                        p.Type = GetTypeReference(t);
+                        if (pe.Name == p.Name)
+                        {
+                            object t = Eval(mc.Arguments[0]);
+                            p.Type = GetTypeReference(t);
+                        }
                     }
                 }
             }

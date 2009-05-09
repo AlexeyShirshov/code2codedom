@@ -236,6 +236,12 @@ namespace LinqToCodedomTest
                     Emit.assignDelegate("h2", CodeDom.VarRef("cc"), "zoo"),
                     Emit.@return((VarRef<Func<int, string>> h2) => h2.v(100))
                 )
+                .AddMethod(typeof(string), MemberAttributes.Public | MemberAttributes.Static,
+                    (DynType cc, DynType c2) => "foo" + cc.SetType("cls")+c2.SetType(typeof(string)),
+                    Emit.declare(typeof(Func<int, string>), "h2"),
+                    Emit.assignDelegate("h2", CodeDom.VarRef("cc"), "zoo"),
+                    Emit.@return((VarRef<Func<int, string>> h2, VarRef<string> c2) => h2.v(100)+c2)
+                )
             ;
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));

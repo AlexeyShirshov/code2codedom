@@ -25,6 +25,15 @@ namespace LinqToCodedom.Extensions
             return classCode.AddMethod(returnType, ma, paramsAndName, statements);
         }
 
+        public static CodeMemberMethod AddMethod<T, T2>(this CodeTypeMember member,
+            Type returnType, MemberAttributes ma,
+            Expression<Func<T, T2, string>> paramsAndName, params CodeStatement[] statements)
+        {
+            var classCode = member.GetDeclaration();
+
+            return classCode.AddMethod(returnType, ma, paramsAndName, statements);
+        }
+
         public static CodeMemberMethod AddMethod<T>(this CodeTypeMember member,
             string returnType, MemberAttributes ma,
             Expression<Func<T, string>> paramsAndName, params CodeStatement[] statements)

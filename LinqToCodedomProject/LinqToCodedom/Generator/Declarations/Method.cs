@@ -25,6 +25,21 @@ namespace LinqToCodedom.Generator
             return method;
         }
 
+        public static CodeMemberMethod Method<T, T2>(Type returnType, MemberAttributes ma,
+            Expression<Func<T, T2, string>> paramsAndName, params CodeStatement[] statements)
+        {
+            CodeMemberMethod method = new CodeMemberMethod()
+            {
+                ReturnType = returnType == null ? null : new CodeTypeReference(returnType),
+                Attributes = ma
+            };
+
+            method.Name = CodeDom.GetMethodName<string>(paramsAndName, method.Parameters);
+            method.Statements.AddRange(statements);
+
+            return method;
+        }
+
         public static CodeMemberMethod Method<T>(string returnType, MemberAttributes ma,
             Expression<Func<T, string>> paramsAndName, params CodeStatement[] statements)
         {
