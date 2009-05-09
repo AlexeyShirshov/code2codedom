@@ -10,19 +10,38 @@ namespace LinqToCodedom.Visitors
     public class QueryVisitor
     {
         private Func<Expression, bool> _test;
+        private bool _m;
+        private List<Expression> _l = new List<Expression>();
 
         public QueryVisitor(Func<Expression, bool> t)
         {
             _test = t;
         }
 
+        public IEnumerable<Expression> VisitMulti(Expression exp)
+        {
+            _m = true;
+            _Visit(exp);
+            return _l;
+        }
+
         public Expression Visit(Expression exp)
+        {
+            return _Visit(exp);
+        }
+
+        private Expression _Visit(Expression exp)
         {
             if (exp == null)
                 return null;
 
             if (_test(exp))
-                return exp;
+            {
+                if (_m)
+                    _l.Add(exp);
+                else
+                    return exp;
+            }
 
             switch (exp.NodeType)
             {
@@ -116,7 +135,7 @@ namespace LinqToCodedom.Visitors
 
         private Expression VisitUnary(UnaryExpression u)
         {
-            return this.Visit(u.Operand);
+            return this._Visit(u.Operand);
         }
 
         //private CodeBinaryOperatorType BindOperant(ExpressionType e)
@@ -186,17 +205,17 @@ namespace LinqToCodedom.Visitors
 
         private Expression VisitBinary(BinaryExpression b)
         {
-            var left = Visit(b.Left);
+            var left = _Visit(b.Left);
 
             if (left != null)
                 return left;
 
-            return Visit(b.Right);
+            return _Visit(b.Right);
         }
 
         private Expression VisitTypeIs(TypeBinaryExpression b)
         {
-            return Visit(b.Expression);
+            return _Visit(b.Expression);
         }
 
         private Expression VisitConstant(ConstantExpression c)
@@ -206,11 +225,11 @@ namespace LinqToCodedom.Visitors
 
         private Expression VisitConditional(ConditionalExpression c)
         {
-            Expression ifTrue = this.Visit(c.IfTrue);
+            Expression ifTrue = this._Visit(c.IfTrue);
             if (ifTrue != null)
                 return ifTrue;
 
-            return this.Visit(c.IfFalse);
+            return this._Visit(c.IfFalse);
         }
 
         private Expression VisitParameter(ParameterExpression p)
@@ -220,12 +239,12 @@ namespace LinqToCodedom.Visitors
 
         private Expression VisitMemberAccess(MemberExpression m)
         {
-            return this.Visit(m.Expression);
+            return this._Visit(m.Expression);
         }
 
         private Expression VisitMethodCall(MethodCallExpression m)
         {
-            Expression obj = this.Visit(m.Object);
+            Expression obj = this._Visit(m.Object);
 
             if (obj != null)
                 return obj;
@@ -244,14 +263,14 @@ namespace LinqToCodedom.Visitors
             List<Expression> list = new List<Expression>();
             for (int i = 0, n = original.Count; i < n; i++)
             {
-                list.Add(this.Visit(original[i]));
+                list.Add(this._Visit(original[i]));
             }
             return list.AsReadOnly();
         }
 
         private Expression VisitMemberAssignment(MemberAssignment assignment)
         {
-            return this.Visit(assignment.Expression);
+            return this._Visit(assignment.Expression);
         }
 
         private Expression VisitMemberMemberBinding(MemberMemberBinding binding)
@@ -301,7 +320,7 @@ namespace LinqToCodedom.Visitors
 
         private Expression VisitLambda(LambdaExpression lambda)
         {
-            return this.Visit(lambda.Body);
+            return this._Visit(lambda.Body);
         }
 
         private Expression VisitNew(NewExpression nex)
@@ -358,7 +377,7 @@ namespace LinqToCodedom.Visitors
 
         private Expression VisitInvocation(InvocationExpression iv)
         {
-            var expr = this.Visit(iv.Expression);
+            var expr = this._Visit(iv.Expression);
 
             if (expr != null)
                 return expr;

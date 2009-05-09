@@ -174,7 +174,24 @@ namespace LinqToCodedom.Visitors
             {
                 case ExpressionType.Convert:
                     if (unaryExpression.Type != typeof(Object))
-                        return new CodeCastExpression(unaryExpression.Type, c);
+                    {
+                        if (unaryExpression.Method == null)
+                            return new CodeCastExpression(unaryExpression.Type, c);
+                        else
+                        {
+                            Type dt = unaryExpression.Method.DeclaringType;
+                            if (dt == typeof(Var) ||
+                                (dt.IsGenericType &&
+                                    (dt.GetGenericTypeDefinition() == typeof(VarRef<>)) ||
+                                    (dt.GetGenericTypeDefinition() == typeof(ParamRef<>)) ||
+                                    (dt.GetGenericTypeDefinition() == typeof(MemberRef<>))
+                                )
+                            )
+                                return c;
+                            else
+                                return new CodeCastExpression(unaryExpression.Type, c);
+                        }
+                    }
                     if (c != null)
                         return c;
                     break;
