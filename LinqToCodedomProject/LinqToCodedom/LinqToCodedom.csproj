@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeDomExtensions\TryCatch.cs" />
     <Compile Include="CodeDomExtensions\Ctor.cs" />
     <Compile Include="CodeDomExtensions\Property.cs" />
     <Compile Include="CodeDomExtensions\Object.cs" />
@@ -81,14 +82,16 @@
     <Compile Include="Generator\Declarations\StructField.cs" />
     <Compile Include="Generator\Delegates.cs" />
     <Compile Include="Generator\Statements\assign.cs" />
+    <Compile Include="Generator\Statements\attach.cs" />
+    <Compile Include="Generator\Statements\trycatch.cs" />
     <Compile Include="Generator\Statements\declare.cs" />
     <Compile Include="Generator\Statements\for.cs" />
     <Compile Include="Generator\Statements\if.cs" />
+    <Compile Include="Generator\Statements\label.cs" />
     <Compile Include="Generator\Statements\return.cs" />
     <Compile Include="Generator\Statements\stmt.cs" />
     <Compile Include="Generator\Statements\throw.cs" />
     <Compile Include="References\LateBinding.cs" />
-    <Compile Include="Visitors\CodeDomExpressionVisitor.cs" />
     <Compile Include="CodeDomGenerator.cs" />
     <Compile Include="CodeDomExtensions\TypeDeclaration\TypeDeclaration.cs" />
     <Compile Include="Visitors\CodeExpressionVisitor.cs" />

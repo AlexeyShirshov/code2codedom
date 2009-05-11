@@ -71,6 +71,11 @@ namespace LinqToCodedom
 
         #region Routines
 
+        //public ParamsDelegate CallFunction(string name)
+        //{
+        //    return default(ParamsDelegate);
+        //}
+
         public ParamsDelegate Call(string name)
         {
             return default(ParamsDelegate);
@@ -105,12 +110,45 @@ namespace LinqToCodedom
 
     //public class Par : Base { }
 
-    public class This : Base { }
+    public class This : Base 
+    {
+        public ParamsDelegate Raise(string name)
+        {
+            return default(ParamsDelegate);
+        }
+    }
 
-    public struct DynType
+    public interface IDynType
+    {
+        string SetType(string type);
+        string SetType(Type type);
+        string SetType(System.CodeDom.CodeTypeReference type);
+    }
+
+    public interface IRefParam { }
+    public interface IOutParam { }
+
+    public struct DynType : IDynType
     {
         public string SetType(string type) { return string.Empty; }
         public string SetType(Type type) { return string.Empty; }
         public string SetType(System.CodeDom.CodeTypeReference type) { return string.Empty; }
     }
+
+    public struct DynTypeRef : IDynType, IRefParam
+    {
+        public string SetType(string type) { return string.Empty; }
+        public string SetType(Type type) { return string.Empty; }
+        public string SetType(System.CodeDom.CodeTypeReference type) { return string.Empty; }
+    }
+
+    public struct DynTypeOut : IDynType, IOutParam
+    {
+        public string SetType(string type) { return string.Empty; }
+        public string SetType(Type type) { return string.Empty; }
+        public string SetType(System.CodeDom.CodeTypeReference type) { return string.Empty; }
+    }
+
+    public class RefParam<T> : IRefParam { };
+    public class OutParam<T> : IOutParam { };
 }
