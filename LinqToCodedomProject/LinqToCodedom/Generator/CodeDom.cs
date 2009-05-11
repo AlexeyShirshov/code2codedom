@@ -33,6 +33,15 @@ namespace LinqToCodedom.Generator
             }
         };
 
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public class CodeDelegateArgsInvoke : CodeDelegateInvokeExpression
+        {
+            public CodeDelegateArgsInvoke(CodeExpression target)
+                : base(target)
+            {
+            }
+        };
+
         public static NilClass nil
         {
             get { return null; }
@@ -77,6 +86,16 @@ namespace LinqToCodedom.Generator
             foreach (var p in exp.Parameters)
             {
                 var par = new CodeParameterDeclarationExpression(p.Type, p.Name);
+                if (typeof(IRefParam).IsAssignableFrom(p.Type))
+                    par.Direction = FieldDirection.Ref;
+                if (typeof(IOutParam).IsAssignableFrom(p.Type))
+                    par.Direction = FieldDirection.Out;
+                if (p.Type.IsGenericType && (
+                    p.Type.GetGenericTypeDefinition() == typeof(RefParam<>) ||
+                    p.Type.GetGenericTypeDefinition() == typeof(OutParam<>))
+                    )
+                    par.Type = new CodeTypeReference(p.Type.GetGenericArguments()[0]);
+
                 pars.Add(par);
             }
             return Eval<T>(exp, pars);
@@ -118,7 +137,7 @@ namespace LinqToCodedom.Generator
 
             foreach (var exp in new QueryVisitor((e) => (e is MethodCallExpression &&
                 (e as MethodCallExpression).Object is ParameterExpression &&
-                ((e as MethodCallExpression).Object as ParameterExpression).Type == typeof(DynType)))
+                typeof(IDynType).IsAssignableFrom(((e as MethodCallExpression).Object as ParameterExpression).Type)))
                 .VisitMulti(le))
             {
 
@@ -282,6 +301,13 @@ namespace LinqToCodedom.Generator
         }
 
         public static CodeTypeReference TypeRef(Type type, params Type[] types)
+        {
+            var d = new CodeTypeReference(type);
+            d.TypeArguments.AddRange(types.Select((t) => new CodeTypeReference(t)).ToArray());
+            return d;
+        }
+
+        public static CodeTypeReference TypeRef(Type type, params string[] types)
         {
             var d = new CodeTypeReference(type);
             d.TypeArguments.AddRange(types.Select((t) => new CodeTypeReference(t)).ToArray());

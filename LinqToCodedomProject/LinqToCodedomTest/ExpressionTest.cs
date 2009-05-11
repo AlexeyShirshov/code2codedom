@@ -66,7 +66,53 @@ namespace LinqToCodedomTest
         [TestMethod]
         public void ArrayCreate()
         {
-            Assert.Inconclusive();
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, () => "foo",
+                    Emit.declare(typeof(int[]), "d"),
+                    Emit.declare("d2", () => new int[] { 1, 2, 3 }),
+                    Emit.assignVar("d", () => new int[] { 3, 4 })
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+        }
+
+        [TestMethod]
+        public void ArrayComplexTypeCreate()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, () => "foo",
+                    Emit.declare("cls[]", "d"),
+                    Emit.declare(CodeDom.TypeRef(typeof(List<>), "cls"), "d2"),
+                    Emit.assignVar("d", (Var d2) => d2.Call("ToArray"))
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
         }
 
         [TestMethod]
@@ -138,19 +184,81 @@ namespace LinqToCodedomTest
         [TestMethod]
         public void CastExpression()
         {
-            Assert.Inconclusive();
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, () => "foo",
+                    Emit.declare(typeof(object), "d"),
+                    Emit.assignVar("d", () => 10d),
+                    Emit.declare("dr", (VarRef<object> d) => (decimal)d)
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
         }
 
         [TestMethod]
         public void TypeOfExpression()
         {
-            Assert.Inconclusive();
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(typeof(string), MemberAttributes.Static | MemberAttributes.Public, (object o) => "foo",
+                    Emit.ifelse((VarRef<object> o)=>o.GetType() == typeof(int),
+                        CodeDom.CombineStmts(Emit.@return(()=>"int")),
+                        Emit.@return(()=>"other"))
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+
         }
 
         [TestMethod]
         public void DefaultExpression()
         {
-            Assert.Inconclusive();
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, () => "foo",
+                    Emit.stmt(()=>CodeDom.Call("cls", "zoo")(default(int)))
+                )
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Private, (int i) => "zoo",
+                    Emit.stmt((VarRef<int> i)=>Console.WriteLine(i))
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
         }
 
         [TestMethod]
@@ -284,16 +392,76 @@ namespace LinqToCodedomTest
         [TestMethod]
         public void WorkingWithEvent()
         {
-            //attach
-            //dettach
-            //raise
-            Assert.Inconclusive();
+            var c = new CodeDomGenerator();
+
+            c.AddReference("System.Core.dll").AddNamespace("Samples").AddClass("cls")
+                .AddEvent(typeof(Action), MemberAttributes.Public, "ev")
+                .AddMethod(MemberAttributes.Public, () => "raise",
+                    Emit.declare("cls2", "cc", ()=> CodeDom.@new("cls2")),
+                    Emit.attachDelegate(CodeDom.@this, "ev", CodeDom.VarRef("cc"), "zoo"),
+                    Emit.attachDelegate(CodeDom.@this, "ev", "cls2.foo"),
+                    Emit.stmt(() => CodeDom.@this.Raise("ev")()),
+                    Emit.detachDelegate(CodeDom.@this, "ev", CodeDom.VarRef("cc"), "zoo")
+                )
+            .AddClass("cls2")
+                .AddMethod(MemberAttributes.Public, ()=>"zoo",
+                    Emit.stmt(()=>Console.WriteLine("ok"))
+                )
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, () => "foo",
+                    Emit.stmt(() => Console.WriteLine("ok"))
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type cls = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(cls);
         }
 
         [TestMethod]
         public void ParamByRef()
         {
-            Assert.Inconclusive();
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public,
+                    (RefParam<int> i, DynTypeRef j) => "foo" + j.SetType(typeof(string)),
+                    Emit.assignVar("i", () => 10),
+                    Emit.assignVar("j", () => "zzz")
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type cls = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(cls);
+
+            object[] args = new object[] { 0, "" };
+            System.Reflection.ParameterModifier p = new System.Reflection.ParameterModifier(2);
+            p[0] = true;
+            p[1] = true;
+
+            string s = (string)cls.InvokeMember("foo",
+                System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Static,
+                null, new System.Reflection.ParameterModifier[]{p}, args);
+
+            Assert.AreEqual(10, args[0]);
+            Assert.AreEqual("zzz", args[1]);
+
         }
     }
 }

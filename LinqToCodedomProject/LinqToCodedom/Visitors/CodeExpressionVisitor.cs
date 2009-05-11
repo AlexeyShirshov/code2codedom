@@ -164,7 +164,13 @@ namespace LinqToCodedom.Visitors
 
         private CodeExpression VisitNewArray(NewArrayExpression newArrayExpression)
         {
-            throw new NotImplementedException();
+            Type t = newArrayExpression.Type.GetElementType();
+            CodeArrayCreateExpression arr = new CodeArrayCreateExpression(t);
+            foreach (CodeExpression exp in VisitExpressionList(newArrayExpression.Expressions))
+            {
+                arr.Initializers.Add(exp);
+            }
+            return arr;
         }
 
         private CodeExpression VisitUnary(UnaryExpression unaryExpression)
@@ -237,8 +243,16 @@ namespace LinqToCodedom.Visitors
                 }
                 else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.Call")
                 {
+                    CodeExpression targetExp = _Visit(methodCallExpression.Arguments[0]);
+                    if (targetExp is CodePrimitiveExpression)
+                    {
+                        //CodeTypeReference tr = CodeDom.GetTypeReference((targetExp as CodePrimitiveExpression).Value);
+                        //new CodeMethodReferenceExpression(
+                        targetExp = null;
+                    }
+
                     return new CodeMethodInvokeExpression(
-                        _Visit(methodCallExpression.Arguments[0]),
+                        targetExp,
                         CodeDom.Eval<string>(methodCallExpression.Arguments[1]));
                 }
                 else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.new")
@@ -301,6 +315,7 @@ namespace LinqToCodedom.Visitors
                 switch (mr.MethodName)
                 {
                     case "Call":
+                    case "CallFunction":
                         if (methodCallExpression.Arguments.Count > 0)
                         {
                             string methodName = CodeDom.Eval<string>(methodCallExpression.Arguments[0]);
@@ -322,6 +337,10 @@ namespace LinqToCodedom.Visitors
                         if (methodCallExpression.Arguments.Count > 1)
                             throw new NotImplementedException();
                         return new CodeFieldReferenceExpression(rto, fieldName);
+                    case "Raise":
+                        string eventName = CodeDom.Eval<string>(methodCallExpression.Arguments[0]);
+                        return new CodeDom.CodeDelegateArgsInvoke(
+                            new CodeEventReferenceExpression(rto, eventName));
                     default:
                         throw new NotImplementedException(mr.MethodName);
                 }
@@ -329,6 +348,17 @@ namespace LinqToCodedom.Visitors
             else if (to is CodeDom.CodeArgsInvoke)
             {
                 var c = to as CodeMethodInvokeExpression;
+                foreach (CodeExpression par in VisitSequence(
+                    new QueryVisitor((e) => e is LambdaExpression)
+                        .Visit(methodCallExpression.Arguments[0]) as LambdaExpression))
+                {
+                    c.Parameters.Add(par);
+                }
+                return c;
+            }
+            else if (to is CodeDom.CodeDelegateArgsInvoke)
+            {
+                var c = to as CodeDelegateInvokeExpression;
                 foreach (CodeExpression par in VisitSequence(
                     new QueryVisitor((e) => e is LambdaExpression)
                         .Visit(methodCallExpression.Arguments[0]) as LambdaExpression))

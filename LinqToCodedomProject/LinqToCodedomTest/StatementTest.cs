@@ -181,13 +181,64 @@ namespace LinqToCodedomTest
             //try catch
             //try finally
             //throw
-            Assert.Inconclusive();
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(typeof(string), MemberAttributes.Public | MemberAttributes.Static, () => "foo",
+                    Emit.trycatch(Emit.@throw(() => new ApplicationException()))
+                        .AddCatch(typeof(ApplicationException), "ex", 
+                            Emit.@return(()=>"ok")
+                        )
+                        .AddFinally(Emit.stmt(()=>Console.WriteLine()))
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
         }
 
         [TestMethod]
         public void TestGoTo()
         {
-            Assert.Inconclusive();
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(typeof(int), MemberAttributes.Static | MemberAttributes.Public, () => "foo",
+                    Emit.declare(typeof(int), "i"),
+                    Emit.@goto("x"),
+                    Emit.assignVar("i", () => 10),
+                    Emit.label("x"),
+                    Emit.@return((VarRef<int> i) => i)
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+
+            object t = TestClass.InvokeMember(null, System.Reflection.BindingFlags.CreateInstance, null, null, null);
+
+            Assert.IsNotNull(t);
+
+            Assert.AreEqual(0, TestClass.InvokeMember("foo", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.InvokeMethod, null, t, null));
+
         }
     }
 }
