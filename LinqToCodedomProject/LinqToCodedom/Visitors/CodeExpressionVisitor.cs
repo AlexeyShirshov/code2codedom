@@ -165,11 +165,27 @@ namespace LinqToCodedom.Visitors
         private CodeExpression VisitNewArray(NewArrayExpression newArrayExpression)
         {
             Type t = newArrayExpression.Type.GetElementType();
-            CodeArrayCreateExpression arr = new CodeArrayCreateExpression(t);
-            foreach (CodeExpression exp in VisitExpressionList(newArrayExpression.Expressions))
+            CodeTypeReference tr = new CodeTypeReference(t);
+            CodeArrayCreateExpression arr = new CodeArrayCreateExpression(tr);
+
+            if (newArrayExpression.NodeType == ExpressionType.NewArrayBounds)
             {
-                arr.Initializers.Add(exp);
+                throw new NotImplementedException();
+                //foreach (CodeExpression exp in VisitExpressionList(newArrayExpression.Expressions))
+                //{
+                    
+                //}
             }
+            else if (newArrayExpression.NodeType == ExpressionType.NewArrayInit)
+            {
+                foreach (CodeExpression exp in VisitExpressionList(newArrayExpression.Expressions))
+                {
+                    arr.Initializers.Add(exp);
+                }
+            }
+            else
+                throw new NotSupportedException();
+            
             return arr;
         }
 
@@ -341,6 +357,21 @@ namespace LinqToCodedom.Visitors
                         string eventName = CodeDom.Eval<string>(methodCallExpression.Arguments[0]);
                         return new CodeDom.CodeDelegateArgsInvoke(
                             new CodeEventReferenceExpression(rto, eventName));
+                    case "ArrayGet":
+                        return new CodeArrayIndexerExpression(rto, 
+                            VisitExpressionList((methodCallExpression.Arguments[0] as NewArrayExpression).Expressions).ToArray()
+                        );
+                    case "JaggedArrayGet":
+                        var n = methodCallExpression.Arguments[0] as NewArrayExpression;
+                        CodeArrayIndexerExpression prev = null;
+                        foreach(CodeExpression e in VisitExpressionList(n.Expressions.Reverse()))
+                        {
+                            if (prev == null)
+                                prev = new CodeArrayIndexerExpression(rto, e);
+                            else
+                                prev = new CodeArrayIndexerExpression(prev, e);
+                        }
+                        return prev;
                     default:
                         throw new NotImplementedException(mr.MethodName);
                 }
@@ -381,10 +412,14 @@ namespace LinqToCodedom.Visitors
 
         private CodeExpression VisitBinary(BinaryExpression binaryExpression)
         {
-            CodeBinaryOperatorType operType;
+            CodeBinaryOperatorType operType = default(CodeBinaryOperatorType);
 
             switch (binaryExpression.NodeType)
             {
+                case ExpressionType.ArrayIndex:
+                    return new CodeArrayIndexerExpression(
+                        _Visit(binaryExpression.Left), new CodeExpression[] { _Visit(binaryExpression.Right) }
+                    );
                 case ExpressionType.Add:
                     operType = CodeBinaryOperatorType.Add;
                     break;
@@ -412,12 +447,6 @@ namespace LinqToCodedom.Visitors
                 case ExpressionType.GreaterThanOrEqual:
                     operType = CodeBinaryOperatorType.GreaterThanOrEqual;
                     break;
-                case ExpressionType.Invoke:
-
-                case ExpressionType.Lambda:
-
-                case ExpressionType.LeftShift:
-
                 case ExpressionType.LessThan:
                     operType = CodeBinaryOperatorType.LessThan;
                     break;
@@ -433,12 +462,6 @@ namespace LinqToCodedom.Visitors
                 case ExpressionType.MultiplyChecked:
                     operType = CodeBinaryOperatorType.Multiply;
                     break;
-                case ExpressionType.Negate:
-
-                case ExpressionType.NegateChecked:
-
-                case ExpressionType.Not:
-
                 case ExpressionType.NotEqual:
                     operType = CodeBinaryOperatorType.IdentityInequality;
                     break;
@@ -448,19 +471,14 @@ namespace LinqToCodedom.Visitors
                 case ExpressionType.OrElse:
                     operType = CodeBinaryOperatorType.BooleanOr;
                     break;
-                case ExpressionType.Power:
-
-                case ExpressionType.RightShift:
-
                 case ExpressionType.Subtract:
                     operType = CodeBinaryOperatorType.Subtract;
                     break;
                 case ExpressionType.SubtractChecked:
                     operType = CodeBinaryOperatorType.Subtract;
                     break;
-                case ExpressionType.UnaryPlus:
                 default:
-                    throw new NotImplementedException();
+                    throw new NotImplementedException(binaryExpression.NodeType.ToString());
             }
 
             return new CodeBinaryOperatorExpression(

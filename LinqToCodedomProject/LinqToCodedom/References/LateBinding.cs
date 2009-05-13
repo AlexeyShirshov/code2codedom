@@ -104,6 +104,16 @@ namespace LinqToCodedom
         }
 
         #endregion
+
+        public object ArrayGet(params int[] i)
+        {
+            return null;
+        }
+
+        public object JaggedArrayGet(params int[] i)
+        {
+            return null;
+        }
     }
 
     public class Var : Base { public Var(string name) { Name = name; } public string Name { get; protected set; } }
