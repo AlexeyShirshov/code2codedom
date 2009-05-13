@@ -72,7 +72,8 @@ namespace LinqToCodedomTest
                 .AddMethod(MemberAttributes.Public | MemberAttributes.Static, () => "foo",
                     Emit.declare(typeof(int[]), "d"),
                     Emit.declare("d2", () => new int[] { 1, 2, 3 }),
-                    Emit.assignVar("d", () => new int[] { 3, 4 })
+                    Emit.assignVar("d", () => new int[] { 3, 4 }),
+                    Emit.declare("d3", (VarRef<int[]> d) => d.v[0])
                 )
             ;
 
@@ -99,6 +100,159 @@ namespace LinqToCodedomTest
                     Emit.declare("cls[]", "d"),
                     Emit.declare(CodeDom.TypeRef(typeof(List<>), "cls"), "d2"),
                     Emit.assignVar("d", (Var d2) => d2.Call("ToArray"))
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+        }
+
+        [TestMethod]
+        public void ArrayIndexer()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, () => "foo",
+                    Emit.declare("d", () => new int[] { 1, 2, 3 }),
+                    Emit.declare("d2", (VarRef<int[]> d) => d.v[0])
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+        }
+
+        [TestMethod]
+        public void ArrayComplexTypeIndexer()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, () => "foo",
+                    Emit.declare("cls[]", "d"),
+                    Emit.declare("cls", "d2"),
+                    Emit.assignVar("d2", (Var d) => d.ArrayGet(1))
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+        }
+
+        [TestMethod]
+        public void ArrayComplexTypeMultiIndexer()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, () => "foo",
+                    Emit.declare("cls[,]", "d"),
+                    Emit.declare("cls", "d2"),
+                    Emit.assignVar("d2", (Var d) => d.ArrayGet(1,0))
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+        }
+
+        [TestMethod]
+        public void ArrayComplexTypeJaggedIndexer()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, () => "foo",
+                    Emit.declare("cls[][]", "d"),
+                    Emit.declare("cls", "d2"),
+                    Emit.assignVar("d2", (Var d) => d.JaggedArrayGet(1, 0))
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+        }
+
+        [TestMethod]
+        public void MultidimensionalArray()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, () => "foo",
+                    Emit.declare("d", () => new int[2, 2]),
+                    Emit.declare("d2", (VarRef<int[,]> d) => d.v[0, 1])
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+        }
+
+        [TestMethod]
+        public void JaggedArray()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, () => "foo",
+                    Emit.declare("d", () => new int[][] { new int[] { 1 }, new int[] { 2 } }),
+                    Emit.declare("d2", (VarRef<int[][]> d) => d.v[0][0])
                 )
             ;
 
@@ -214,9 +368,9 @@ namespace LinqToCodedomTest
 
             c.AddNamespace("Samples").AddClass("cls")
                 .AddMethod(typeof(string), MemberAttributes.Static | MemberAttributes.Public, (object o) => "foo",
-                    Emit.ifelse((VarRef<object> o)=>o.GetType() == typeof(int),
-                        CodeDom.CombineStmts(Emit.@return(()=>"int")),
-                        Emit.@return(()=>"other"))
+                    Emit.ifelse((VarRef<object> o) => o.GetType() == typeof(int),
+                        CodeDom.CombineStmts(Emit.@return(() => "int")),
+                        Emit.@return(() => "other"))
                 )
             ;
 
@@ -241,10 +395,10 @@ namespace LinqToCodedomTest
 
             c.AddNamespace("Samples").AddClass("cls")
                 .AddMethod(MemberAttributes.Static | MemberAttributes.Public, () => "foo",
-                    Emit.stmt(()=>CodeDom.Call("cls", "zoo")(default(int)))
+                    Emit.stmt(() => CodeDom.Call("cls", "zoo")(default(int)))
                 )
                 .AddMethod(MemberAttributes.Static | MemberAttributes.Private, (int i) => "zoo",
-                    Emit.stmt((VarRef<int> i)=>Console.WriteLine(i))
+                    Emit.stmt((VarRef<int> i) => Console.WriteLine(i))
                 )
             ;
 
@@ -268,12 +422,12 @@ namespace LinqToCodedomTest
 
             c.AddNamespace("Samples").AddClass("cls")
                 .AddMethod(MemberAttributes.Static | MemberAttributes.Public,
-                    ()=>"foo",
+                    () => "foo",
                     Emit.declare(typeof(EventHandler), "h"),
                     Emit.assignDelegate("h", "zoo"),
-                    Emit.stmt((Var h)=>h.Call()(null, null))
+                    Emit.stmt((Var h) => h.Call()(null, null))
                 )
-                .AddMethod(MemberAttributes.Static | MemberAttributes.Private,(object sender, EventArgs args)=>"zoo")                    
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Private, (object sender, EventArgs args) => "zoo")
             ;
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
@@ -335,20 +489,20 @@ namespace LinqToCodedomTest
                     Emit.@return((VarRef<Func<int, string>> h2) => h2.v(10))
                 )
                 .AddMethod(typeof(string), MemberAttributes.Public, (int i) => "zoo",
-                    Emit.@return((VarRef<int> i)=>i.ToString())
+                    Emit.@return((VarRef<int> i) => i.ToString())
                 )
             .AddClass("cls2")
-                .AddMethod(typeof(string), MemberAttributes.Public | MemberAttributes.Static, 
-                    (DynType cc) => "foo"+cc.SetType("cls"),
+                .AddMethod(typeof(string), MemberAttributes.Public | MemberAttributes.Static,
+                    (DynType cc) => "foo" + cc.SetType("cls"),
                     Emit.declare(typeof(Func<int, string>), "h2"),
                     Emit.assignDelegate("h2", CodeDom.VarRef("cc"), "zoo"),
                     Emit.@return((VarRef<Func<int, string>> h2) => h2.v(100))
                 )
                 .AddMethod(typeof(string), MemberAttributes.Public | MemberAttributes.Static,
-                    (DynType cc, DynType c2) => "foo" + cc.SetType("cls")+c2.SetType(typeof(string)),
+                    (DynType cc, DynType c2) => "foo" + cc.SetType("cls") + c2.SetType(typeof(string)),
                     Emit.declare(typeof(Func<int, string>), "h2"),
                     Emit.assignDelegate("h2", CodeDom.VarRef("cc"), "zoo"),
-                    Emit.@return((VarRef<Func<int, string>> h2, VarRef<string> c2) => h2.v(100)+c2)
+                    Emit.@return((VarRef<Func<int, string>> h2, VarRef<string> c2) => h2.v(100) + c2)
                 )
             ;
 
@@ -384,7 +538,7 @@ namespace LinqToCodedomTest
 
             string s2 = (string)cls2.InvokeMember("foo",
                 System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Static,
-                null, t2, new object[]{t});
+                null, t2, new object[] { t });
 
             Assert.AreEqual("100", s2);
         }
@@ -397,15 +551,15 @@ namespace LinqToCodedomTest
             c.AddReference("System.Core.dll").AddNamespace("Samples").AddClass("cls")
                 .AddEvent(typeof(Action), MemberAttributes.Public, "ev")
                 .AddMethod(MemberAttributes.Public, () => "raise",
-                    Emit.declare("cls2", "cc", ()=> CodeDom.@new("cls2")),
+                    Emit.declare("cls2", "cc", () => CodeDom.@new("cls2")),
                     Emit.attachDelegate(CodeDom.@this, "ev", CodeDom.VarRef("cc"), "zoo"),
                     Emit.attachDelegate(CodeDom.@this, "ev", "cls2.foo"),
                     Emit.stmt(() => CodeDom.@this.Raise("ev")()),
                     Emit.detachDelegate(CodeDom.@this, "ev", CodeDom.VarRef("cc"), "zoo")
                 )
             .AddClass("cls2")
-                .AddMethod(MemberAttributes.Public, ()=>"zoo",
-                    Emit.stmt(()=>Console.WriteLine("ok"))
+                .AddMethod(MemberAttributes.Public, () => "zoo",
+                    Emit.stmt(() => Console.WriteLine("ok"))
                 )
                 .AddMethod(MemberAttributes.Public | MemberAttributes.Static, () => "foo",
                     Emit.stmt(() => Console.WriteLine("ok"))
@@ -457,7 +611,7 @@ namespace LinqToCodedomTest
 
             string s = (string)cls.InvokeMember("foo",
                 System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Static,
-                null, new System.Reflection.ParameterModifier[]{p}, args);
+                null, new System.Reflection.ParameterModifier[] { p }, args);
 
             Assert.AreEqual(10, args[0]);
             Assert.AreEqual("zzz", args[1]);
