@@ -22,7 +22,7 @@ namespace Demo
             var c = new CodeDomGenerator();
 
             c.AddNamespace("Samples")
-            .AddClass(Define.Class("TestClass")
+            .AddClass("TestClass")
                 .AddMethod(MemberAttributes.Public | MemberAttributes.Static, (int a)=>"Print",
                     Emit.stmt(() => Console.WriteLine("Hello, world!")),
                     Emit.stmt((ParamRef<int> a) => Console.WriteLine(a)),
@@ -31,7 +31,6 @@ namespace Demo
                     //Builder.ifelse((Par<int> a) => a.GetHashCode() == 10 && a < 1 && (2 + 3) < 7,
                     //    Builder.GetStmts(Builder.stmt(() => Console.WriteLine("true"))),
                     //    Builder.stmt(() => Console.WriteLine("false")))
-                )
             );
 
 
