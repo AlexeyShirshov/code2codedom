@@ -204,8 +204,8 @@ namespace LinqToCodedom.Visitors
                             Type dt = unaryExpression.Method.DeclaringType;
                             if (dt == typeof(Var) ||
                                 (dt.IsGenericType &&
-                                    (dt.GetGenericTypeDefinition() == typeof(VarRef<>)) ||
-                                    (dt.GetGenericTypeDefinition() == typeof(ParamRef<>)) ||
+                                    /*(dt.GetGenericTypeDefinition() == typeof(VarRef<>)) ||
+                                    (dt.GetGenericTypeDefinition() == typeof(ParamRef<>)) ||*/
                                     (dt.GetGenericTypeDefinition() == typeof(MemberRef<>))
                                 )
                             )
@@ -259,17 +259,26 @@ namespace LinqToCodedom.Visitors
                 }
                 else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.Call")
                 {
-                    CodeExpression targetExp = _Visit(methodCallExpression.Arguments[0]);
-                    if (targetExp is CodePrimitiveExpression)
+                    if (methodCallExpression.Arguments.Count == 1)
                     {
-                        //CodeTypeReference tr = CodeDom.GetTypeReference((targetExp as CodePrimitiveExpression).Value);
-                        //new CodeMethodReferenceExpression(
-                        targetExp = null;
+                        return new CodeMethodInvokeExpression(
+                            null,
+                            CodeDom.Eval<string>(methodCallExpression.Arguments[0]));
                     }
+                    else
+                    {
+                        CodeExpression targetExp = _Visit(methodCallExpression.Arguments[0]);
+                        if (targetExp is CodePrimitiveExpression)
+                        {
+                            //CodeTypeReference tr = CodeDom.GetTypeReference((targetExp as CodePrimitiveExpression).Value);
+                            //new CodeMethodReferenceExpression(
+                            targetExp = null;
+                        }
 
-                    return new CodeMethodInvokeExpression(
-                        targetExp,
-                        CodeDom.Eval<string>(methodCallExpression.Arguments[1]));
+                        return new CodeMethodInvokeExpression(
+                            targetExp,
+                            CodeDom.Eval<string>(methodCallExpression.Arguments[1]));
+                    }
                 }
                 else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.new")
                 {

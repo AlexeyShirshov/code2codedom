@@ -27,14 +27,15 @@ namespace LinqToCodedom.Visitors
             {
                 if (p.Type.IsGenericType)
                 {
-                    if (p.Type.GetGenericTypeDefinition() == typeof(ParamRef<>))
+                    /*if (p.Type.GetGenericTypeDefinition() == typeof(ParamRef<>))
                         _params.Add(new CodeArgumentReferenceExpression(p.Name));
                     else if (p.Type.GetGenericTypeDefinition() == typeof(VarRef<>))
                         _params.Add(new CodeVariableReferenceExpression(p.Name));
-                    else if (p.Type.GetGenericTypeDefinition() == typeof(SetValueRef<>))
+                    else*/
+                    if (p.Type.GetGenericTypeDefinition() == typeof(SetValueRef<>))
                         _params.Add(new CodePropertySetValueReferenceExpression());
                     else
-                        throw new NotImplementedException();
+                        _params.Add(new CodeVariableReferenceExpression(p.Name));
 
                     _params[_params.Count - 1].UserData["name"] = p.Name;
                 }
@@ -44,7 +45,10 @@ namespace LinqToCodedom.Visitors
                     _params[_params.Count - 1].UserData["name"] = p.Name;
                 }
                 else
-                    throw new NotImplementedException();
+                {
+                    _params.Add(new CodeVariableReferenceExpression(p.Name));
+                    _params[_params.Count - 1].UserData["name"] = p.Name;
+                }
             }
         }
 

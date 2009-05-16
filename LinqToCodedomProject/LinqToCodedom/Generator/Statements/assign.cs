@@ -82,13 +82,13 @@ namespace LinqToCodedom.Generator
             return assignProperty<TResult>(new CodeThisReferenceExpression(), propertyName, stmt);
         }
 
-        public static CodeAssignStatement assign<TResult, T>(Expression<Func<TResult, LinqToCodedom.Generator.CodeDom.NilClass>> name,
-            Expression<Func<TResult, T>> stmt)
-        {
-            return new CodeAssignStatement(
-                new CodeExpressionVisitor(new VisitorContext()).Visit(name),
-                new CodeExpressionVisitor(new VisitorContext()).Visit(stmt));
-        }
+        //public static CodeAssignStatement assign<TResult, T>(Expression<Func<TResult, LinqToCodedom.Generator.CodeDom.NilClass>> name,
+        //    Expression<Func<TResult, T>> stmt)
+        //{
+        //    return new CodeAssignStatement(
+        //        new CodeExpressionVisitor(new VisitorContext()).Visit(name),
+        //        new CodeExpressionVisitor(new VisitorContext()).Visit(stmt));
+        //}
 
         public static CodeAssignStatement assignDelegate(string varName, Base target, string methodName)
         {

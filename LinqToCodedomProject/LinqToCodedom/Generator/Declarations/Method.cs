@@ -10,7 +10,7 @@ namespace LinqToCodedom.Generator
     public static partial class Define
     {
         #region Method
-        public static CodeMemberMethod Method<T>(Type returnType, MemberAttributes ma,
+        public static CodeMemberMethod Method<T>(MemberAttributes ma, Type returnType, 
             Expression<Func<T, string>> paramsAndName, params CodeStatement[] statements)
         {
             CodeMemberMethod method = new CodeMemberMethod()
@@ -25,7 +25,7 @@ namespace LinqToCodedom.Generator
             return method;
         }
 
-        public static CodeMemberMethod Method<T, T2>(Type returnType, MemberAttributes ma,
+        public static CodeMemberMethod Method<T, T2>(MemberAttributes ma, Type returnType, 
             Expression<Func<T, T2, string>> paramsAndName, params CodeStatement[] statements)
         {
             CodeMemberMethod method = new CodeMemberMethod()
@@ -40,7 +40,7 @@ namespace LinqToCodedom.Generator
             return method;
         }
 
-        public static CodeMemberMethod Method<T>(string returnType, MemberAttributes ma,
+        public static CodeMemberMethod Method<T>(MemberAttributes ma, string returnType, 
             Expression<Func<T, string>> paramsAndName, params CodeStatement[] statements)
         {
             CodeMemberMethod method = new CodeMemberMethod()
@@ -55,7 +55,7 @@ namespace LinqToCodedom.Generator
             return method;
         }
 
-        public static CodeMemberMethod Method<T>(CodeTypeReference returnType, MemberAttributes ma,
+        public static CodeMemberMethod Method<T>(MemberAttributes ma, CodeTypeReference returnType, 
             Expression<Func<T, string>> paramsAndName, params CodeStatement[] statements)
         {
             CodeMemberMethod method = new CodeMemberMethod()
@@ -98,7 +98,7 @@ namespace LinqToCodedom.Generator
             return method;
         }
 
-        public static CodeMemberMethod Method(Type returnType, MemberAttributes ma,
+        public static CodeMemberMethod Method(MemberAttributes ma, Type returnType, 
             Expression<Func<string>> paramsAndName, params CodeStatement[] statements)
         {
             CodeMemberMethod method = new CodeMemberMethod()
@@ -113,7 +113,7 @@ namespace LinqToCodedom.Generator
             return method;
         }
 
-        public static CodeMemberMethod Method(string returnType, MemberAttributes ma,
+        public static CodeMemberMethod Method(MemberAttributes ma, string returnType, 
             Expression<Func<string>> paramsAndName, params CodeStatement[] statements)
         {
             CodeMemberMethod method = new CodeMemberMethod()
@@ -128,7 +128,7 @@ namespace LinqToCodedom.Generator
             return method;
         }
 
-        public static CodeMemberMethod Method(CodeTypeReference returnType, MemberAttributes ma,
+        public static CodeMemberMethod Method(MemberAttributes ma, CodeTypeReference returnType, 
             Expression<Func<string>> paramsAndName, params CodeStatement[] statements)
         {
             CodeMemberMethod method = new CodeMemberMethod()
