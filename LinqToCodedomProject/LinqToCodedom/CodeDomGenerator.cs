@@ -46,6 +46,13 @@ namespace LinqToCodedom
             return codeNamespace;
         }
 
+        public CodeNamespace AddNamespace(CodeNamespace codeNamespace)
+        {
+            _namespaces.Add(codeNamespace);
+
+            return codeNamespace;
+        }
+
         public CodeDomGenerator AddReference(string referencedAssembly)
         {
             _assemblies.Add(referencedAssembly);

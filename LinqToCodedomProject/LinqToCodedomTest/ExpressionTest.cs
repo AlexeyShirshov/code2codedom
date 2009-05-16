@@ -73,7 +73,7 @@ namespace LinqToCodedomTest
                     Emit.declare(typeof(int[]), "d"),
                     Emit.declare("d2", () => new int[] { 1, 2, 3 }),
                     Emit.assignVar("d", () => new int[] { 3, 4 }),
-                    Emit.declare("d3", (VarRef<int[]> d) => d.v[0])
+                    Emit.declare("d3", (int[] d) => d[0])
                 )
             ;
 
@@ -124,7 +124,7 @@ namespace LinqToCodedomTest
             c.AddNamespace("Samples").AddClass("cls")
                 .AddMethod(MemberAttributes.Public | MemberAttributes.Static, () => "foo",
                     Emit.declare("d", () => new int[] { 1, 2, 3 }),
-                    Emit.declare("d2", (VarRef<int[]> d) => d.v[0])
+                    Emit.declare("d2", (int[] d) => d[0])
                 )
             ;
 
@@ -227,7 +227,7 @@ namespace LinqToCodedomTest
             c.AddNamespace("Samples").AddClass("cls")
                 .AddMethod(MemberAttributes.Public | MemberAttributes.Static, () => "foo",
                     Emit.declare("d", () => new int[2, 2]),
-                    Emit.declare("d2", (VarRef<int[,]> d) => d.v[0, 1])
+                    Emit.declare("d2", (int[,] d) => d[0, 1])
                 )
             ;
 
@@ -252,7 +252,7 @@ namespace LinqToCodedomTest
             c.AddNamespace("Samples").AddClass("cls")
                 .AddMethod(MemberAttributes.Public | MemberAttributes.Static, () => "foo",
                     Emit.declare("d", () => new int[][] { new int[] { 1 }, new int[] { 2 } }),
-                    Emit.declare("d2", (VarRef<int[][]> d) => d.v[0][0])
+                    Emit.declare("d2", (int[][] d) => d[0][0])
                 )
             ;
 
@@ -281,13 +281,11 @@ namespace LinqToCodedomTest
                 )
                 .AddCtor(
                     Define.Ctor((int i, string s) => MemberAttributes.Public,
-                        Emit.assignField("_s", (VarRef<string> s) => s),
-                        Emit.assignField("_i", (VarRef<int> i) => i)
+                        Emit.assignField("_s", (string s) => s),
+                        Emit.assignField("_i", (int i) => i)
                     )
                 )
-                .AddMethod("TestClass", MemberAttributes.Static | MemberAttributes.Public, () => "Create",
-                    Emit.@return(() => CodeDom.@new("TestClass", 100, "yyy"))
-                )
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, "TestClass", () => "Create", Emit.@return(() => CodeDom.@new("TestClass", 100, "yyy")))
             );
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
@@ -315,11 +313,8 @@ namespace LinqToCodedomTest
                 )
                 .AddProperty("T", MemberAttributes.Public, "S", "_s")
             ).AddClass(Define.Class("cls")
-                .AddMethod(CodeDom.TypeRef("TestClass", "T"), MemberAttributes.Public | MemberAttributes.Static, () => "foo",
-                    Emit.declare(CodeDom.TypeRef("TestClass", "T"), "cc",
-                        () => CodeDom.@new(CodeDom.TypeRef("TestClass", "T"))),
-                    Emit.@return((Var cc) => cc)
-                ).Generic("T")
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, CodeDom.TypeRef("TestClass", "T"), () => "foo", Emit.declare(CodeDom.TypeRef("TestClass", "T"), "cc",
+                        () => CodeDom.@new(CodeDom.TypeRef("TestClass", "T"))), Emit.@return((Var cc) => cc)).Generic("T")
             );
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
@@ -344,7 +339,7 @@ namespace LinqToCodedomTest
                 .AddMethod(MemberAttributes.Static | MemberAttributes.Public, () => "foo",
                     Emit.declare(typeof(object), "d"),
                     Emit.assignVar("d", () => 10d),
-                    Emit.declare("dr", (VarRef<object> d) => (decimal)d)
+                    Emit.declare("dr", (object d) => (decimal)d)
                 )
             ;
 
@@ -367,11 +362,9 @@ namespace LinqToCodedomTest
             var c = new CodeDomGenerator();
 
             c.AddNamespace("Samples").AddClass("cls")
-                .AddMethod(typeof(string), MemberAttributes.Static | MemberAttributes.Public, (object o) => "foo",
-                    Emit.ifelse((VarRef<object> o) => o.GetType() == typeof(int),
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, typeof(string), (object o) => "foo", Emit.ifelse((object o) => o.GetType() == typeof(int),
                         CodeDom.CombineStmts(Emit.@return(() => "int")),
-                        Emit.@return(() => "other"))
-                )
+                        Emit.@return(() => "other")))
             ;
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
@@ -398,7 +391,7 @@ namespace LinqToCodedomTest
                     Emit.stmt(() => CodeDom.Call("cls", "zoo")(default(int)))
                 )
                 .AddMethod(MemberAttributes.Static | MemberAttributes.Private, (int i) => "zoo",
-                    Emit.stmt((VarRef<int> i) => Console.WriteLine(i))
+                    Emit.stmt((int i) => Console.WriteLine(i))
                 )
             ;
 
@@ -449,11 +442,7 @@ namespace LinqToCodedomTest
             var c = new CodeDomGenerator();
 
             c.AddReference("System.Core.dll").AddNamespace("Samples").AddClass("cls")
-                .AddMethod(typeof(string), MemberAttributes.Static | MemberAttributes.Public,
-                    () => "foo",
-                    Emit.declare("h2", () => new Func<string>("aaa".ToString)),
-                    Emit.@return((VarRef<Func<string>> h2) => h2.v())
-                )
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, typeof(string), () => "foo", Emit.declare("h2", () => new Func<string>("aaa".ToString)), Emit.@return((Func<string> h2) => h2()))
             ;
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
@@ -482,28 +471,11 @@ namespace LinqToCodedomTest
             var c = new CodeDomGenerator();
 
             c.AddReference("System.Core.dll").AddNamespace("Samples").AddClass("cls")
-                .AddMethod(typeof(string), MemberAttributes.Public,
-                    () => "foo",
-                    Emit.declare(typeof(Func<int, string>), "h2"),
-                    Emit.assignDelegate("h2", CodeDom.@this, "zoo"),
-                    Emit.@return((VarRef<Func<int, string>> h2) => h2.v(10))
-                )
-                .AddMethod(typeof(string), MemberAttributes.Public, (int i) => "zoo",
-                    Emit.@return((VarRef<int> i) => i.ToString())
-                )
+                .AddMethod(MemberAttributes.Public, typeof(string), () => "foo", Emit.declare(typeof(Func<int, string>), "h2"), Emit.assignDelegate("h2", CodeDom.@this, "zoo"), Emit.@return((Func<int, string> h2) => h2(10)))
+                .AddMethod(MemberAttributes.Public, typeof(string), (int i) => "zoo", Emit.@return((int i) => i.ToString()))
             .AddClass("cls2")
-                .AddMethod(typeof(string), MemberAttributes.Public | MemberAttributes.Static,
-                    (DynType cc) => "foo" + cc.SetType("cls"),
-                    Emit.declare(typeof(Func<int, string>), "h2"),
-                    Emit.assignDelegate("h2", CodeDom.VarRef("cc"), "zoo"),
-                    Emit.@return((VarRef<Func<int, string>> h2) => h2.v(100))
-                )
-                .AddMethod(typeof(string), MemberAttributes.Public | MemberAttributes.Static,
-                    (DynType cc, DynType c2) => "foo" + cc.SetType("cls") + c2.SetType(typeof(string)),
-                    Emit.declare(typeof(Func<int, string>), "h2"),
-                    Emit.assignDelegate("h2", CodeDom.VarRef("cc"), "zoo"),
-                    Emit.@return((VarRef<Func<int, string>> h2, VarRef<string> c2) => h2.v(100) + c2)
-                )
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, typeof(string), (DynType cc) => "foo" + cc.SetType("cls"), Emit.declare(typeof(Func<int, string>), "h2"), Emit.assignDelegate("h2", CodeDom.VarRef("cc"), "zoo"), Emit.@return((Func<int, string> h2) => h2(100)))
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, typeof(string), (DynType cc, DynType c2) => "foo" + cc.SetType("cls") + c2.SetType(typeof(string)), Emit.declare(typeof(Func<int, string>), "h2"), Emit.assignDelegate("h2", CodeDom.VarRef("cc"), "zoo"), Emit.@return((Func<int, string> h2, string c2) => h2(100) + c2))
             ;
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));

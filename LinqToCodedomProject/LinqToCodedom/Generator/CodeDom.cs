@@ -219,16 +219,10 @@ namespace LinqToCodedom.Generator
             return default(ParamsDelegate<TReturn>);
         }
 
-        //public static TReturn Invoke<TReturn, T>(object target, string name, params object[] param)
-        //{
-        //    return default(TReturn);
-        //}
-
-        //public static TReturn Invoke<TReturn, T2, T>(object target, string name, params object[] param)
-        //{
-        //    return default(TReturn);
-        //}
-
+        public static ParamsDelegate<TReturn> Call<TReturn>(string name)
+        {
+            return default(ParamsDelegate<TReturn>);
+        }
         #endregion
 
         #region Routines

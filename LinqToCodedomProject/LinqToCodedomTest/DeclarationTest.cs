@@ -73,15 +73,11 @@ namespace LinqToCodedomTest
             var c = new CodeDomGenerator();
 
             c.AddNamespace("Samples").AddClass(Define.Class("TestClass")
-                .AddMethod(typeof(int), MemberAttributes.Public, (int a) => "Test",
-                    Emit.@return((ParamRef<int> a) => a + 100)
-                )
+                .AddMethod(MemberAttributes.Public, typeof(int), (int a) => "Test", Emit.@return((int a) => a + 100))
                 .AddMethod(
-                    Define.Method(typeof(int), MemberAttributes.Public, (int a) => "Test1",
-                        Emit.@return(() =>
+                    Define.Method(MemberAttributes.Public, typeof(int), (int a) => "Test1", Emit.@return(() =>
                             CodeDom.VarRef<int>("a") +
-                            CodeDom.@this.Call<int>("Test")(3))
-                    )
+                            CodeDom.@this.Call<int>("Test")(3)))
                 )
             ).AddClass(Define.Class("cls")
                 .AddMethod(MemberAttributes.Public | MemberAttributes.Static, () => "foo",
@@ -126,10 +122,8 @@ namespace LinqToCodedomTest
                 .AddGetProperty(typeof(int), MemberAttributes.Public, "Test",
                     Emit.@return(() => 100)
                 )
-                .AddMethod(typeof(int), MemberAttributes.Public, (int a) => "Test1",
-                    Emit.@return((ParamRef<int> a) =>
-                        a + CodeDom.@this.Property<int>("Test"))
-                )
+                .AddMethod(MemberAttributes.Public, typeof(int), (int a) => "Test1", Emit.@return((int a) =>
+                        a + CodeDom.@this.Property<int>("Test")))
             );
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
@@ -165,7 +159,7 @@ namespace LinqToCodedomTest
                 .AddProperty(
                     Define.Property(typeof(string), MemberAttributes.Public, "Test",
                        CodeDom.CombineStmts(Emit.@return(() => CodeDom.@this.Field<string>("_s"))),
-                       Emit.assignField("_s", (ParamRef<string> value) => value)
+                       Emit.assignField("_s", (string value) => value)
                     )
                 )
                 .AddProperty(
@@ -178,11 +172,8 @@ namespace LinqToCodedomTest
                        CodeDom.Property<string>(CodeDom.VarRef("value"), "Test")
                    ))
                 )
-                .AddMethod(typeof(string), MemberAttributes.Public, (int a) => "Test1",
-                    Emit.assignProperty("Test", () => Guid.NewGuid().ToString()),
-                    Emit.@return((ParamRef<int> a) =>
-                        a.ToString() + CodeDom.@this.Property<string>("Test"))
-                )
+                .AddMethod(MemberAttributes.Public, typeof(string), (int a) => "Test1", Emit.assignProperty("Test", () => Guid.NewGuid().ToString()), Emit.@return((int a) =>
+                        a.ToString() + CodeDom.@this.Property<string>("Test")))
             );
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
@@ -220,10 +211,7 @@ namespace LinqToCodedomTest
                 .AddField(typeof(int), "_i", () => 10)
                 .AddProperty(typeof(int), MemberAttributes.Public, "I", "_i")
             .AddClass("cls2")
-                .AddMethod(typeof(int), MemberAttributes.Public | MemberAttributes.Static, () => "foo",
-                    Emit.declare("cls1", "cc", () => CodeDom.@new("cls1")),
-                    Emit.@return((Var cc) => cc.Property<int>("I"))
-                )
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, typeof(int), () => "foo", Emit.declare("cls1", "cc", () => CodeDom.@new("cls1")), Emit.@return((Var cc) => cc.Property<int>("I")))
             ;
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
@@ -256,11 +244,8 @@ namespace LinqToCodedomTest
                 )
                 .AddProperty("T", MemberAttributes.Public, "S", "_s")
             ).AddClass(Define.Class("cls")
-                .AddMethod(CodeDom.TypeRef("TestClass", "T"), MemberAttributes.Public | MemberAttributes.Static, () => "foo",
-                    Emit.declare(CodeDom.TypeRef("TestClass", "T"), "cc",
-                        () => CodeDom.@new(CodeDom.TypeRef("TestClass", "T"))),
-                    Emit.@return((Var cc)=> cc)
-                ).Generic("T")
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, CodeDom.TypeRef("TestClass", "T"), () => "foo", Emit.declare(CodeDom.TypeRef("TestClass", "T"), "cc",
+                        () => CodeDom.@new(CodeDom.TypeRef("TestClass", "T"))), Emit.@return((Var cc) => cc)).Generic("T")
             );
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
@@ -402,15 +387,13 @@ namespace LinqToCodedomTest
                 )
                 .AddCtor(
                     Define.Ctor((int i, string s) => MemberAttributes.Public,
-                        Emit.assignField("_s", (VarRef<string> s) => s),
-                        Emit.assignField("_i", (VarRef<int> i) => i)
+                        Emit.assignField("_s", (string s) => s),
+                        Emit.assignField("_i", (int i) => i)
                     )
                 )
                 .AddGetProperty(typeof(string), MemberAttributes.Public, "S", "_s").Comment("This is a comment")
                 .AddGetProperty(typeof(int), MemberAttributes.Public, "I", "_i").Document("This is a documentation")
-                .AddMethod("TestClass", MemberAttributes.Static | MemberAttributes.Public, ()=>"Create",
-                    Emit.@return(() => CodeDom.@new("TestClass", 100, "yyy"))
-                )
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, "TestClass", () => "Create", Emit.@return(() => CodeDom.@new("TestClass", 100, "yyy")))
             );
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
@@ -467,17 +450,13 @@ namespace LinqToCodedomTest
                 )
                 .AddCtor(
                     Define.Ctor((int i, string s) => MemberAttributes.Public,
-                        Emit.assignField("_s", (VarRef<string> s) => s),
-                        Emit.assignField("_i", (VarRef<int> i) => i)
+                        Emit.assignField("_s", (string s) => s),
+                        Emit.assignField("_i", (int i) => i)
                     )
                 )
                 .AddGetProperty(typeof(string), MemberAttributes.Public, "S", "_s").Comment("This is a comment")
                 .AddGetProperty(typeof(int), MemberAttributes.Public, "I", "_i").Document("This is a documentation")
-                .AddMethod(typeof(object), MemberAttributes.Public | MemberAttributes.Static, (MemoryStream ms)=>"Deserialize", 
-                    Emit.declare("f",()=>new BinaryFormatter()),
-                    Emit.stmt((VarRef<MemoryStream> ms)=>ms.v.Seek(0, SeekOrigin.Begin)),
-                    Emit.@return((VarRef<BinaryFormatter> f, VarRef<MemoryStream> ms)=>f.v.Deserialize(ms))
-                )
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, typeof(object), (MemoryStream ms) => "Deserialize", Emit.declare("f", () => new BinaryFormatter()), Emit.stmt((MemoryStream ms) => ms.Seek(0, SeekOrigin.Begin)), Emit.@return((BinaryFormatter f, MemoryStream ms) => f.Deserialize(ms)))
             );
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
@@ -531,7 +510,7 @@ namespace LinqToCodedomTest
                 ).Implements(typeof(IDisposable))
             ).AddInterface(Define.Interface("Ixxx")
                 .AddMethod(MemberAttributes.Public, ()=>"First")
-                .AddMethod(typeof(DateTime), MemberAttributes.Public, () => "Second")
+                .AddMethod(MemberAttributes.Public, typeof(DateTime), () => "Second")
                 .AddProperty("TestClass", MemberAttributes.Public, "Third")
                 .AddGetProperty("TestClass", MemberAttributes.Public, "Fifth")
                 .AddEvent(typeof(EventHandler), MemberAttributes.Public, "Fourth")
@@ -539,9 +518,7 @@ namespace LinqToCodedomTest
                 .AddMethod(MemberAttributes.Public, ()=>"First",
                     Emit.@throw(()=>new NotImplementedException())
                 ).Implements("Ixxx")
-                .AddMethod(typeof(DateTime), MemberAttributes.Public, () => "Second",
-                    Emit.@throw(() => new NotImplementedException())
-                ).Implements("Ixxx")
+                .AddMethod(MemberAttributes.Public, typeof(DateTime), () => "Second", Emit.@throw(() => new NotImplementedException())).Implements("Ixxx")
                 .AddProperty("TestClass", MemberAttributes.Public, "Third",
                     CodeDom.CombineStmts(Emit.@throw(() => new NotImplementedException())),
                     Emit.@throw(() => new NotImplementedException())
@@ -577,7 +554,7 @@ namespace LinqToCodedomTest
                 .AddField(typeof(bool), "_x")
                 .AddField(typeof(int), "_y")
                 .AddCtor((bool x) => MemberAttributes.Public,
-                    Emit.assignField("_x", (VarRef<bool> x) => x),
+                    Emit.assignField("_x", (bool x) => x),
                     Emit.assignField("_y", ()=> 100)
                 )
                 .AddGetProperty(typeof(int), MemberAttributes.Public, "Z", "_y")

@@ -71,36 +71,28 @@ namespace LinqToCodedomTest
 
             c.AddNamespace("Samples").AddClass(Define.Class("TestClass")
                 .AddMethod(
-                    Define.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test",
-                        Emit.ifelse((ParamRef<int> a) => a.v == 10,
+                    Define.Method(MemberAttributes.Public | MemberAttributes.Static, typeof(int), (int a) => "Test", Emit.ifelse((int a) => a == 10,
                             CodeDom.CombineStmts(Emit.@return(() => 1)),
                             Emit.@return(() => -1)
-                        )
-                    )
+                        ))
                 )
                 .AddMethod(
-                    Define.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test2",
-                        Emit.ifelse((ParamRef<int> a) => a.v < 10,
+                    Define.Method(MemberAttributes.Public | MemberAttributes.Static, typeof(int), (int a) => "Test2", Emit.ifelse((int a) => a < 10,
                             CodeDom.CombineStmts(Emit.@return(() => 1)),
                             Emit.@return(() => -1)
-                        )
-                    )
+                        ))
                 )
                 .AddMethod(
-                    Define.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test3",
-                        Emit.ifelse((ParamRef<int> a) => a.v * 3 < 7,
+                    Define.Method(MemberAttributes.Public | MemberAttributes.Static, typeof(int), (int a) => "Test3", Emit.ifelse((int a) => a * 3 < 7,
                             CodeDom.CombineStmts(Emit.@return(() => 1)),
                             Emit.@return(() => -1)
-                        )
-                    )
+                        ))
                 )
                 .AddMethod(
-                    Define.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test4",
-                        Emit.ifelse((ParamRef<int> a) => Math.Abs(a.v) * 3 < 7 + Math.Min(4, a.v),
+                    Define.Method(MemberAttributes.Public | MemberAttributes.Static, typeof(int), (int a) => "Test4", Emit.ifelse((int a) => Math.Abs(a) * 3 < 7 + Math.Min(4, a),
                             CodeDom.CombineStmts(Emit.@return(() => 1)),
                             Emit.@return(() => -1)
-                        )
-                    )
+                        ))
                 )
             );
 
@@ -140,26 +132,18 @@ namespace LinqToCodedomTest
 
             c.AddNamespace("Samples").AddClass(Define.Class("TestClass")
                 .AddMethod(
-                    Define.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test",
-                        Emit.declare("res", () => 0),
-                        Emit.@for(
+                    Define.Method(MemberAttributes.Public | MemberAttributes.Static, typeof(int), (int a) => "Test", Emit.declare("res", () => 0), Emit.@for(
                             "i", //int i
-                            (ParamRef<int> a) => a,  // = a 
-                            (VarRef<int> i) => i < 10, //i<10
-                            (VarRef<int> i) => i + 1, //i+=1
-                                Emit.assign((VarRef<int> res) => CodeDom.nil, (VarRef<int> res) => res + 1)
-                        ),
-                        Emit.@return((VarRef<int> res) => res)
-                    )
+                            (int a) => a,  // = a 
+                            (int i) => i < 10, //i<10
+                            (int i) => i + 1, //i+=1
+                                Emit.assignVar("res", (int res) => res + 1)
+                        ), Emit.@return((int res) => res))
                 )
                 .AddMethod(
-                    Define.Method(typeof(int), MemberAttributes.Public | MemberAttributes.Static, (int a) => "Test1",
-                        Emit.declare("res", () => 0),
-                        Emit.@for("i", (ParamRef<int> a) => a, (VarRef<int> i) => i < 10, () => CodeDom.VarRef<int>("i") + 2,
+                    Define.Method(MemberAttributes.Public | MemberAttributes.Static, typeof(int), (int a) => "Test1", Emit.declare("res", () => 0), Emit.@for("i", (int a) => a, (int i) => i < 10, () => CodeDom.VarRef<int>("i") + 2,
                             Emit.assignVar("res", () => CodeDom.VarRef<int>("res") + 1)
-                        ),
-                        Emit.@return(() => CodeDom.VarRef<int>("res") + 100)
-                    )
+                        ), Emit.@return(() => CodeDom.VarRef<int>("res") + 100))
                 )
             );
 
@@ -184,13 +168,11 @@ namespace LinqToCodedomTest
             var c = new CodeDomGenerator();
 
             c.AddNamespace("Samples").AddClass("cls")
-                .AddMethod(typeof(string), MemberAttributes.Public | MemberAttributes.Static, () => "foo",
-                    Emit.trycatch(Emit.@throw(() => new ApplicationException()))
-                        .AddCatch(typeof(ApplicationException), "ex", 
-                            Emit.@return(()=>"ok")
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, typeof(string), () => "foo", Emit.trycatch(Emit.@throw(() => new ApplicationException()))
+                        .AddCatch(typeof(ApplicationException), "ex",
+                            Emit.@return(() => "ok")
                         )
-                        .AddFinally(Emit.stmt(()=>Console.WriteLine()))
-                )
+                        .AddFinally(Emit.stmt(() => Console.WriteLine())))
             ;
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
@@ -212,13 +194,7 @@ namespace LinqToCodedomTest
             var c = new CodeDomGenerator();
 
             c.AddNamespace("Samples").AddClass("cls")
-                .AddMethod(typeof(int), MemberAttributes.Static | MemberAttributes.Public, () => "foo",
-                    Emit.declare(typeof(int), "i"),
-                    Emit.@goto("x"),
-                    Emit.assignVar("i", () => 10),
-                    Emit.label("x"),
-                    Emit.@return((VarRef<int> i) => i)
-                )
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, typeof(int), () => "foo", Emit.declare(typeof(int), "i"), Emit.@goto("x"), Emit.assignVar("i", () => 10), Emit.label("x"), Emit.@return((int i) => i))
             ;
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));

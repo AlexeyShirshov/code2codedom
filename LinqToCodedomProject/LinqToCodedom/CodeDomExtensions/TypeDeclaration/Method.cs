@@ -19,66 +19,60 @@ namespace LinqToCodedom.Extensions
             return classCode;
         }
 
-        public static CodeMemberMethod AddMethod<T>(this CodeTypeDeclaration classCode,
-            Type returnType, MemberAttributes ma,
-            Expression<Func<T, string>> paramsAndName, params CodeStatement[] statements)
+        public static CodeMemberMethod AddMethod<T>(this CodeTypeDeclaration classCode, 
+            MemberAttributes ma, Type returnType, Expression<Func<T, string>> paramsAndName, params CodeStatement[] statements)
         {
-            var meth = Define.Method(returnType, CorrectAttributes(classCode, ma), paramsAndName, statements);
+            var meth = Define.Method(CorrectAttributes(classCode, ma), returnType, paramsAndName, statements);
 
             classCode.Members_Add(meth);
 
             return meth;
         }
 
-        public static CodeMemberMethod AddMethod<T, T2>(this CodeTypeDeclaration classCode,
-            Type returnType, MemberAttributes ma,
-            Expression<Func<T, T2, string>> paramsAndName, params CodeStatement[] statements)
+        public static CodeMemberMethod AddMethod<T, T2>(this CodeTypeDeclaration classCode, 
+            MemberAttributes ma, Type returnType, Expression<Func<T, T2, string>> paramsAndName, params CodeStatement[] statements)
         {
-            var meth = Define.Method(returnType, CorrectAttributes(classCode, ma), paramsAndName, statements);
+            var meth = Define.Method(CorrectAttributes(classCode, ma), returnType, paramsAndName, statements);
 
             classCode.Members_Add(meth);
 
             return meth;
         }
 
-        public static CodeMemberMethod AddMethod<T>(this CodeTypeDeclaration classCode,
-            string returnType, MemberAttributes ma,
-            Expression<Func<T, string>> paramsAndName, params CodeStatement[] statements)
+        public static CodeMemberMethod AddMethod<T>(this CodeTypeDeclaration classCode, 
+            MemberAttributes ma, string returnType, Expression<Func<T, string>> paramsAndName, params CodeStatement[] statements)
         {
-            var meth = Define.Method(returnType, CorrectAttributes(classCode, ma), paramsAndName, statements);
+            var meth = Define.Method(CorrectAttributes(classCode, ma), returnType, paramsAndName, statements);
 
             classCode.Members_Add(meth);
 
             return meth;
         }
 
-        public static CodeMemberMethod AddMethod(this CodeTypeDeclaration classCode,
-            string returnType, MemberAttributes ma,
-            Expression<Func<string>> paramsAndName, params CodeStatement[] statements)
+        public static CodeMemberMethod AddMethod(this CodeTypeDeclaration classCode, 
+            MemberAttributes ma, string returnType, Expression<Func<string>> paramsAndName, params CodeStatement[] statements)
         {
-            var meth = Define.Method(returnType, CorrectAttributes(classCode, ma), paramsAndName, statements);
+            var meth = Define.Method(CorrectAttributes(classCode, ma), returnType, paramsAndName, statements);
 
             classCode.Members_Add(meth);
 
             return meth;
         }
 
-        public static CodeMemberMethod AddMethod(this CodeTypeDeclaration classCode,
-            CodeTypeReference returnType, MemberAttributes ma,
-            Expression<Func<string>> paramsAndName, params CodeStatement[] statements)
+        public static CodeMemberMethod AddMethod(this CodeTypeDeclaration classCode, 
+            MemberAttributes ma, CodeTypeReference returnType, Expression<Func<string>> paramsAndName, params CodeStatement[] statements)
         {
-            var meth = Define.Method(returnType, CorrectAttributes(classCode, ma), paramsAndName, statements);
+            var meth = Define.Method(CorrectAttributes(classCode, ma), returnType, paramsAndName, statements);
 
             classCode.Members_Add(meth);
 
             return meth;
         }
 
-        public static CodeMemberMethod AddMethod(this CodeTypeDeclaration classCode,
-            Type returnType, MemberAttributes ma,
-            Expression<Func<string>> paramsAndName, params CodeStatement[] statements)
+        public static CodeMemberMethod AddMethod(this CodeTypeDeclaration classCode, 
+            MemberAttributes ma, Type returnType, Expression<Func<string>> paramsAndName, params CodeStatement[] statements)
         {
-            var meth = Define.Method(returnType, CorrectAttributes(classCode, ma), paramsAndName, statements);
+            var meth = Define.Method(CorrectAttributes(classCode, ma), returnType, paramsAndName, statements);
 
             classCode.Members_Add(meth);
 
