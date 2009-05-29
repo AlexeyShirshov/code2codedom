@@ -412,10 +412,23 @@ namespace LinqToCodedom.Visitors
                 var c = new CodeMethodInvokeExpression(mr);
                 foreach (var par in methodCallExpression.Arguments)
                 {
-                    c.Parameters.Add(_Visit(par));
+                    AddParam(c.Parameters, par);
                 }
                 c.Method.TargetObject = to;
                 return c;
+            }
+        }
+
+        private void AddParam(CodeExpressionCollection @params, Expression par)
+        {
+            try
+            {
+                object v = CodeDom.Eval(par);
+                @params.Add(new CodePrimitiveExpression(v));
+            }
+            catch(InvalidOperationException ex)
+            {
+                @params.Add(_Visit(par));
             }
         }
 
