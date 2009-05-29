@@ -13,9 +13,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		LinqToCodedomProject.vsmdi = LinqToCodedomProject.vsmdi
 	EndProjectSection
 EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "VBTests", "VBTests\VBTests.vbproj", "{4B8B05B5-C0E3-4FF4-BE4A-655D8128C4E3}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 4
+		SccNumberOfProjects = 5
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs10.codeplex.com/
 		SccLocalPath0 = .
@@ -28,6 +30,9 @@ Global
 		SccProjectUniqueName3 = Demo\\Demo.csproj
 		SccProjectName3 = Demo
 		SccLocalPath3 = Demo
+		SccProjectUniqueName4 = VBTests\\VBTests.vbproj
+		SccProjectName4 = VBTests
+		SccLocalPath4 = VBTests
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = LinqToCodedomProject.vsmdi
@@ -49,6 +54,10 @@ Global
 		{5B031C1D-341A-4C76-B822-DA7C0F35C457}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B031C1D-341A-4C76-B822-DA7C0F35C457}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5B031C1D-341A-4C76-B822-DA7C0F35C457}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B8B05B5-C0E3-4FF4-BE4A-655D8128C4E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B8B05B5-C0E3-4FF4-BE4A-655D8128C4E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B8B05B5-C0E3-4FF4-BE4A-655D8128C4E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B8B05B5-C0E3-4FF4-BE4A-655D8128C4E3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
