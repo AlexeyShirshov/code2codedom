@@ -114,7 +114,7 @@ namespace LinqToCodedom.Visitors
             {
                 CodeMethodInvokeExpression mi = to as CodeMethodInvokeExpression;
                 if (invocationExpression.Arguments.Count > 0)
-                    foreach (CodeExpression par in VisitExpressionList((invocationExpression.Arguments[0] as NewArrayExpression).Expressions))
+                    foreach (CodeExpression par in VisitArguments((invocationExpression.Arguments[0] as NewArrayExpression).Expressions))
                     {
                         mi.Parameters.Add(par);
                     }
@@ -123,7 +123,7 @@ namespace LinqToCodedom.Visitors
             else if (to is CodeDelegateInvokeExpression)
             {
                 if (invocationExpression.Arguments.Count > 0)
-                    foreach (CodeExpression par in VisitExpressionList((invocationExpression.Arguments[0] as NewArrayExpression).Expressions))
+                    foreach (CodeExpression par in VisitArguments((invocationExpression.Arguments[0] as NewArrayExpression).Expressions))
                     {
                         (to as CodeDelegateInvokeExpression).Parameters.Add(par);
                     }
@@ -133,7 +133,7 @@ namespace LinqToCodedom.Visitors
             {
                 var mi = new CodeDelegateInvokeExpression(to);
                 if (invocationExpression.Arguments.Count > 0)
-                    foreach (CodeExpression par in VisitExpressionList(invocationExpression.Arguments))
+                    foreach (CodeExpression par in VisitArguments(invocationExpression.Arguments))
                     {
                         mi.Parameters.Add(par);
                     }
@@ -153,13 +153,23 @@ namespace LinqToCodedom.Visitors
             return list;
         }
 
+        public CodeExpressionCollection VisitArguments(IEnumerable<Expression> original)
+        {
+            CodeExpressionCollection list = new CodeExpressionCollection();
+            foreach (Expression e in original)
+            {
+                AddParam(list, e);
+            }
+            return list;
+        }
+
         private CodeExpressionCollection VisitSequence(LambdaExpression lambda)
         {
             var me = lambda.Body as MethodCallExpression;
             if (me == null)
                 throw new NotSupportedException();
 
-            return VisitExpressionList((me.Arguments[0] as NewArrayExpression).Expressions);
+            return VisitArguments((me.Arguments[0] as NewArrayExpression).Expressions);
         }
 
         private CodeExpression VisitNewArray(NewArrayExpression newArrayExpression)
@@ -424,11 +434,24 @@ namespace LinqToCodedom.Visitors
             try
             {
                 object v = CodeDom.Eval(par);
-                @params.Add(new CodePrimitiveExpression(v));
+                @params.Add(GetFromPrimitive(v));
             }
-            catch(InvalidOperationException ex)
+            catch(Exception ex)
             {
                 @params.Add(_Visit(par));
+            }
+        }
+
+        private CodeExpression GetExpression(Expression exp)
+        {
+            try
+            {
+                object v = CodeDom.Eval(exp);
+                return GetFromPrimitive(v);
+            }
+            catch (Exception ex)
+            {
+                return _Visit(exp);
             }
         }
 
@@ -440,7 +463,7 @@ namespace LinqToCodedom.Visitors
             {
                 case ExpressionType.ArrayIndex:
                     return new CodeArrayIndexerExpression(
-                        _Visit(binaryExpression.Left), new CodeExpression[] { _Visit(binaryExpression.Right) }
+                        GetExpression(binaryExpression.Left), new CodeExpression[] { GetExpression(binaryExpression.Right) }
                     );
                 case ExpressionType.Add:
                     operType = CodeBinaryOperatorType.Add;
@@ -525,20 +548,25 @@ namespace LinqToCodedom.Visitors
                 return new CodePrimitiveExpression(null);
             else
             {
-                Type t = constantExpression.Value.GetType();
-                if (t.IsEnum)
-                    return new CodeFieldReferenceExpression(new CodeTypeReferenceExpression(t),
-                        constantExpression.Value.ToString());
-                else if (typeof(Type).IsAssignableFrom(t))
-                    return new CodeTypeOfExpression(constantExpression.Value as Type);
-                else if (typeof(System.Reflection.MemberInfo).IsAssignableFrom(t))
-                {
-                    System.Reflection.MemberInfo mi = constantExpression.Value as System.Reflection.MemberInfo;
-                    return new CodePrimitiveExpression(mi.Name);
-                }
-                else
-                    return new CodePrimitiveExpression(constantExpression.Value);
+                return GetFromPrimitive(constantExpression.Value);
             }
+        }
+
+        private CodeExpression GetFromPrimitive(object v)
+        {
+            Type t = v.GetType();
+            if (t.IsEnum)
+                return new CodeFieldReferenceExpression(
+                    new CodeTypeReferenceExpression(t), v.ToString());
+            else if (typeof(Type).IsAssignableFrom(t))
+                return new CodeTypeOfExpression(v as Type);
+            else if (typeof(System.Reflection.MemberInfo).IsAssignableFrom(t))
+            {
+                System.Reflection.MemberInfo mi = v as System.Reflection.MemberInfo;
+                return new CodePrimitiveExpression(mi.Name);
+            }
+            else
+                return new CodePrimitiveExpression(v);
         }
 
         private CodeExpression VisitMemberAccess(MemberExpression memberExpression)

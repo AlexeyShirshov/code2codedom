@@ -456,7 +456,11 @@ namespace LinqToCodedomTest
                 )
                 .AddGetProperty(typeof(string), MemberAttributes.Public, "S", "_s").Comment("This is a comment")
                 .AddGetProperty(typeof(int), MemberAttributes.Public, "I", "_i").Document("This is a documentation")
-                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, typeof(object), (MemoryStream ms) => "Deserialize", Emit.declare("f", () => new BinaryFormatter()), Emit.stmt((MemoryStream ms) => ms.Seek(0, SeekOrigin.Begin)), Emit.@return((BinaryFormatter f, MemoryStream ms) => f.Deserialize(ms)))
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, typeof(object), (MemoryStream ms) => "Deserialize", 
+                    Emit.declare("f", () => new BinaryFormatter()), 
+                    Emit.stmt((MemoryStream ms) => ms.Seek(0, SeekOrigin.Begin)), 
+                    Emit.@return((BinaryFormatter f, MemoryStream ms) => f.Deserialize(ms))
+                )
             );
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
