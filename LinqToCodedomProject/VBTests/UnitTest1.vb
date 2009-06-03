@@ -65,6 +65,12 @@ Imports System.CodeDom
         Dim TestClass As Type = ass.GetType("Samples.cls")
 
         Assert.IsNotNull(TestClass)
+
+        Select Case "ssdfsd"
+            Case "ds"
+                Exit Select
+        End Select
+
     End Sub
 
 End Class

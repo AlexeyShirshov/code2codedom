@@ -307,8 +307,124 @@ namespace LinqToCodedomTest
                 .AddMethod(MemberAttributes.Static | MemberAttributes.Public, () => "zoo",
                     Emit.@foreach(new CodeTypeReference(typeof(object)), "ch", 
                         () => "afdgfad".ToCharArray(),
-                        Emit.stmt((char ch) => Console.WriteLine(ch))
+                        Emit.stmt((char ch) => Console.WriteLine(ch)),
+                        Emit.continueFor()
                     )
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+        }
+
+        [TestMethod]
+        public void TestBreak()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, (System.IO.MemoryStream ms) => "foo",
+                    Emit.@foreach("ch", () => "afdgfad".ToCharArray(),
+                        Emit.stmt((char ch) => Console.WriteLine(ch)),
+                        Emit.exitFor()
+                    )
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+        }
+
+        [TestMethod]
+        public void TestDoBreak()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, (System.IO.MemoryStream ms) => "foo",
+                    Emit.@do(() => true,
+                        Emit.exitDo()
+                    )
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+        }
+
+        [TestMethod]
+        public void TestWhileBreak()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, (System.IO.MemoryStream ms) => "foo",
+                    Emit.@while(() => false,
+                        Emit.exitWhile()
+                    )
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+        }
+
+        [TestMethod]
+        public void TestSwitch()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, (int i) => "foo",
+                    Emit.@switch((int i) => i)
+                        .Case(1, 
+                            Emit.stmt(()=>Console.WriteLine("1")),
+                            Emit.exitSwitch()
+                        )
+                        .Case(2, 
+                            Emit.stmt(() => Console.WriteLine("2")),
+                            Emit.exitSwitch()
+                        )
+                        .CaseElse(
+                            Emit.stmt((int i) => Console.WriteLine(i)),
+                            Emit.exitSwitch()
+                        )
                 )
             ;
 
