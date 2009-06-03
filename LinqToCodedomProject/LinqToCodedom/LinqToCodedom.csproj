@@ -83,8 +83,28 @@
     <Compile Include="Generator\Declarations\Property.cs" />
     <Compile Include="Generator\Declarations\StructField.cs" />
     <Compile Include="Generator\Delegates.cs" />
+    <Compile Include="Generator\Extensions\CodeGenerator.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Generator\Statements\assign.cs" />
     <Compile Include="Generator\Statements\attach.cs" />
+    <Compile Include="Generator\Extensions\AsExpression\CodeAsExpression.cs" />
+    <Compile Include="Generator\Extensions\ConversionOperator\CodeCsMemberOperatorOverride.cs" />
+    <Compile Include="Generator\Extensions\ConversionOperator\CodeMemberOperatorOverride.cs" />
+    <Compile Include="Generator\Extensions\ConversionOperator\CodeVbConversionOperator.cs" />
+    <Compile Include="Generator\Extensions\ForeachStatement\CodeCsForeachStatement.cs" />
+    <Compile Include="Generator\Extensions\ForeachStatement\CodeForeachStatement.cs" />
+    <Compile Include="Generator\Extensions\ForeachStatement\CodeVbForeachStatement.cs" />
+    <Compile Include="Generator\Extensions\IsExpression\CodeIsExpression.cs" />
+    <Compile Include="Generator\Extensions\LockStatement\CodeCsLockStatement.cs" />
+    <Compile Include="Generator\Extensions\LockStatement\CodeLockStatement.cs" />
+    <Compile Include="Generator\Extensions\LockStatement\CodeVbLockStatement.cs" />
+    <Compile Include="Generator\Extensions\Using\CodeCSUsingStatement.cs" />
+    <Compile Include="Generator\Extensions\Using\CodeUsingStatement.cs" />
+    <Compile Include="Generator\Extensions\Using\CodeVBUsingStatement.cs" />
+    <Compile Include="Generator\Extensions\XorExpression\CodeCsXorExpression.cs" />
+    <Compile Include="Generator\Extensions\XorExpression\CodeVbXorExpression.cs" />
+    <Compile Include="Generator\Extensions\XorExpression\CodeXorExpressionBase.cs" />
     <Compile Include="Generator\Statements\trycatch.cs" />
     <Compile Include="Generator\Statements\declare.cs" />
     <Compile Include="Generator\Statements\for.cs" />

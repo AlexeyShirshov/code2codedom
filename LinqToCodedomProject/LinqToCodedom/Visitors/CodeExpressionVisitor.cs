@@ -5,6 +5,7 @@ using System.Text;
 using System.CodeDom;
 using System.Linq.Expressions;
 using LinqToCodedom.Generator;
+using LinqToCodedom.CodeDomPatterns;
 
 namespace LinqToCodedom.Visitors
 {
@@ -231,8 +232,10 @@ namespace LinqToCodedom.Visitors
                     if (c != null)
                         return c;
                     break;
+                case ExpressionType.TypeAs:
+                    return new CodeAsExpression(new CodeTypeReference(unaryExpression.Type), c);
             }
-            throw new NotImplementedException();
+            throw new NotImplementedException(unaryExpression.NodeType.ToString());
         }
 
         public static CodeMethodReferenceExpression GetMethodRef(System.Reflection.MethodInfo methodInfo)
@@ -592,7 +595,7 @@ namespace LinqToCodedom.Visitors
                         throw new NotImplementedException();
                 }
                 else
-                    return null;
+                    return new CodeSnippetExpression(memberExpression.Type.ToString() + "." + memberExpression.Member.Name);
             }
             else
             {

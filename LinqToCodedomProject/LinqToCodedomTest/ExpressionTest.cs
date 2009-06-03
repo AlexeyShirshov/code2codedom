@@ -589,5 +589,30 @@ namespace LinqToCodedomTest
             Assert.AreEqual("zzz", args[1]);
 
         }
+
+        [TestMethod]
+        public void AsExpression()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, typeof(string), () => "foo", 
+                    Emit.declare("d", () => string.Empty as IComparable)
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+
+        }
     }
 }
