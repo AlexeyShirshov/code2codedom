@@ -71,25 +71,29 @@ namespace LinqToCodedomTest
 
             c.AddNamespace("Samples").AddClass(Define.Class("TestClass")
                 .AddMethod(
-                    Define.Method(MemberAttributes.Public | MemberAttributes.Static, typeof(int), (int a) => "Test", Emit.ifelse((int a) => a == 10,
+                    Define.Method(MemberAttributes.Public | MemberAttributes.Static, typeof(int), (int a) => "Test",
+                        Emit.ifelse((int a) => a == 10,
                             CodeDom.CombineStmts(Emit.@return(() => 1)),
                             Emit.@return(() => -1)
                         ))
                 )
                 .AddMethod(
-                    Define.Method(MemberAttributes.Public | MemberAttributes.Static, typeof(int), (int a) => "Test2", Emit.ifelse((int a) => a < 10,
+                    Define.Method(MemberAttributes.Public | MemberAttributes.Static, typeof(int), (int a) => "Test2",
+                        Emit.ifelse((int a) => a < 10,
                             CodeDom.CombineStmts(Emit.@return(() => 1)),
                             Emit.@return(() => -1)
                         ))
                 )
                 .AddMethod(
-                    Define.Method(MemberAttributes.Public | MemberAttributes.Static, typeof(int), (int a) => "Test3", Emit.ifelse((int a) => a * 3 < 7,
+                    Define.Method(MemberAttributes.Public | MemberAttributes.Static, typeof(int), (int a) => "Test3",
+                        Emit.ifelse((int a) => a * 3 < 7,
                             CodeDom.CombineStmts(Emit.@return(() => 1)),
                             Emit.@return(() => -1)
                         ))
                 )
                 .AddMethod(
-                    Define.Method(MemberAttributes.Public | MemberAttributes.Static, typeof(int), (int a) => "Test4", Emit.ifelse((int a) => Math.Abs(a) * 3 < 7 + Math.Min(4, a),
+                    Define.Method(MemberAttributes.Public | MemberAttributes.Static, typeof(int), (int a) => "Test4",
+                        Emit.ifelse((int a) => Math.Abs(a) * 3 < 7 + Math.Min(4, a),
                             CodeDom.CombineStmts(Emit.@return(() => 1)),
                             Emit.@return(() => -1)
                         ))
@@ -132,7 +136,9 @@ namespace LinqToCodedomTest
 
             c.AddNamespace("Samples").AddClass(Define.Class("TestClass")
                 .AddMethod(
-                    Define.Method(MemberAttributes.Public | MemberAttributes.Static, typeof(int), (int a) => "Test", Emit.declare("res", () => 0), Emit.@for(
+                    Define.Method(MemberAttributes.Public | MemberAttributes.Static, typeof(int), (int a) => "Test",
+                        Emit.declare("res", () => 0),
+                        Emit.@for(
                             "i", //int i
                             (int a) => a,  // = a 
                             (int i) => i < 10, //i<10
@@ -141,7 +147,9 @@ namespace LinqToCodedomTest
                         ), Emit.@return((int res) => res))
                 )
                 .AddMethod(
-                    Define.Method(MemberAttributes.Public | MemberAttributes.Static, typeof(int), (int a) => "Test1", Emit.declare("res", () => 0), Emit.@for("i", (int a) => a, (int i) => i < 10, () => CodeDom.VarRef<int>("i") + 2,
+                    Define.Method(MemberAttributes.Public | MemberAttributes.Static, typeof(int), (int a) => "Test1",
+                        Emit.declare("res", () => 0),
+                        Emit.@for("i", (int a) => a, (int i) => i < 10, () => CodeDom.VarRef<int>("i") + 2,
                             Emit.assignVar("res", () => CodeDom.VarRef<int>("res") + 1)
                         ), Emit.@return(() => CodeDom.VarRef<int>("res") + 100))
                 )
@@ -168,7 +176,8 @@ namespace LinqToCodedomTest
             var c = new CodeDomGenerator();
 
             c.AddNamespace("Samples").AddClass("cls")
-                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, typeof(string), () => "foo", Emit.trycatch(Emit.@throw(() => new ApplicationException()))
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, typeof(string), () => "foo",
+                    Emit.trycatch(Emit.@throw(() => new ApplicationException()))
                         .AddCatch(typeof(ApplicationException), "ex",
                             Emit.@return(() => "ok")
                         )
@@ -194,7 +203,12 @@ namespace LinqToCodedomTest
             var c = new CodeDomGenerator();
 
             c.AddNamespace("Samples").AddClass("cls")
-                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, typeof(int), () => "foo", Emit.declare(typeof(int), "i"), Emit.@goto("x"), Emit.assignVar("i", () => 10), Emit.label("x"), Emit.@return((int i) => i))
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, typeof(int), () => "foo",
+                    Emit.declare(typeof(int), "i"),
+                    Emit.@goto("x"),
+                    Emit.assignVar("i", () => 10),
+                    Emit.label("x"),
+                    Emit.@return((int i) => i))
             ;
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
@@ -215,6 +229,100 @@ namespace LinqToCodedomTest
 
             Assert.AreEqual(0, TestClass.InvokeMember("foo", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.InvokeMethod, null, t, null));
 
+        }
+
+        [TestMethod]
+        public void TestUsing()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, (System.IO.MemoryStream ms) => "foo",
+                    Emit.@using((System.IO.MemoryStream ms) => ms,
+                        Emit.stmt(() => Console.WriteLine("using"))
+                    )
+                )
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, () => "zoo",
+                    Emit.@using("ms", () => new System.IO.MemoryStream(),
+                        Emit.stmt(() => Console.WriteLine("using"))
+                    )
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+        }
+
+        [TestMethod]
+        public void TestLock()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, (System.IO.MemoryStream ms) => "foo",
+                    Emit.@lock((System.IO.MemoryStream ms) => ms,
+                        Emit.stmt(() => Console.WriteLine("using"))
+                    )
+                )
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, () => "zoo",
+                    Emit.@lock(() => string.Intern("asdflaskj"),
+                        Emit.stmt(() => Console.WriteLine("using"))
+                    )
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+        }
+
+        [TestMethod]
+        public void TestForeach()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, (System.IO.MemoryStream ms) => "foo",
+                    Emit.@foreach("ch", () => "afdgfad".ToCharArray(),
+                        Emit.stmt((char ch) => Console.WriteLine(ch))
+                    )
+                )
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, () => "zoo",
+                    Emit.@foreach(new CodeTypeReference(typeof(object)), "ch", 
+                        () => "afdgfad".ToCharArray(),
+                        Emit.stmt((char ch) => Console.WriteLine(ch))
+                    )
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
         }
     }
 }

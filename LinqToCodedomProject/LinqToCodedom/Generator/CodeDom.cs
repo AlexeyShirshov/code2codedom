@@ -61,6 +61,11 @@ namespace LinqToCodedom.Generator
         {
         }
 
+        public static T TypedSeq<T>(T v, params object[] args)
+        {
+            return v;
+        }
+
         public static T NamedSeq<T>(T anonymousTypeDeclaration)
         {
             return default(T);
@@ -315,10 +320,12 @@ namespace LinqToCodedom.Generator
             return param;
         }
 
-        //public static System.Collections.ObjectModel.ReadOnlyCollection<Expression> ToReadOnlyList(this IEnumerable<Expression> col)
-        //{
-        //    return new System.Collections.ObjectModel.ReadOnlyCollection<Expression>(col.ToList());
-        //}
+        public static CodeParameterDeclarationExpression[] ToArray(this CodeParameterDeclarationExpressionCollection col)
+        {
+            CodeParameterDeclarationExpression[] param = new CodeParameterDeclarationExpression[col.Count];
+            col.CopyTo(param, 0);
+            return param;
+        }
 
         public static ParamsDelegate<TReturn> CallDelegate<TReturn>(string varName)
         {

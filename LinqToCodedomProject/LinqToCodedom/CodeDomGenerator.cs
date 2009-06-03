@@ -7,6 +7,9 @@ using System.Text;
 using System;
 using System.Linq;
 using LinqToCodedom.Extensions;
+using System.Collections;
+using LinqToCodedom.CustomCodeDomGeneration;
+using LinqToCodedom.CodeDomPatterns;
 
 namespace LinqToCodedom
 {
@@ -60,77 +63,15 @@ namespace LinqToCodedom
             return this;
         }
 
-        class Pair<T, T2>
-        {
-            public T First;
-            public T2 Second;
-            public Pair(T first, T2 second)
-            {
-                First = first;
-                Second = second;
-            }
-        }
-
         public CodeCompileUnit GetCompileUnit(Language language)
         {
             // Create a new CodeCompileUnit to contain 
             // the program graph.
             CodeCompileUnit compileUnit = new CodeCompileUnit();
 
-            foreach (CodeNamespace ns in _namespaces)
-            {
-                CodeNamespace ns2add = ns;
-                for (int j = 0; j < ns.Types.Count; j++)
-                {
-                    CodeTypeDeclaration c = ns.Types[j];
-                    List<Pair<int, CodeTypeMember>> toReplace = new List<Pair<int, CodeTypeMember>>();
-                    for (int i = 0; i < c.Members.Count; i++)
-                    {
-                        CodeTypeMember m = c.Members[i];
-                        CodeTypeMember newMember = ProcessMember(m, language);
-                        if (newMember != m)
-                            toReplace.Add(new Pair<int, CodeTypeMember>(i, newMember));
-                    }
-                    if (toReplace.Count > 0)
-                    {
-                        if (ns2add == ns)
-                            ns2add = ns.Clone() as CodeNamespace;
-
-                        c = ns2add.Types[j];
-                        foreach (Pair<int, CodeTypeMember> p in toReplace)
-                        {
-                            int idx = p.First;
-                            c.Members.RemoveAt(idx);
-                            c.Members.Insert(idx, p.Second);
-                        }
-                    }
-                }
-                compileUnit.Namespaces.Add(ns2add);
-            }
+            CodeDomTreeProcessor.ProcessNS(compileUnit, language, _namespaces);
 
             return compileUnit;
-        }
-
-        private CodeTypeMember ProcessMember(CodeTypeMember m, Language language)
-        {
-            if (typeof(CodeMemberMethod).IsAssignableFrom(m.GetType()))
-                return PropcessMethod(m as CodeMemberMethod, language);
-            return m;
-        }
-
-        private CodeMemberMethod PropcessMethod(CodeMemberMethod method, Language language)
-        {
-            if (language == Language.VB)
-            {
-                if (method.PrivateImplementationType != null)
-                {
-                    CodeMemberMethod newMethod = method.Clone() as CodeMemberMethod;
-                    newMethod.ImplementationTypes.Add(method.PrivateImplementationType);
-                    newMethod.PrivateImplementationType = null;
-                    return newMethod;
-                }
-            }
-            return method;
         }
 
         public Assembly Compile()
@@ -191,5 +132,5 @@ namespace LinqToCodedom
 
             return sb.ToString();
         }
-    }       
+    }
 }
