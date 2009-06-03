@@ -171,6 +171,30 @@ namespace LinqToCodedom
                 ProcessStmt(((CodeUsingStatement)stmt).Statements, language);
                 ProcessExpr(((CodeUsingStatement)stmt).UsingExpression, language);
             }
+            else if (typeof(CodeForeachStatement).IsAssignableFrom(stmt.GetType()))
+            {
+                ProcessStmt(((CodeForeachStatement)stmt).Statements, language);
+                ProcessExpr(((CodeForeachStatement)stmt).IterExpression, language);
+            }
+            else if (typeof(CodeDoStatement).IsAssignableFrom(stmt.GetType()))
+            {
+                ProcessStmt(((CodeDoStatement)stmt).Statements, language);
+                ProcessExpr(((CodeDoStatement)stmt).TestExpression, language);
+            }
+            else if (typeof(CodeWhileStatement).IsAssignableFrom(stmt.GetType()))
+            {
+                ProcessStmt(((CodeWhileStatement)stmt).Statements, language);
+                ProcessExpr(((CodeWhileStatement)stmt).TestExpression, language);
+            }
+            else if (typeof(CodeSwitchStatement).IsAssignableFrom(stmt.GetType()))
+            {
+                ProcessExpr(((CodeSwitchStatement)stmt).SwitchExpression, language);
+                foreach (CodeSwitchStatement.CaseBlock cb in ((CodeSwitchStatement)stmt).Cases)
+                {
+                    ProcessExpr(cb.CaseExpression, language);
+                    ProcessStmt(cb.Statements, language);
+                }
+            }
 
             ICustomCodeDomObject co = stmt as ICustomCodeDomObject;
             if (co != null)

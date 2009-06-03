@@ -90,6 +90,11 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Generator\Extensions\CodeAssignExpression.cs" />
+    <Compile Include="Generator\Extensions\CodeContinueStatement.cs" />
+    <Compile Include="Generator\Extensions\CodeBreakStatement.cs" />
+    <Compile Include="Generator\Extensions\CodeDoStatement.cs" />
+    <Compile Include="Generator\Extensions\CodeWhileStatement.cs" />
+    <Compile Include="Generator\Extensions\CodeSwitchStatement.cs" />
     <Compile Include="Generator\Statements\assign.cs" />
     <Compile Include="Generator\Statements\attach.cs" />
     <Compile Include="Generator\Extensions\CodeAsExpression.cs" />
@@ -99,6 +104,10 @@
     <Compile Include="Generator\Extensions\CodeLockStatement.cs" />
     <Compile Include="Generator\Extensions\CodeUsingStatement.cs" />
     <Compile Include="Generator\Extensions\CodeXorExpression.cs" />
+    <Compile Include="Generator\Statements\continue-break.cs" />
+    <Compile Include="Generator\Statements\switch.cs" />
+    <Compile Include="Generator\Statements\while.cs" />
+    <Compile Include="Generator\Statements\do.cs" />
     <Compile Include="Generator\Statements\foreach.cs" />
     <Compile Include="Generator\Statements\lock.cs" />
     <Compile Include="Generator\Statements\using.cs" />
