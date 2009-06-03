@@ -30,11 +30,11 @@ namespace LinqToCodedom
             switch (provider)
             {
                 case Language.VB:
-                    return new Microsoft.VisualBasic.VBCodeProvider(providerOptions);
-
+                    return new CustomCodeDomGeneration.VBCustomCodeProvider(providerOptions);
                 case Language.CSharp:
+                    return new CustomCodeDomGeneration.CSCustomCodeProvider(providerOptions);
                 default:
-                    return new Microsoft.CSharp.CSharpCodeProvider(providerOptions);
+                    throw new NotImplementedException(provider.ToString());
             }
         }
 
@@ -95,7 +95,7 @@ namespace LinqToCodedom
                     {
                         if (ns2add == ns)
                             ns2add = ns.Clone() as CodeNamespace;
-                        
+
                         c = ns2add.Types[j];
                         foreach (Pair<int, CodeTypeMember> p in toReplace)
                         {
@@ -191,5 +191,5 @@ namespace LinqToCodedom
 
             return sb.ToString();
         }
-    }
+    }       
 }
