@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Linq.Expressions;
+using LinqToCodedom.CodeDomPatterns;
 
 namespace LinqToCodedom
 {
@@ -133,6 +134,10 @@ namespace LinqToCodedom
         string SetType(string type);
         string SetType(Type type);
         string SetType(System.CodeDom.CodeTypeReference type);
+
+        //OperatorType SetOperatorType(string type);
+        //OperatorType SetOperatorType(Type type);
+        //OperatorType SetOperatorType(System.CodeDom.CodeTypeReference type);
     }
 
     public interface IRefParam { }
@@ -143,6 +148,10 @@ namespace LinqToCodedom
         public string SetType(string type) { return string.Empty; }
         public string SetType(Type type) { return string.Empty; }
         public string SetType(System.CodeDom.CodeTypeReference type) { return string.Empty; }
+
+        //public OperatorType SetOperatorType(string type) { return OperatorType.Explicit; }
+        //public OperatorType SetOperatorType(Type type) { return OperatorType.Explicit; }
+        //public OperatorType SetOperatorType(System.CodeDom.CodeTypeReference type) { return OperatorType.Explicit; }
     }
 
     public struct DynTypeRef : IDynType, IRefParam
@@ -150,6 +159,10 @@ namespace LinqToCodedom
         public string SetType(string type) { return string.Empty; }
         public string SetType(Type type) { return string.Empty; }
         public string SetType(System.CodeDom.CodeTypeReference type) { return string.Empty; }
+
+        //public OperatorType SetOperatorType(string type) { return OperatorType.Explicit; }
+        //public OperatorType SetOperatorType(Type type) { return OperatorType.Explicit; }
+        //public OperatorType SetOperatorType(System.CodeDom.CodeTypeReference type) { return OperatorType.Explicit; }
     }
 
     public struct DynTypeOut : IDynType, IOutParam
@@ -157,6 +170,10 @@ namespace LinqToCodedom
         public string SetType(string type) { return string.Empty; }
         public string SetType(Type type) { return string.Empty; }
         public string SetType(System.CodeDom.CodeTypeReference type) { return string.Empty; }
+
+        //public OperatorType SetOperatorType(string type) { return OperatorType.Explicit; }
+        //public OperatorType SetOperatorType(Type type) { return OperatorType.Explicit; }
+        //public OperatorType SetOperatorType(System.CodeDom.CodeTypeReference type) { return OperatorType.Explicit; }
     }
 
     public class RefParam<T> : IRefParam { };

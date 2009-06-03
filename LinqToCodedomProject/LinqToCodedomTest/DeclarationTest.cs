@@ -10,6 +10,7 @@ using LinqToCodedom.Generator;
 using LinqToCodedom.Extensions;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using LinqToCodedom.CodeDomPatterns;
 
 namespace LinqToCodedomTest
 {
@@ -617,6 +618,33 @@ namespace LinqToCodedomTest
             Type rrClass = ass.GetType("Samples.rr");
 
             Assert.IsNotNull(rrClass);
+        }
+
+        [TestMethod]
+        public void Builder_Operator()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("ee")
+                .AddOperators(
+                    Define.Operator(new CodeTypeReference(typeof(int)),
+                        (DynType t) => CodeDom.TypedSeq(OperatorType.Implicit,t.SetType("ee")),
+                        Emit.@return(()=>10)
+                    )
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type eeClass = ass.GetType("Samples.ee");
+
+            Assert.IsNotNull(eeClass);
         }
     }
 }

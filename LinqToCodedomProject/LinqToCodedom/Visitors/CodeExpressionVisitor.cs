@@ -70,9 +70,9 @@ namespace LinqToCodedom.Visitors
                 case ExpressionType.ExclusiveOr:
                     return this.VisitBinary((BinaryExpression)exp);
                 case ExpressionType.TypeIs:
-                //return this.VisitTypeIs((TypeBinaryExpression)exp);
+                    return this.VisitTypeIs((TypeBinaryExpression)exp);
                 case ExpressionType.Conditional:
-                //return this.VisitConditional((ConditionalExpression)exp);
+                    return this.VisitConditional((ConditionalExpression)exp);
                 case ExpressionType.Constant:
                     return this.VisitConstant((ConstantExpression)exp);
                 case ExpressionType.Parameter:
@@ -97,6 +97,19 @@ namespace LinqToCodedom.Visitors
                 default:
                     throw new NotImplementedException(string.Format("Unhandled expression type: '{0}'", exp.NodeType));
             }
+        }
+
+        private CodeExpression VisitTypeIs(TypeBinaryExpression typeBinaryExpression)
+        {
+            var c = _Visit(typeBinaryExpression.Expression);
+            return new CodeIsExpression(
+                new CodeTypeReference(typeBinaryExpression.TypeOperand), c
+            );
+        }
+
+        private CodeExpression VisitConditional(ConditionalExpression conditionalExpression)
+        {
+            throw new NotImplementedException();
         }
 
         private CodeExpression VisitNew(NewExpression newExpression)
@@ -487,8 +500,7 @@ namespace LinqToCodedom.Visitors
                     operType = CodeBinaryOperatorType.ValueEquality;
                     break;
                 case ExpressionType.ExclusiveOr:
-                    operType = CodeBinaryOperatorType.BooleanOr;
-                    break;
+                    return new CodeXorExpression(_Visit(binaryExpression.Left), _Visit(binaryExpression.Right));
                 case ExpressionType.GreaterThan:
                     operType = CodeBinaryOperatorType.GreaterThan;
                     break;

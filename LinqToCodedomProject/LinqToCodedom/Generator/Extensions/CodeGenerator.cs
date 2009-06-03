@@ -13,6 +13,8 @@ namespace LinqToCodedom.CustomCodeDomGeneration
         void GenerateCode(LinqToCodedom.CodeDomGenerator.Language language);
     }
 
+    class ccc { }
+
     class CustomCodeGenerator : ICodeCompiler, ICodeGenerator
         //CodeCompiler
     {

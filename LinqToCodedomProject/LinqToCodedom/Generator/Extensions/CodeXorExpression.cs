@@ -7,41 +7,40 @@ using System.IO;
 
 namespace LinqToCodedom.CodeDomPatterns
 {
-    public abstract class CodeIsExpression : CodeSnippetExpression, ICustomCodeDomObject
+    public class CodeXorExpression : CodeSnippetExpression, ICustomCodeDomObject
     {
-        private CodeTypeReference m_typeReference;
-        private CodeExpression m_expression;
+        private CodeExpression m_left;
+        private CodeExpression m_right;
 
-        public CodeIsExpression(CodeTypeReference type, CodeExpression expression)
+        public CodeXorExpression(CodeExpression left, CodeExpression right)
         {
-            m_typeReference = type;
-            m_expression = expression;
+            m_left = left;
+            m_right = right;
         }
 
-        public CodeTypeReference TypeReference
+        public CodeExpression Left
         {
-            get { return m_typeReference; }
+            get { return m_left; }
             set
             {
-                if (m_typeReference != value)
+                if (m_left != value)
                 {
-                    m_typeReference = value;
+                    m_left = value;
                 }
             }
         }
 
-        public CodeExpression Expression
+        public CodeExpression Right
         {
-            get { return m_expression; }
+            get { return m_right; }
             set
             {
-                if (m_expression != value)
+                if (m_right != value)
                 {
-                    m_expression = value;
+                    m_right = value;
                 }
             }
         }
-
 
         #region ICustomCodeDomObject Members
 
@@ -56,9 +55,9 @@ namespace LinqToCodedom.CodeDomPatterns
                         using (System.CodeDom.Compiler.IndentedTextWriter tw = new System.CodeDom.Compiler.IndentedTextWriter(new StringWriter(), opts.IndentString))
                         {
                             tw.Write("(");
-                            provider.GenerateCodeFromExpression(Expression, tw, opts);
-                            tw.Write(" is ");
-                            provider.GenerateCodeFromExpression(new CodeTypeReferenceExpression(TypeReference), tw, opts);
+                            provider.GenerateCodeFromExpression(Left, tw, opts);
+                            tw.Write(" ^ ");
+                            provider.GenerateCodeFromExpression(Right, tw, opts);
                             tw.Write(")");
                             Value = tw.InnerWriter.ToString();
                         }
@@ -70,10 +69,10 @@ namespace LinqToCodedom.CodeDomPatterns
                         System.CodeDom.Compiler.CodeGeneratorOptions opts = new System.CodeDom.Compiler.CodeGeneratorOptions();
                         using (System.CodeDom.Compiler.IndentedTextWriter tw = new System.CodeDom.Compiler.IndentedTextWriter(new StringWriter(), opts.IndentString))
                         {
-                            tw.Write("( TypeOf ");
-                            provider.GenerateCodeFromExpression(Expression, tw, opts);
-                            tw.Write(" Is ");
-                            provider.GenerateCodeFromExpression(new CodeTypeReferenceExpression(TypeReference), tw, opts);
+                            tw.Write("(");
+                            provider.GenerateCodeFromExpression(Left, tw, opts);
+                            tw.Write(" Xor ");
+                            provider.GenerateCodeFromExpression(Right, tw, opts);
                             tw.Write(")");
                             Value = tw.InnerWriter.ToString();
                         }

@@ -60,6 +60,7 @@
     <Compile Include="CodeDomExtensions\Event.cs" />
     <Compile Include="CodeDomExtensions\Method.cs" />
     <Compile Include="CodeDomExtensions\Namespace.cs" />
+    <Compile Include="CodeDomExtensions\TypeDeclaration\Operator.cs" />
     <Compile Include="CodeDomExtensions\TypeDeclaration\Ctor.cs" />
     <Compile Include="CodeDomExtensions\TypeDeclaration\Delegate.cs" />
     <Compile Include="CodeDomExtensions\TypeDeclaration\Event.cs" />
@@ -72,9 +73,11 @@
     <Compile Include="CodeDomExtensions\TypeMember\Method.cs" />
     <Compile Include="CodeDomExtensions\TypeMember\Property.cs" />
     <Compile Include="CodeDomExtensions\TypeMember\TypeMember.cs" />
+    <Compile Include="CodeDomTreeProcessor.cs" />
     <Compile Include="Generator\CodeDom.cs" />
     <Compile Include="Generator\Declarations\Class.cs" />
     <Compile Include="Generator\Declarations\Attribute.cs" />
+    <Compile Include="Generator\Declarations\Operator.cs" />
     <Compile Include="Generator\Declarations\Ctor.cs" />
     <Compile Include="Generator\Declarations\Delegate.cs" />
     <Compile Include="Generator\Declarations\Event.cs" />
@@ -86,25 +89,19 @@
     <Compile Include="Generator\Extensions\CodeGenerator.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Generator\Extensions\CodeAssignExpression.cs" />
     <Compile Include="Generator\Statements\assign.cs" />
     <Compile Include="Generator\Statements\attach.cs" />
-    <Compile Include="Generator\Extensions\AsExpression\CodeAsExpression.cs" />
-    <Compile Include="Generator\Extensions\ConversionOperator\CodeCsMemberOperatorOverride.cs" />
-    <Compile Include="Generator\Extensions\ConversionOperator\CodeMemberOperatorOverride.cs" />
-    <Compile Include="Generator\Extensions\ConversionOperator\CodeVbConversionOperator.cs" />
-    <Compile Include="Generator\Extensions\ForeachStatement\CodeCsForeachStatement.cs" />
-    <Compile Include="Generator\Extensions\ForeachStatement\CodeForeachStatement.cs" />
-    <Compile Include="Generator\Extensions\ForeachStatement\CodeVbForeachStatement.cs" />
-    <Compile Include="Generator\Extensions\IsExpression\CodeIsExpression.cs" />
-    <Compile Include="Generator\Extensions\LockStatement\CodeCsLockStatement.cs" />
-    <Compile Include="Generator\Extensions\LockStatement\CodeLockStatement.cs" />
-    <Compile Include="Generator\Extensions\LockStatement\CodeVbLockStatement.cs" />
-    <Compile Include="Generator\Extensions\Using\CodeCSUsingStatement.cs" />
-    <Compile Include="Generator\Extensions\Using\CodeUsingStatement.cs" />
-    <Compile Include="Generator\Extensions\Using\CodeVBUsingStatement.cs" />
-    <Compile Include="Generator\Extensions\XorExpression\CodeCsXorExpression.cs" />
-    <Compile Include="Generator\Extensions\XorExpression\CodeVbXorExpression.cs" />
-    <Compile Include="Generator\Extensions\XorExpression\CodeXorExpressionBase.cs" />
+    <Compile Include="Generator\Extensions\CodeAsExpression.cs" />
+    <Compile Include="Generator\Extensions\CodeMemberOperatorOverride.cs" />
+    <Compile Include="Generator\Extensions\CodeForeachStatement.cs" />
+    <Compile Include="Generator\Extensions\CodeIsExpression.cs" />
+    <Compile Include="Generator\Extensions\CodeLockStatement.cs" />
+    <Compile Include="Generator\Extensions\CodeUsingStatement.cs" />
+    <Compile Include="Generator\Extensions\CodeXorExpression.cs" />
+    <Compile Include="Generator\Statements\foreach.cs" />
+    <Compile Include="Generator\Statements\lock.cs" />
+    <Compile Include="Generator\Statements\using.cs" />
     <Compile Include="Generator\Statements\trycatch.cs" />
     <Compile Include="Generator\Statements\declare.cs" />
     <Compile Include="Generator\Statements\for.cs" />

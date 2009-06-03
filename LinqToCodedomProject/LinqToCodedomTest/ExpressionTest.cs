@@ -596,7 +596,7 @@ namespace LinqToCodedomTest
             var c = new CodeDomGenerator();
 
             c.AddNamespace("Samples").AddClass("cls")
-                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, typeof(string), () => "foo", 
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, () => "foo", 
                     Emit.declare("d", () => string.Empty as IComparable)
                 )
             ;
@@ -614,5 +614,56 @@ namespace LinqToCodedomTest
             Assert.IsNotNull(TestClass);
 
         }
+
+        [TestMethod]
+        public void IsExpression()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, () => "foo",
+                    Emit.declare("d", () => string.Empty is IComparable)
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+
+        }
+
+        [TestMethod]
+        public void XorExpression()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, (int i) => "foo",
+                    Emit.declare("d", (int i) => i ^ 5)
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+
+        }
+
     }
 }
