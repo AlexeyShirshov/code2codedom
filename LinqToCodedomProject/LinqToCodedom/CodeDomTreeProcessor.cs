@@ -60,12 +60,13 @@ namespace LinqToCodedom
         private static CodeTypeMember ProcessMember(CodeTypeMember m, LinqToCodedom.CodeDomGenerator.Language language)
         {
             if (typeof(CodeMemberMethod).IsAssignableFrom(m.GetType()))
+            {
                 foreach (CodeStatement stmt in ((CodeMemberMethod)m).Statements)
                 {
                     ProcessStmt(stmt, language);
                 }
-
-            if (typeof(CodeMemberProperty).IsAssignableFrom(m.GetType()))
+            }
+            else if (typeof(CodeMemberProperty).IsAssignableFrom(m.GetType()))
             {
                 foreach (CodeStatement stmt in ((CodeMemberProperty)m).GetStatements)
                 {
@@ -77,17 +78,22 @@ namespace LinqToCodedom
                     ProcessStmt(stmt, language);
                 }
             }
-
-            if (typeof(CodeConstructor).IsAssignableFrom(m.GetType()))
+            else if (typeof(CodeConstructor).IsAssignableFrom(m.GetType()))
             {
                 ProcessExpr(((CodeConstructor)m).BaseConstructorArgs, language);
                 ProcessExpr(((CodeConstructor)m).ChainedConstructorArgs, language);
                 ProcessStmt(((CodeConstructor)m).Statements, language);
             }
-
-            if (typeof(CodeMemberField).IsAssignableFrom(m.GetType()))
+            else if (typeof(CodeMemberField).IsAssignableFrom(m.GetType()))
             {
                 ProcessExpr(((CodeMemberField)m).InitExpression, language);
+            }
+            else if (typeof(CodeTypeDeclaration).IsAssignableFrom(m.GetType()))
+            {
+                foreach (CodeTypeMember ms in ((CodeTypeDeclaration)m).Members)
+                {
+                    ProcessMember(ms, language);
+                }
             }
 
             ICustomCodeDomObject co = m as ICustomCodeDomObject;
