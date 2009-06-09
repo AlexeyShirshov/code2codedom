@@ -6,6 +6,7 @@ using System.CodeDom;
 using System.Linq.Expressions;
 using LinqToCodedom.Generator;
 using LinqToCodedom.CodeDomPatterns;
+using System.Reflection;
 
 namespace LinqToCodedom.Visitors
 {
@@ -20,6 +21,14 @@ namespace LinqToCodedom.Visitors
 
         public CodeExpression Visit(Expression exp)
         {
+            //Expression c = new QueryVisitor((e) => e.NodeType == ExpressionType.Constant && e.Type.Name.StartsWith("<>c__DisplayClass")).Visit(exp);
+            //if (c != null)
+            //{
+            //    object v = CodeDom.Eval(exp);
+            //    return GetFromPrimitive(v);
+            //}
+            //else
+            //{
             CodeExpression res = _Visit(exp);
             if (res is CodeDom.CodeThisExpression)
                 res = new CodeThisReferenceExpression();
@@ -27,6 +36,7 @@ namespace LinqToCodedom.Visitors
                 res = new CodeBaseReferenceExpression();
 
             return res;
+            //}
         }
 
         private CodeExpression _Visit(Expression exp)
@@ -197,7 +207,7 @@ namespace LinqToCodedom.Visitors
                 throw new NotImplementedException();
                 //foreach (CodeExpression exp in VisitExpressionList(newArrayExpression.Expressions))
                 //{
-                    
+
                 //}
             }
             else if (newArrayExpression.NodeType == ExpressionType.NewArrayInit)
@@ -209,7 +219,7 @@ namespace LinqToCodedom.Visitors
             }
             else
                 throw new NotSupportedException();
-            
+
             return arr;
         }
 
@@ -228,8 +238,8 @@ namespace LinqToCodedom.Visitors
                             Type dt = unaryExpression.Method.DeclaringType;
                             if (dt == typeof(Var) ||
                                 (dt.IsGenericType &&
-                                    /*(dt.GetGenericTypeDefinition() == typeof(VarRef<>)) ||
-                                    (dt.GetGenericTypeDefinition() == typeof(ParamRef<>)) ||*/
+                                /*(dt.GetGenericTypeDefinition() == typeof(VarRef<>)) ||
+                                (dt.GetGenericTypeDefinition() == typeof(ParamRef<>)) ||*/
                                     (dt.GetGenericTypeDefinition() == typeof(MemberRef<>))
                                 )
                             )
@@ -393,13 +403,13 @@ namespace LinqToCodedom.Visitors
                         return new CodeDom.CodeDelegateArgsInvoke(
                             new CodeEventReferenceExpression(rto, eventName));
                     case "ArrayGet":
-                        return new CodeArrayIndexerExpression(rto, 
+                        return new CodeArrayIndexerExpression(rto,
                             VisitExpressionList((methodCallExpression.Arguments[0] as NewArrayExpression).Expressions).ToArray()
                         );
                     case "JaggedArrayGet":
                         var n = methodCallExpression.Arguments[0] as NewArrayExpression;
                         CodeArrayIndexerExpression prev = null;
-                        foreach(CodeExpression e in VisitExpressionList(n.Expressions.Reverse()))
+                        foreach (CodeExpression e in VisitExpressionList(n.Expressions.Reverse()))
                         {
                             if (prev == null)
                                 prev = new CodeArrayIndexerExpression(rto, e);
@@ -452,7 +462,7 @@ namespace LinqToCodedom.Visitors
                 object v = CodeDom.Eval(par);
                 @params.Add(GetFromPrimitive(v));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 @params.Add(_Visit(par));
             }
@@ -569,19 +579,31 @@ namespace LinqToCodedom.Visitors
 
         private CodeExpression GetFromPrimitive(object v)
         {
-            Type t = v.GetType();
-            if (t.IsEnum)
-                return new CodeFieldReferenceExpression(
-                    new CodeTypeReferenceExpression(t), v.ToString());
-            else if (typeof(Type).IsAssignableFrom(t))
-                return new CodeTypeOfExpression(v as Type);
-            else if (typeof(System.Reflection.MemberInfo).IsAssignableFrom(t))
+            //    return GetFromPrimitive(v, null);
+            //}
+
+            //private CodeExpression GetFromPrimitive(object v, Expression exp)
+            //{
+            if (v != null)
             {
-                System.Reflection.MemberInfo mi = v as System.Reflection.MemberInfo;
-                return new CodePrimitiveExpression(mi.Name);
+                Type t = v.GetType();
+                if (t.IsEnum)
+                    return new CodeFieldReferenceExpression(
+                        new CodeTypeReferenceExpression(t), v.ToString());
+                else if (typeof(Type).IsAssignableFrom(t))
+                    return new CodeTypeOfExpression(v as Type);
+                else if (typeof(System.Reflection.MemberInfo).IsAssignableFrom(t))
+                {
+                    System.Reflection.MemberInfo mi = v as System.Reflection.MemberInfo;
+                    return new CodePrimitiveExpression(mi.Name);
+                }
+                //else if (t.Name.StartsWith("<>c__DisplayClass"))
+                //{
+                //    return GetFromPrimitive(CodeDom.Eval(exp));
+                //}
             }
-            else
-                return new CodePrimitiveExpression(v);
+
+            return new CodePrimitiveExpression(v);
         }
 
         private CodeExpression VisitMemberAccess(MemberExpression memberExpression)
@@ -614,8 +636,27 @@ namespace LinqToCodedom.Visitors
                 var c = _Visit(memberExpression.Expression);
                 if (c is CodeSnippetExpression)
                     throw new NotImplementedException();
-                else
-                    return c;
+                else if (c is CodePrimitiveExpression)
+                {
+                    //object v = ((CodePrimitiveExpression)c).Value;
+                    //if (v != null && v.GetType().Name.StartsWith("<>c__DisplayClass"))
+                    //{
+                        return GetFromPrimitive(CodeDom.Eval(memberExpression));
+                    //}
+                    //else
+                    //{
+                    //    MethodInfo mi = memberExpression.Member as MethodInfo;
+                    //    if (mi != null)
+                    //    {
+                    //    }
+                    //    else
+                    //    {
+                    //        ProInfo mi = memberExpression.Member as MethodInfo;
+                    //    }
+                    //}
+                }
+                
+                return c;
             }
         }
     }
