@@ -50,13 +50,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CodeAssert.cs" />
     <Compile Include="DeclarationTest.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ExpressionTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StatementTest.cs" />
+    <Compile Include="Visitors.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LinqToCodedom\LinqToCodedom.csproj">
