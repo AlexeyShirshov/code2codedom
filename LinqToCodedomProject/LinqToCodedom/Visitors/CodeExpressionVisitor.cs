@@ -285,8 +285,29 @@ namespace LinqToCodedom.Visitors
                 }
                 else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.TypeRef")
                 {
-                    return new CodeTypeReferenceExpression(
+                    var c = new CodeTypeReferenceExpression(
                         CodeDom.Eval<string>(methodCallExpression.Arguments[0]));
+
+                    foreach (Expression ee in methodCallExpression.Arguments.Skip(1))
+                    {
+                        object t = CodeDom.Eval(ee);
+                        c.Type.TypeArguments.Add(CodeDom.GetTypeReference(t));
+                    }
+
+                    return c;
+                }
+                else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.TypeOf")
+                {
+                    var c = new CodeTypeOfExpression(
+                        CodeDom.Eval<string>(methodCallExpression.Arguments[0]));
+
+                    foreach (Expression ee in methodCallExpression.Arguments.Skip(1))
+                    {
+                        object t = CodeDom.Eval(ee);
+                        c.Type.TypeArguments.Add(CodeDom.GetTypeReference(t));
+                    }
+
+                    return c;
                 }
                 else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.get_nil")
                 {

@@ -293,6 +293,36 @@ namespace LinqToCodedom.Generator
 
         #endregion
 
+        public static Type TypeOf(string type, params string[] types)
+        {
+            return typeof(string);
+        }
+
+        public static Type TypeOf(Type type, params Type[] types)
+        {
+            return type;
+        }
+
+        public static Type TypeOf(Type type, params string[] types)
+        {
+            return type;
+        }
+
+        //public static CodeTypeOfExpression TypeOf(string type, params string[] types)
+        //{
+        //    return new CodeTypeOfExpression(TypeRef(type, types));
+        //}
+
+        //public static CodeTypeOfExpression TypeOf(Type type, params Type[] types)
+        //{
+        //    return new CodeTypeOfExpression(TypeRef(type, types));
+        //}
+
+        //public static CodeTypeOfExpression TypeOf(Type type, params string[] types)
+        //{
+        //    return new CodeTypeOfExpression(TypeRef(type, types));
+        //}
+
         public static CodeTypeReference TypeRef(string type, params string[] types)
         {
             return new CodeTypeReference(type,
