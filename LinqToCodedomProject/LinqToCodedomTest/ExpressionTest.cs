@@ -362,7 +362,8 @@ namespace LinqToCodedomTest
             var c = new CodeDomGenerator();
 
             c.AddNamespace("Samples").AddClass("cls")
-                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, typeof(string), (object o) => "foo", Emit.ifelse((object o) => o.GetType() == typeof(int),
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, typeof(string), (object o) => "foo", 
+                    Emit.ifelse((object o) => o.GetType() == typeof(int),
                         CodeDom.CombineStmts(Emit.@return(() => "int")),
                         Emit.@return(() => "other")))
             ;
