@@ -288,12 +288,16 @@ namespace LinqToCodedom.Visitors
                     var c = new CodeTypeReferenceExpression(
                         CodeDom.Eval<string>(methodCallExpression.Arguments[0]));
 
-                    foreach (Expression ee in methodCallExpression.Arguments.Skip(1))
+                    if (methodCallExpression.Arguments.Count == 2)
                     {
-                        object t = CodeDom.Eval(ee);
-                        c.Type.TypeArguments.Add(CodeDom.GetTypeReference(t));
-                    }
+                        NewArrayExpression arr = methodCallExpression.Arguments[1] as NewArrayExpression;
+                        foreach (Expression ee in arr.Expressions)
+                        {
+                            object t = CodeDom.Eval(ee);
+                            c.Type.TypeArguments.Add(CodeDom.GetTypeReference(t));
+                        }
 
+                    }
                     return c;
                 }
                 else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.TypeOf")
@@ -301,10 +305,14 @@ namespace LinqToCodedom.Visitors
                     var c = new CodeTypeOfExpression(
                         CodeDom.Eval<string>(methodCallExpression.Arguments[0]));
 
-                    foreach (Expression ee in methodCallExpression.Arguments.Skip(1))
+                    if (methodCallExpression.Arguments.Count == 2)
                     {
-                        object t = CodeDom.Eval(ee);
-                        c.Type.TypeArguments.Add(CodeDom.GetTypeReference(t));
+                        NewArrayExpression arr = methodCallExpression.Arguments[1] as NewArrayExpression;
+                        foreach (Expression ee in arr.Expressions)
+                        {
+                            object t = CodeDom.Eval(ee);
+                            c.Type.TypeArguments.Add(CodeDom.GetTypeReference(t));
+                        }
                     }
 
                     return c;
