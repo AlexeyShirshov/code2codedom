@@ -253,7 +253,7 @@ namespace LinqToCodedom.Generator
 
         #region Fields
 
-        public static T Field<T>(string name)
+        public static T Field<T>(object target, string name)
         {
             return default(T);
         }
