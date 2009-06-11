@@ -283,6 +283,11 @@ namespace LinqToCodedom.Visitors
                     return new CodeVariableReferenceExpression(
                         CodeDom.Eval<string>(methodCallExpression.Arguments[0]));
                 }
+                else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.TypeRef")
+                {
+                    return new CodeTypeReferenceExpression(
+                        CodeDom.Eval<string>(methodCallExpression.Arguments[0]));
+                }
                 else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.get_nil")
                 {
                     return null;
@@ -290,6 +295,12 @@ namespace LinqToCodedom.Visitors
                 else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.Property")
                 {
                     return new CodePropertyReferenceExpression(
+                        _Visit(methodCallExpression.Arguments[0]),
+                        CodeDom.Eval<string>(methodCallExpression.Arguments[1]));
+                }
+                else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.Field")
+                {
+                    return new CodeFieldReferenceExpression(
                         _Visit(methodCallExpression.Arguments[0]),
                         CodeDom.Eval<string>(methodCallExpression.Arguments[1]));
                 }
