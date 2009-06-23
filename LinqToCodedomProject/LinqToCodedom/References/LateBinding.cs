@@ -51,25 +51,6 @@ namespace LinqToCodedom
 
         #endregion
 
-        //#region Functions
-
-        //public TReturn Call<TReturn>(string name, params object[] param)
-        //{
-        //    return default(TReturn);
-        //}
-
-        //public TReturn Call<TReturn, T>(string name, params object[] param)
-        //{
-        //    return default(TReturn);
-        //}
-
-        //public TReturn Call<TReturn, T2, T>(string name, params object[] param)
-        //{
-        //    return default(TReturn);
-        //}
-
-        //#endregion
-
         #region Routines
 
         //public ParamsDelegate CallFunction(string name)
@@ -114,6 +95,11 @@ namespace LinqToCodedom
         public object JaggedArrayGet(params int[] i)
         {
             return null;
+        }
+
+        public T cast<T>()
+        {
+            return default(T);
         }
     }
 
