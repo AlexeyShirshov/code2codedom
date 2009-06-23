@@ -463,28 +463,30 @@ namespace LinqToCodedom.Visitors
                         throw new NotImplementedException(mr.MethodName);
                 }
             }
-            else if (to is CodeDom.CodeArgsInvoke)
-            {
-                var c = to as CodeMethodInvokeExpression;
-                foreach (CodeExpression par in VisitSequence(
-                    new QueryVisitor((e) => e is LambdaExpression)
-                        .Visit(methodCallExpression.Arguments[0]) as LambdaExpression))
-                {
-                    c.Parameters.Add(par);
-                }
-                return c;
-            }
-            else if (to is CodeDom.CodeDelegateArgsInvoke)
-            {
-                var c = to as CodeDelegateInvokeExpression;
-                foreach (CodeExpression par in VisitSequence(
-                    new QueryVisitor((e) => e is LambdaExpression)
-                        .Visit(methodCallExpression.Arguments[0]) as LambdaExpression))
-                {
-                    c.Parameters.Add(par);
-                }
-                return c;
-            }
+            //else if (to is CodeDom.CodeArgsInvoke)
+            //{
+            //    var c = to as CodeMethodInvokeExpression;
+            //    c.Parameters.AddRange(VisitArguments(methodCallExpression.Arguments));
+            //    //foreach (CodeExpression par in VisitSequence(
+            //    //    new QueryVisitor((e) => e is LambdaExpression)
+            //    //        .Visit(methodCallExpression.Arguments[0]) as LambdaExpression))
+            //    //{
+            //    //    c.Parameters.Add(par);
+            //    //}
+            //    return c;
+            //}
+            //else if (to is CodeDom.CodeDelegateArgsInvoke)
+            //{
+            //    var c = to as CodeDelegateInvokeExpression;
+            //    c.Parameters.AddRange(VisitArguments(methodCallExpression.Arguments));
+            //    //foreach (CodeExpression par in VisitSequence(
+            //    //    new QueryVisitor((e) => e is LambdaExpression)
+            //    //        .Visit(methodCallExpression.Arguments[0]) as LambdaExpression))
+            //    //{
+            //    //    c.Parameters.Add(par);
+            //    //}
+            //    return c;
+            //}
             else
             {
                 var c = new CodeMethodInvokeExpression(mr);
