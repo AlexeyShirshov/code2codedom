@@ -666,5 +666,30 @@ namespace LinqToCodedomTest
 
         }
 
+        [TestMethod]
+        public void ThisTest()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples")
+                .AddClass("cls").Implements(typeof(IServiceProvider))
+                .AddMethod(MemberAttributes.Public, typeof(object), (Type t) => "GetService",
+                    Emit.@return(() => CodeDom.@this.cast<IServiceProvider>())
+                ).Implements(typeof(IServiceProvider))
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+
+        }
     }
 }

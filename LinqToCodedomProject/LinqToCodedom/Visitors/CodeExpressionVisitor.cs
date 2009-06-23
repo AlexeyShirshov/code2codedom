@@ -457,6 +457,8 @@ namespace LinqToCodedom.Visitors
                                 prev = new CodeArrayIndexerExpression(prev, e);
                         }
                         return prev;
+                    case "cast":
+                        return rto;
                     default:
                         throw new NotImplementedException(mr.MethodName);
                 }
