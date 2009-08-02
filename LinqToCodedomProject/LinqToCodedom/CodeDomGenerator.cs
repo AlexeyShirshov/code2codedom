@@ -94,7 +94,7 @@ namespace LinqToCodedom
                 options.ReferencedAssemblies.Add(refAsm);
 
             if (assemblyPath != null)
-                options.OutputAssembly = assemblyPath.Replace('\\', '/');
+                options.OutputAssembly = assemblyPath.Replace("file:\\", string.Empty).Replace('\\', '/');
 
             using (CodeDomProvider codeProvider = CreateProvider(language))
             {
@@ -130,7 +130,7 @@ namespace LinqToCodedom
                 options.ReferencedAssemblies.Add(refAsm);
 
             if (assemblyPath != null)
-                options.OutputAssembly = assemblyPath.Replace('\\', '/');
+                options.OutputAssembly = assemblyPath.Replace("file:\\",string.Empty).Replace('\\', '/');
 
             using (CodeDomProvider codeProvider = CreateProvider(language))
             {
