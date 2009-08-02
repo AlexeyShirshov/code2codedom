@@ -8,7 +8,7 @@ namespace LinqToCodedom.Extensions
 {
     public static class CodeConstructorExtensions
     {
-        public static CodeConstructor Base(this CodeConstructor ctor, CodeExpression[] baseCtorArgs)
+        public static CodeConstructor Base(this CodeConstructor ctor, params CodeExpression[] baseCtorArgs)
         {
             ctor.BaseConstructorArgs.AddRange(baseCtorArgs);
 
@@ -22,7 +22,7 @@ namespace LinqToCodedom.Extensions
             return ctor;
         }
 
-        public static CodeConstructor This(this CodeConstructor ctor, CodeExpression[] thisCtorArgs)
+        public static CodeConstructor This(this CodeConstructor ctor, params CodeExpression[] thisCtorArgs)
         {
             ctor.ChainedConstructorArgs.AddRange(thisCtorArgs);
 

@@ -7,6 +7,7 @@ using LinqToCodedom.CustomCodeDomGeneration;
 using LinqToCodedom.CodeDomPatterns;
 using System.Collections;
 using LinqToCodedom.Extensions;
+using System.IO;
 
 namespace LinqToCodedom
 {
@@ -352,6 +353,49 @@ namespace LinqToCodedom
                     newMethod.PrivateImplementationType = null;
                     return newMethod;
                 }
+            }
+
+            object o = method.UserData["linq2codedom:partial"];
+            if (o != null)
+            {
+                bool partial = (bool)o;
+
+                //if (partial)
+                //{
+                //    string typeStr = null;
+
+                //    switch (language)
+                //    {
+                //        case CodeDomGenerator.Language.CSharp:
+                //            using (Microsoft.CSharp.CSharpCodeProvider provider = new Microsoft.CSharp.CSharpCodeProvider())
+                //            {
+                //                System.CodeDom.Compiler.CodeGeneratorOptions opts = new System.CodeDom.Compiler.CodeGeneratorOptions();
+                //                using (System.CodeDom.Compiler.IndentedTextWriter tw = new System.CodeDom.Compiler.IndentedTextWriter(new StringWriter(), opts.IndentString))
+                //                {
+                //                    provider.(method.ReturnType, tw, opts);
+                //                    typeStr = tw.InnerWriter.ToString();
+                //                }
+                //            }
+                //            break;
+                //        case CodeDomGenerator.Language.VB:
+                //            using (Microsoft.VisualBasic.VBCodeProvider provider = new Microsoft.VisualBasic.VBCodeProvider())
+                //            {
+                //                System.CodeDom.Compiler.CodeGeneratorOptions opts = new System.CodeDom.Compiler.CodeGeneratorOptions();
+                //                using (System.CodeDom.Compiler.IndentedTextWriter tw = new System.CodeDom.Compiler.IndentedTextWriter(new StringWriter(), opts.IndentString))
+                //                {
+                //                    tw.Write("(");
+                //                    provider.GenerateCodeFromExpression(Left, tw, opts);
+                //                    tw.Write(" Xor ");
+                //                    provider.GenerateCodeFromExpression(Right, tw, opts);
+                //                    tw.Write(")");
+                //                    Value = tw.InnerWriter.ToString();
+                //                }
+                //            }
+                //            break;
+                //        default:
+                //            throw new NotImplementedException(language.ToString());
+                //    }
+                //}
             }
             return method;
         }

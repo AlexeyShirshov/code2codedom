@@ -20,10 +20,11 @@ namespace LinqToCodedom
     public class Base
     {
         #region Properties
-        
-        //public void Property<T, TResult>(string name, Expression<Func<T, TResult>> paramsExp)
-        //{
-        //}
+
+        public Prop Property(string name)
+        {
+            return new Prop(this, name);
+        }
 
         public T Property<T>(string name)
         {
@@ -53,12 +54,7 @@ namespace LinqToCodedom
 
         #region Routines
 
-        //public ParamsDelegate CallFunction(string name)
-        //{
-        //    return default(ParamsDelegate);
-        //}
-
-        public ParamsDelegate Call(string name)
+        public ParamsDelegate Call(string name, params System.CodeDom.CodeTypeReference[] types)
         {
             return default(ParamsDelegate);
         }
@@ -85,6 +81,11 @@ namespace LinqToCodedom
             return default(T);
         }
 
+        public object Field(string name)
+        {
+            return null;
+        }
+
         #endregion
 
         public object ArrayGet(params int[] i)
@@ -105,7 +106,19 @@ namespace LinqToCodedom
 
     public class Var : Base { public Var(string name) { Name = name; } public string Name { get; protected set; } }
 
-    //public class Par : Base { }
+    public class Prop : Var 
+    {
+        public Prop(Base target, string name) : base(name) { Target = target; }
+
+        public Base Target { get; protected set; }
+    }
+
+    public class Field : Var
+    {
+        public Field(Base target, string name) : base(name) { Target = target; }
+
+        public Base Target { get; protected set; }
+    }
 
     public class This : Base 
     {

@@ -95,6 +95,7 @@
     <Compile Include="Generator\Extensions\CodeDoStatement.cs" />
     <Compile Include="Generator\Extensions\CodeWhileStatement.cs" />
     <Compile Include="Generator\Extensions\CodeSwitchStatement.cs" />
+    <Compile Include="Generator\Extensions\CodeNotExpression.cs" />
     <Compile Include="Generator\Statements\assign.cs" />
     <Compile Include="Generator\Statements\attach.cs" />
     <Compile Include="Generator\Extensions\CodeAsExpression.cs" />

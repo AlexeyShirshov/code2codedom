@@ -17,8 +17,7 @@ namespace LinqToCodedom
     {
         private List<CodeNamespace> _namespaces = new List<CodeNamespace>();
 
-        private System.Collections.Specialized.StringCollection _assemblies =
-            new System.Collections.Specialized.StringCollection() { "System.dll" };
+        private List<string> _assemblies = new List<string> { "System.dll" };
 
         public enum Language { CSharp, VB };
 
@@ -118,19 +117,73 @@ namespace LinqToCodedom
             return null;
         }
 
+        public static Assembly Compile(string assemblyPath, Language language, 
+            IEnumerable<string> assemblies,
+            params CodeCompileUnit[] units)
+        {
+            CompilerParameters options = new CompilerParameters();
+            options.IncludeDebugInformation = false;
+            options.GenerateExecutable = false;
+            options.GenerateInMemory = (assemblyPath == null);
+
+            foreach (string refAsm in assemblies)
+                options.ReferencedAssemblies.Add(refAsm);
+
+            if (assemblyPath != null)
+                options.OutputAssembly = assemblyPath.Replace('\\', '/');
+
+            using (CodeDomProvider codeProvider = CreateProvider(language))
+            {
+                CompilerResults results =
+                   codeProvider.CompileAssemblyFromDom(options, units);
+
+                if (results.Errors.Count == 0)
+                    return results.CompiledAssembly;
+
+                // Process compilation errors
+                Console.WriteLine("Compilation Errors:");
+
+                foreach (string outpt in results.Output)
+                    Console.WriteLine(outpt);
+
+                foreach (CompilerError err in results.Errors)
+                    Console.WriteLine(err.ToString());
+            }
+
+            return null;
+        }
+
         public string GenerateCode(Language language)
+        {
+            return GenerateCode(language, GetCompileUnit(language));
+        }
+
+        public static string GenerateCode(Language language, CodeCompileUnit unit)
         {
             StringBuilder sb = new StringBuilder();
 
-            using (TextWriter tw = new IndentedTextWriter(new StringWriter(sb)))
+            GenerateCode(new StringWriter(sb), language, unit);
+
+            return sb.ToString();
+        }
+
+        public static void GenerateCode(TextWriter wr, Language language, CodeCompileUnit unit)
+        {
+            using (TextWriter tw = new IndentedTextWriter(wr))
             {
                 using (CodeDomProvider codeProvider = CreateProvider(language))
                 {
-                    codeProvider.GenerateCodeFromCompileUnit(GetCompileUnit(language), tw, new CodeGeneratorOptions());
+                    codeProvider.GenerateCodeFromCompileUnit(unit, tw, new CodeGeneratorOptions());
                 }
             }
+        }
 
-            return sb.ToString();
+        public IEnumerable<CodeNamespace> Namespaces
+        {
+            get
+            {
+                return _namespaces;
+            }
         }
     }
 }

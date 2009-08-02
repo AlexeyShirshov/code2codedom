@@ -70,6 +70,17 @@ namespace LinqToCodedom.Extensions
         }
 
         public static CodeMemberProperty AddProperty(this CodeTypeDeclaration classCode,
+            CodeTypeReference propertyType, MemberAttributes ma, string name,
+                CodeStatement[] getStatements, params CodeStatement[] setStatements)
+        {
+            var prop = Define.Property(propertyType, CorrectAttributes(classCode, ma), name, getStatements, setStatements);
+
+            classCode.Members_Add(prop);
+
+            return prop;
+        }
+
+        public static CodeMemberProperty AddProperty(this CodeTypeDeclaration classCode,
             string propertyType, MemberAttributes ma, string name,
                 CodeStatement[] getStatements, params CodeStatement[] setStatements)
         {
@@ -93,6 +104,17 @@ namespace LinqToCodedom.Extensions
 
         public static CodeMemberProperty AddGetProperty(this CodeTypeDeclaration classCode,
             string propertyType, MemberAttributes ma, string name,
+            params CodeStatement[] statements)
+        {
+            var prop = Define.GetProperty(propertyType, CorrectAttributes(classCode, ma), name, statements);
+
+            classCode.Members_Add(prop);
+
+            return prop;
+        }
+
+        public static CodeMemberProperty AddGetProperty(this CodeTypeDeclaration classCode,
+            CodeTypeReference propertyType, MemberAttributes ma, string name,
             params CodeStatement[] statements)
         {
             var prop = Define.GetProperty(propertyType, CorrectAttributes(classCode, ma), name, statements);

@@ -30,7 +30,6 @@ namespace LinqToCodedom.Generator
             var c = new CodeAttributeDeclaration(type);
             InitAttributeArgs(anonymType, c);
             return c;
-
         }
 
         public static CodeAttributeDeclaration Attribute(CodeTypeReference type,
@@ -39,7 +38,6 @@ namespace LinqToCodedom.Generator
             var c = new CodeAttributeDeclaration(type);
             c.Arguments.AddRange(args.Select((a) => new CodeAttributeArgument(new CodePrimitiveExpression(a))).ToArray());
             return c;
-
         }
 
         public static CodeAttributeDeclaration Attribute<T>(string type,
@@ -50,7 +48,6 @@ namespace LinqToCodedom.Generator
             InitAttributeArgs(anonymType, c);
 
             return c;
-
         }
 
         public static CodeAttributeDeclaration Attribute(string type,
@@ -59,7 +56,19 @@ namespace LinqToCodedom.Generator
             var c = new CodeAttributeDeclaration(type);
             c.Arguments.AddRange(args.Select((a) => new CodeAttributeArgument(new CodePrimitiveExpression(a))).ToArray());
             return c;
+        }
 
+        public static CodeAttributeDeclaration Attribute(Type type,
+            params object[] args)
+        {
+            var c = new CodeAttributeDeclaration(new CodeTypeReference(type));
+            c.Arguments.AddRange(args.Select((a) => new CodeAttributeArgument(new CodePrimitiveExpression(a))).ToArray());
+            return c;
+        }
+
+        public static void InitAttributeArgs<T>(Expression<Func<T>> anonymType, CodeAttributeDeclaration c)
+        {
+            InitAttributeArgs((Expression)anonymType, c);
         }
 
         private static void InitAttributeArgs(Expression anonymType, CodeAttributeDeclaration c)
@@ -70,7 +79,7 @@ namespace LinqToCodedom.Generator
                 o.GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance))
             {
                 c.Arguments.Add(new CodeAttributeArgument(pi.Name,
-                    new CodePrimitiveExpression(pi.GetValue(o, null))
+                    LinqToCodedom.Visitors.CodeExpressionVisitor.GetFromPrimitive(pi.GetValue(o, null))
                 ));
             }
         }

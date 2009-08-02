@@ -440,5 +440,11 @@ namespace LinqToCodedomTest
 
             Assert.IsNotNull(TestClass);
         }
+
+        [TestMethod]
+        public void TestPartialMethods()
+        {
+
+        }
     }
 }

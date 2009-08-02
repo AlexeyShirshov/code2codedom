@@ -8,7 +8,7 @@ namespace LinqToCodedom.Extensions
 {
     public static class CodeMemberMethodExtensions
     {
-        #region Method
+        
         public static CodeMemberMethod Implements(this CodeMemberMethod method, string t)
         {
             if ((method.Attributes & MemberAttributes.Private) == MemberAttributes.Private)
@@ -63,6 +63,10 @@ namespace LinqToCodedom.Extensions
             return method;
         }
 
-        #endregion
+        public static CodeMemberMethod Partial(this CodeMemberMethod method, bool partial)
+        {
+            method.UserData["linq2codedom:partial"] = partial;
+            return method;
+        }
     }
 }
