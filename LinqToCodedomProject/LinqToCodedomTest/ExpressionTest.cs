@@ -313,8 +313,11 @@ namespace LinqToCodedomTest
                 )
                 .AddProperty("T", MemberAttributes.Public, "S", "_s")
             ).AddClass(Define.Class("cls")
-                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, CodeDom.TypeRef("TestClass", "T"), () => "foo", Emit.declare(CodeDom.TypeRef("TestClass", "T"), "cc",
-                        () => CodeDom.@new(CodeDom.TypeRef("TestClass", "T"))), Emit.@return((Var cc) => cc)).Generic("T")
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, CodeDom.TypeRef("TestClass", "T"), () => "foo", 
+                    Emit.declare(CodeDom.TypeRef("TestClass", "T"), "cc",
+                        () => CodeDom.@new(CodeDom.TypeRef("TestClass", "T"))), 
+                    Emit.@return((Var cc) => cc))
+                .Generic("T")
             );
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
@@ -690,6 +693,42 @@ namespace LinqToCodedomTest
 
             Assert.IsNotNull(TestClass);
 
+        }
+
+        [TestMethod]
+        public void TestGetExpression()
+        {
+            CodeExpression exp = CodeDom.GetExpression(()=>1);
+
+            CodeExpression exp2 = CodeDom.GetExpression((int g) => 1+g);
+
+            CodeExpression exp3 = CodeDom.GetExpression((int g) => CodeDom.@this.Field<int>("d")+g-10);
+        }
+
+        [TestMethod]
+        public void TestNotExpression()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples")
+                .AddClass("cls")
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, (bool f) => "foo",
+                    Emit.declare("b", (bool f) => !f),
+                    Emit.declare("s", (bool f) => !(f && false))
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
         }
     }
 }

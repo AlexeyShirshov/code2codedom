@@ -89,6 +89,11 @@ namespace LinqToCodedomTest
                     Emit.declare("TestClass", "cc", () => CodeDom.@new("TestClass")),
                     Emit.stmt((Var cc) => cc.Call("Test1")(3))
                 )
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, (int s) => "foo3",
+                    Emit.declare("TestClass", "cc"),
+                    Emit.declare(typeof(int), "i"),
+                    Emit.stmt((int s) => CodeDom.Call(CodeDom.VarRef("cc"), "Test1")(CodeDom.VarRef<int>("i")+s))
+                )
             );
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
@@ -212,7 +217,9 @@ namespace LinqToCodedomTest
                 .AddField(typeof(int), "_i", () => 10)
                 .AddProperty(typeof(int), MemberAttributes.Public, "I", "_i")
             .AddClass("cls2")
-                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, typeof(int), () => "foo", Emit.declare("cls1", "cc", () => CodeDom.@new("cls1")), Emit.@return((Var cc) => cc.Property<int>("I")))
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, typeof(int), () => "foo", 
+                    Emit.declare("cls1", "cc", () => CodeDom.@new("cls1")), 
+                    Emit.@return((Var cc) => cc.Property<int>("I")))
             ;
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
@@ -245,8 +252,14 @@ namespace LinqToCodedomTest
                 )
                 .AddProperty("T", MemberAttributes.Public, "S", "_s")
             ).AddClass(Define.Class("cls")
-                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, CodeDom.TypeRef("TestClass", "T"), () => "foo", Emit.declare(CodeDom.TypeRef("TestClass", "T"), "cc",
-                        () => CodeDom.@new(CodeDom.TypeRef("TestClass", "T"))), Emit.@return((Var cc) => cc)).Generic("T")
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, CodeDom.TypeRef("TestClass", "T"), () => "foo", 
+                    Emit.declare(CodeDom.TypeRef("TestClass", "T"), "cc",
+                        () => CodeDom.@new(CodeDom.TypeRef("TestClass", "T"))), 
+                    Emit.@return((Var cc) => cc))
+                .Generic("T")
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, ()=>"foo2",
+                    Emit.stmt(()=>CodeDom.Call("cls", "foo", typeof(int)))
+                )
             );
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
@@ -394,7 +407,8 @@ namespace LinqToCodedomTest
                 )
                 .AddGetProperty(typeof(string), MemberAttributes.Public, "S", "_s").Comment("This is a comment")
                 .AddGetProperty(typeof(int), MemberAttributes.Public, "I", "_i").Document("This is a documentation")
-                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, "TestClass", () => "Create", Emit.@return(() => CodeDom.@new("TestClass", 100, "yyy")))
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, "TestClass", () => "Create", 
+                    Emit.@return(() => CodeDom.@new("TestClass", 100, "yyy")))
             );
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));

@@ -180,7 +180,7 @@ namespace LinqToCodedom.Generator
                 else if (t is Type)
                     type = new CodeTypeReference(t as Type);
                 else
-                    throw new NotSupportedException();
+                    throw new NotSupportedException(t.ToString());
             }
             return type;
         }
@@ -237,13 +237,15 @@ namespace LinqToCodedom.Generator
             return default(ParamsDelegate);
         }
 
-        //public static void Call(object target, string name, params object[] param)
-        //{
-        //}
+        public static ParamsDelegate Call(object target, string name, params CodeTypeReference[] types)
+        {
+            return default(ParamsDelegate);
+        }
 
-        //public static void Call<T, TResult>(object target, string name, params object[] param)
-        //{
-        //}
+        public static ParamsDelegate Call(object target, string name, params Type[] types)
+        {
+            return default(ParamsDelegate);
+        }
 
         //public static void Call<TResult>(object target, string name, params object[] param)
         //{
@@ -256,6 +258,16 @@ namespace LinqToCodedom.Generator
         public static T Field<T>(object target, string name)
         {
             return default(T);
+        }
+
+        public static Field Field(Base target, string name)
+        {
+            return new Field(target, name);
+        }
+
+        public static object Field(object target, string name)
+        {
+            return null;
         }
 
         #endregion
@@ -382,6 +394,21 @@ namespace LinqToCodedom.Generator
             }
             else
                 throw new NotSupportedException();
+        }
+
+        public static CodeExpression GetExpression<TResult, T>(Expression<Func<TResult, T>> exp)
+        {
+            return new CodeExpressionVisitor(new VisitorContext()).Visit(exp);
+        }
+
+        public static CodeExpression GetExpression<TResult>(Expression<Func<TResult>> exp)
+        {
+            return new CodeExpressionVisitor(new VisitorContext()).Visit(exp);
+        }
+
+        public static CodeExpression GetExpression<TResult, T, T2>(Expression<Func<TResult, T, T2>> exp)
+        {
+            return new CodeExpressionVisitor(new VisitorContext()).Visit(exp);
         }
     }
 }

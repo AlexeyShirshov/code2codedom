@@ -30,6 +30,16 @@ namespace LinqToCodedom.Extensions
         }
 
         public static CodeMemberField AddField(this CodeTypeDeclaration classCode,
+            CodeTypeReference fieldType, MemberAttributes ma, string name)
+        {
+            var c = Define.Field(fieldType, CorrectAttributes(classCode, ma), name);
+
+            classCode.Members_Add(c);
+
+            return c;
+        }
+
+        public static CodeMemberField AddField(this CodeTypeDeclaration classCode,
             Type fieldType, string name)
         {
             var c = Define.Field(fieldType, CorrectAttributes(classCode, MemberAttributes.Private), name);

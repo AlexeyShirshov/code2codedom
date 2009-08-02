@@ -257,6 +257,8 @@ namespace LinqToCodedom.Visitors
                     break;
                 case ExpressionType.TypeAs:
                     return new CodeAsExpression(new CodeTypeReference(unaryExpression.Type), c);
+                case ExpressionType.Not:
+                    return new CodeNotExpression(_Visit(unaryExpression.Operand));
             }
             throw new NotImplementedException(unaryExpression.NodeType.ToString());
         }
@@ -351,9 +353,19 @@ namespace LinqToCodedom.Visitors
                             targetExp = null;
                         }
 
-                        return new CodeMethodInvokeExpression(
+                        var m = new CodeMethodReferenceExpression(
                             targetExp,
                             CodeDom.Eval<string>(methodCallExpression.Arguments[1]));
+
+                        if (methodCallExpression.Arguments.Count == 3)
+                        {
+                            foreach (Expression e in (methodCallExpression.Arguments[2] as NewArrayExpression).Expressions)
+                            {
+                                m.TypeArguments.Add(CodeDom.GetTypeReference(CodeDom.Eval(e)));
+                            }
+                        }
+
+                        return new CodeMethodInvokeExpression(m);
                     }
                 }
                 else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.new")
@@ -416,13 +428,22 @@ namespace LinqToCodedom.Visitors
                 switch (mr.MethodName)
                 {
                     case "Call":
-                    case "CallFunction":
+                    //case "CallFunction":
                         if (methodCallExpression.Arguments.Count > 0)
                         {
-                            string methodName = CodeDom.Eval<string>(methodCallExpression.Arguments[0]);
-                            if (methodCallExpression.Arguments.Count > 1)
-                                throw new NotImplementedException();
-                            return new CodeDom.CodeArgsInvoke(rto, methodName);
+                            var m = new CodeMethodReferenceExpression(
+                                rto,
+                                CodeDom.Eval<string>(methodCallExpression.Arguments[0]));
+
+                            if (methodCallExpression.Arguments.Count == 2)
+                            {
+                                foreach (Expression e in (methodCallExpression.Arguments[1] as NewArrayExpression).Expressions)
+                                {
+                                    m.TypeArguments.Add(CodeDom.GetTypeReference(CodeDom.Eval(e)));
+                                }
+                            }
+
+                            return new CodeMethodInvokeExpression(m);
                         }
                         else
                         {
@@ -506,7 +527,7 @@ namespace LinqToCodedom.Visitors
                 object v = CodeDom.Eval(par);
                 @params.Add(GetFromPrimitive(v));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 @params.Add(_Visit(par));
             }
@@ -519,7 +540,7 @@ namespace LinqToCodedom.Visitors
                 object v = CodeDom.Eval(exp);
                 return GetFromPrimitive(v);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return _Visit(exp);
             }
@@ -621,7 +642,7 @@ namespace LinqToCodedom.Visitors
             }
         }
 
-        private CodeExpression GetFromPrimitive(object v)
+        public static CodeExpression GetFromPrimitive(object v)
         {
             //    return GetFromPrimitive(v, null);
             //}
@@ -641,10 +662,26 @@ namespace LinqToCodedom.Visitors
                     System.Reflection.MemberInfo mi = v as System.Reflection.MemberInfo;
                     return new CodePrimitiveExpression(mi.Name);
                 }
-                //else if (t.Name.StartsWith("<>c__DisplayClass"))
-                //{
-                //    return GetFromPrimitive(CodeDom.Eval(exp));
-                //}
+                else if (v is Var)
+                {
+                    return new CodeVariableReferenceExpression((v as Var).Name);
+                }
+                else if (v is This)
+                {
+                    return new CodeThisReferenceExpression();
+                }
+                else if (v is Base)
+                {
+                    return new CodeBaseReferenceExpression();
+                }
+                else if (v is Prop)
+                {
+                    return new CodePropertyReferenceExpression(GetFromPrimitive((v as Prop).Target), (v as Var).Name);
+                }
+                else if (v is Field)
+                {
+                    return new CodeFieldReferenceExpression(GetFromPrimitive((v as Field).Target), (v as Var).Name);
+                }
             }
 
             return new CodePrimitiveExpression(v);
