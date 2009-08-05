@@ -141,6 +141,7 @@ namespace LinqToCodedom
 
     public interface IRefParam { }
     public interface IOutParam { }
+    public interface IParamArray { }
 
     public struct DynType : IDynType
     {
@@ -177,4 +178,5 @@ namespace LinqToCodedom
 
     public class RefParam<T> : IRefParam { };
     public class OutParam<T> : IOutParam { };
+    public class ParamArray<T> : IParamArray { };
 }

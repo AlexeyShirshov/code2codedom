@@ -69,6 +69,16 @@ namespace LinqToCodedom.Extensions
             return c;
         }
 
+        public static CodeMemberField AddField<T>(this CodeTypeDeclaration classCode,
+           string name, Expression<Func<T>> exp)
+        {
+            var c = Define.Field(name, exp);
+
+            classCode.Members_Add(c);
+
+            return c;
+        }
+
         #endregion
 
     }

@@ -91,15 +91,30 @@ namespace LinqToCodedom.Generator
             foreach (var p in exp.Parameters)
             {
                 var par = new CodeParameterDeclarationExpression(p.Type, p.Name);
+                
                 if (typeof(IRefParam).IsAssignableFrom(p.Type))
                     par.Direction = FieldDirection.Ref;
+                
                 if (typeof(IOutParam).IsAssignableFrom(p.Type))
                     par.Direction = FieldDirection.Out;
+                
+                if (typeof(IParamArray).IsAssignableFrom(p.Type))
+                    par.CustomAttributes.Add(Define.Attribute(typeof(ParamArrayAttribute)));
+
                 if (p.Type.IsGenericType && (
                     p.Type.GetGenericTypeDefinition() == typeof(RefParam<>) ||
-                    p.Type.GetGenericTypeDefinition() == typeof(OutParam<>))
+                    p.Type.GetGenericTypeDefinition() == typeof(OutParam<>) ||
+                    p.Type.GetGenericTypeDefinition() == typeof(ParamArray<>))
                     )
-                    par.Type = new CodeTypeReference(p.Type.GetGenericArguments()[0]);
+                {                    
+                    Type rt = p.Type.GetGenericArguments()[0];
+
+                    if (p.Type.GetGenericTypeDefinition() == typeof(ParamArray<>) &&
+                        !rt.IsArray)
+                        par.Type = new CodeTypeReference(rt.ToString() + "[]");
+                    else
+                        par.Type = new CodeTypeReference(rt);
+                }
 
                 pars.Add(par);
             }

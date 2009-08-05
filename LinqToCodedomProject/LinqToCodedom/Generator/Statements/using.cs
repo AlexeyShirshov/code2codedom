@@ -48,5 +48,17 @@ namespace LinqToCodedom.Generator
                 ), stmt
             );
         }
+
+        public static CodeUsingStatement @using<TResult>(CodeTypeReference varType, string varName,
+            Expression<Func<TResult>> exp, params CodeStatement[] stmt)
+        {
+            return new CodeUsingStatement(
+                new CodeAssignExpression(
+                    new CodeParameterDeclarationExpression(varType, varName),
+                    new CodeExpressionVisitor(new VisitorContext()).Visit(exp)
+                ), stmt
+            );
+        }
+
     }
 }

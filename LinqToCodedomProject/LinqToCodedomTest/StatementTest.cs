@@ -247,6 +247,11 @@ namespace LinqToCodedomTest
                         Emit.stmt(() => Console.WriteLine("using"))
                     )
                 )
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, () => "zoo2",
+                    Emit.@using(new CodeTypeReference(typeof(System.IO.MemoryStream)), "ms2", () => CodeDom.@new(typeof(System.IO.MemoryStream)),
+                        Emit.stmt(() => Console.WriteLine("using"))
+                    )
+                )
             ;
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));

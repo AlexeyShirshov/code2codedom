@@ -595,6 +595,35 @@ namespace LinqToCodedomTest
         }
 
         [TestMethod]
+        public void ParamArrayTest()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public,
+                    (ParamArray<int> i) => "foo",
+                    Emit.declare("j", () => "zzz")
+                )
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public,
+                    (ParamArray<int[]> i) => "foo2",
+                    Emit.declare("js", () => "zzz")
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type cls = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(cls);
+        }
+
+        [TestMethod]
         public void AsExpression()
         {
             var c = new CodeDomGenerator();
