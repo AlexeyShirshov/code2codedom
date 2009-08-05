@@ -85,36 +85,7 @@ namespace LinqToCodedom
 
         public Assembly Compile(string assemblyPath, Language language)
         {
-            CompilerParameters options = new CompilerParameters();
-            options.IncludeDebugInformation = false;
-            options.GenerateExecutable = false;
-            options.GenerateInMemory = (assemblyPath == null);
-
-            foreach (string refAsm in _assemblies)
-                options.ReferencedAssemblies.Add(refAsm);
-
-            if (assemblyPath != null)
-                options.OutputAssembly = assemblyPath.Replace("file:\\", string.Empty).Replace('\\', '/');
-
-            using (CodeDomProvider codeProvider = CreateProvider(language))
-            {
-                CompilerResults results =
-                   codeProvider.CompileAssemblyFromDom(options, GetCompileUnit(language));
-
-                if (results.Errors.Count == 0)
-                    return results.CompiledAssembly;
-
-                // Process compilation errors
-                Console.WriteLine("Compilation Errors:");
-
-                foreach (string outpt in results.Output)
-                    Console.WriteLine(outpt);
-
-                foreach (CompilerError err in results.Errors)
-                    Console.WriteLine(err.ToString());
-            }
-
-            return null;
+            return Compile(assemblyPath, language, _assemblies, GetCompileUnit(language));
         }
 
         public static Assembly Compile(string assemblyPath, Language language, 

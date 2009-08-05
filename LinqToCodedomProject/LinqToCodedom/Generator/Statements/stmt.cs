@@ -20,6 +20,11 @@ namespace LinqToCodedom.Generator
             return new CodeStatementVisitor(new VisitorContext()).Visit(exp);
         }
 
+        public static CodeStatement stmt<T, T2>(Expression<Action<T, T2>> exp)
+        {
+            return new CodeStatementVisitor(new VisitorContext()).Visit(exp);
+        }
+
         public static CodeStatement stmt<TResult>(Expression<Func<TResult>> exp)
         {
             return new CodeStatementVisitor(new VisitorContext()).Visit(exp);

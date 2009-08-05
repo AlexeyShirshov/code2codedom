@@ -140,5 +140,24 @@ namespace LinqToCodedom.Extensions
 
         #endregion
 
+        #region Enum
+
+        public static CodeTypeDeclaration AddEnum(this CodeTypeDeclaration @class, CodeTypeDeclaration enumType)
+        {
+            @class.Members_Add(enumType);
+
+            return @class;
+        }
+
+        public static CodeTypeDeclaration AddEnum(this CodeTypeDeclaration @class, string enumName)
+        {
+            var e = Define.Enum(enumName);
+
+            @class.AddEnum(e);
+
+            return e;
+        }
+
+        #endregion
     }
 }
