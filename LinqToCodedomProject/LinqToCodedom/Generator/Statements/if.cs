@@ -28,6 +28,12 @@ namespace LinqToCodedom.Generator
             return ifelse(condition, trueStatements, null);
         }
 
+        public static CodeConditionStatement @if<T, T2, T3>(Expression<Func<T, T2, T3, bool>> condition,
+           params CodeStatement[] trueStatements)
+        {
+            return ifelse(condition, trueStatements, null);
+        }
+
         public static CodeConditionStatement ifelse(Expression condition,
             CodeStatement[] trueStatements, params CodeStatement[] falseStatements)
         {

@@ -11,6 +11,7 @@ using LinqToCodedom.Extensions;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using LinqToCodedom.CodeDomPatterns;
+using System.Reflection;
 
 namespace LinqToCodedomTest
 {
@@ -93,6 +94,11 @@ namespace LinqToCodedomTest
                     Emit.declare("TestClass", "cc"),
                     Emit.declare(typeof(int), "i"),
                     Emit.stmt((int s) => CodeDom.Call(CodeDom.VarRef("cc"), "Test1")(CodeDom.VarRef<int>("i")+s))
+                )
+                .AddMethod(MemberAttributes.Public, () => "foo4",
+                    Emit.@foreach("mi", ()=>CodeDom.@this.Call<Type>("GetType")().GetMethods(BindingFlags.NonPublic | BindingFlags.Static),
+                        Emit.@return()
+                    )
                 )
             );
 
