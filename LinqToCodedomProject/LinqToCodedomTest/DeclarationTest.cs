@@ -97,6 +97,10 @@ namespace LinqToCodedomTest
                 )
                 .AddMethod(MemberAttributes.Public, () => "foo4",
                     Emit.@foreach("mi", ()=>CodeDom.@this.Call<Type>("GetType")().GetMethods(BindingFlags.NonPublic | BindingFlags.Static),
+                        Emit.stmt(() => CodeDom.VarRef("mi").Call("GetParameters")),
+                        Emit.@if((MethodInfo mi) => mi.Name == "dfdfd",
+                            Emit.@return()
+                        ),
                         Emit.@return()
                     )
                 )
