@@ -282,9 +282,10 @@ namespace LinqToCodedom.Visitors
                 if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.VarRef" ||
                     mr.MethodName == "LinqToCodedom.Generator.CodeDom.ParamRef")
                 {
-                    return new CodeVariableReferenceExpression(
+                    return new LinqToCodedom.Generator.CodeDom.CodeVarExpression(
                         CodeDom.Eval<string>(methodCallExpression.Arguments[0]));
                 }
+
                 else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.TypeRef")
                 {
                     var c = new CodeTypeReferenceExpression(
@@ -745,7 +746,7 @@ namespace LinqToCodedom.Visitors
                     //object v = ((CodePrimitiveExpression)c).Value;
                     //if (v != null && v.GetType().Name.StartsWith("<>c__DisplayClass"))
                     //{
-                        return GetFromPrimitive(CodeDom.Eval(memberExpression));
+                    return GetFromPrimitive(CodeDom.Eval(memberExpression));
                     //}
                     //else
                     //{
@@ -758,6 +759,16 @@ namespace LinqToCodedom.Visitors
                     //        ProInfo mi = memberExpression.Member as MethodInfo;
                     //    }
                     //}
+                }
+                else
+                {
+                    PropertyInfo pi = memberExpression.Member as PropertyInfo;
+                    if (pi != null)
+                    {
+                        c = new CodePropertyReferenceExpression(c, pi.Name);
+                    }
+                    else
+                        throw new NotImplementedException(memberExpression.Member.GetType().ToString());
                 }
                 
                 return c;
