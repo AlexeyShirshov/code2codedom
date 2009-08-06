@@ -563,7 +563,7 @@ namespace LinqToCodedom.Visitors
                     operType = CodeBinaryOperatorType.Add;
                     break;
                 case ExpressionType.And:
-                    operType = CodeBinaryOperatorType.BooleanAnd;
+                    operType = CodeBinaryOperatorType.BitwiseAnd;
                     break;
                 case ExpressionType.AndAlso:
                     operType = CodeBinaryOperatorType.BooleanAnd;
@@ -601,7 +601,7 @@ namespace LinqToCodedom.Visitors
                     operType = CodeBinaryOperatorType.IdentityInequality;
                     break;
                 case ExpressionType.Or:
-                    operType = CodeBinaryOperatorType.BooleanOr;
+                    operType = CodeBinaryOperatorType.BitwiseOr;
                     break;
                 case ExpressionType.OrElse:
                     operType = CodeBinaryOperatorType.BooleanOr;
@@ -653,8 +653,31 @@ namespace LinqToCodedom.Visitors
             {
                 Type t = v.GetType();
                 if (t.IsEnum)
+                {
+                    if (t.GetCustomAttributes(false).Any(a => a is FlagsAttribute))
+                    {
+                        string[] values = v.ToString().Split(',');
+                        if (values.Length > 1)
+                        {
+                            CodeBinaryOperatorExpression op = new CodeBinaryOperatorExpression(
+                                new CodeFieldReferenceExpression(new CodeTypeReferenceExpression(t), values[0]),
+                                CodeBinaryOperatorType.BitwiseOr,
+                                new CodeFieldReferenceExpression(new CodeTypeReferenceExpression(t), values[1])
+                            );
+                            foreach (string item in values.Skip(2))
+                            {
+                                op = new CodeBinaryOperatorExpression(
+                                    op,
+                                    CodeBinaryOperatorType.BitwiseOr,
+                                    new CodeFieldReferenceExpression(new CodeTypeReferenceExpression(t), item)
+                                );
+                            }
+                            return op;
+                        }
+                    }
                     return new CodeFieldReferenceExpression(
                         new CodeTypeReferenceExpression(t), v.ToString());
+                }
                 else if (typeof(Type).IsAssignableFrom(t))
                     return new CodeTypeOfExpression(v as Type);
                 else if (typeof(System.Reflection.MemberInfo).IsAssignableFrom(t))

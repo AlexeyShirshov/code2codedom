@@ -10,6 +10,11 @@ namespace LinqToCodedom.Generator
 {
     public static partial class Emit
     {
+        public static CodeStatement @return()
+        {
+            return new CodeMethodReturnStatement();
+        }
+
         public static CodeStatement @return<TResult>(Expression<Func<TResult>> exp)
         {
             return new CodeMethodReturnStatement(new CodeExpressionVisitor(new VisitorContext()).Visit(exp));

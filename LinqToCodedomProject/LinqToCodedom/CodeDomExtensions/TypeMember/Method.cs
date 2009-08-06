@@ -25,7 +25,8 @@ namespace LinqToCodedom.Extensions
         }
 
         public static CodeMemberMethod AddMethod<T, T2>(this CodeTypeMember member, 
-            MemberAttributes ma, Type returnType, Expression<Func<T, T2, string>> paramsAndName, params CodeStatement[] statements)
+            MemberAttributes ma, Type returnType, Expression<Func<T, T2, string>> paramsAndName, 
+            params CodeStatement[] statements)
         {
             var classCode = member.GetDeclaration();
 
@@ -49,7 +50,8 @@ namespace LinqToCodedom.Extensions
         }
 
         public static CodeMemberMethod AddMethod(this CodeTypeMember member,
-            MemberAttributes ma, Type returnType, Expression<Func<string>> paramsAndName, params CodeStatement[] statements)
+            MemberAttributes ma, Type returnType, Expression<Func<string>> paramsAndName, 
+            params CodeStatement[] statements)
         {
             var classCode = member.GetDeclaration();
 
@@ -68,6 +70,15 @@ namespace LinqToCodedom.Extensions
         public static CodeMemberMethod AddMethod<T, T2>(this CodeTypeMember member,
             MemberAttributes ma,
             Expression<Func<T, T2, string>> paramsAndName, params CodeStatement[] statements)
+        {
+            var classCode = member.GetDeclaration();
+
+            return classCode.AddMethod(ma, paramsAndName, statements);
+        }
+
+        public static CodeMemberMethod AddMethod<T, T2, T3>(this CodeTypeMember member,
+            MemberAttributes ma,
+            Expression<Func<T, T2, T3, string>> paramsAndName, params CodeStatement[] statements)
         {
             var classCode = member.GetDeclaration();
 
