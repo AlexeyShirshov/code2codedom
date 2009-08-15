@@ -45,6 +45,12 @@ namespace LinqToCodedom.Generator
             return condStatement;
         }
 
+        public static CodeConditionStatement ifelse(Expression<Func<bool>> condition,
+            CodeStatement[] trueStatements, params CodeStatement[] falseStatements)
+        {
+            return ifelse(condition as Expression, trueStatements, falseStatements);
+        }
+
         public static CodeConditionStatement ifelse<T>(Expression<Func<T, bool>> condition,
             CodeStatement[] trueStatements, params CodeStatement[] falseStatements)
         {

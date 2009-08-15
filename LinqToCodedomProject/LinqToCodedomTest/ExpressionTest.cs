@@ -342,7 +342,9 @@ namespace LinqToCodedomTest
                 .AddMethod(MemberAttributes.Static | MemberAttributes.Public, () => "foo",
                     Emit.declare(typeof(object), "d"),
                     Emit.assignVar("d", () => 10d),
-                    Emit.declare("dr", (object d) => (decimal)d)
+                    Emit.declare("dr", (object d) => (decimal)d),
+                    Emit.declare("dr2", (object d) => CodeDom.cast(typeof(decimal), d)),
+                    Emit.stmt((object d) => CodeDom.cast<Var>("cls", d).Call("foo"))
                 )
             ;
 
@@ -744,6 +746,32 @@ namespace LinqToCodedomTest
                 .AddMethod(MemberAttributes.Public | MemberAttributes.Static, (bool f) => "foo",
                     Emit.declare("b", (bool f) => !f),
                     Emit.declare("s", (bool f) => !(f && false))
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+        }
+
+        [TestMethod]
+        public void TestTernary()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples")
+                .AddClass("cls")
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, (bool f) => "foo",
+                    Emit.declare("b", (bool f) => !f),
+                    Emit.assignVar("b", (bool f)=>f?true:false)
                 )
             ;
 

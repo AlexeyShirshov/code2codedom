@@ -365,7 +365,12 @@ namespace LinqToCodedom.Generator
 
         public static CodeTypeReference TypeRef(Type type, params string[] types)
         {
-            var d = new CodeTypeReference(type);
+            return TypeRef(new CodeTypeReference(type), types);
+        }
+
+        public static CodeTypeReference TypeRef(CodeTypeReference type, params string[] types)
+        {
+            var d = type;
             d.TypeArguments.AddRange(types.Select((t) => new CodeTypeReference(t)).ToArray());
             return d;
         }
@@ -425,5 +430,49 @@ namespace LinqToCodedom.Generator
         {
             return new CodeExpressionVisitor(new VisitorContext()).Visit(exp);
         }
+
+        public static CodeExpression GetExpression(Expression<Action> exp)
+        {
+            return new CodeExpressionVisitor(new VisitorContext()).Visit(exp);
+        }
+
+        public static CodeExpression GetExpression<T>(Expression<Action<T>> exp)
+        {
+            return new CodeExpressionVisitor(new VisitorContext()).Visit(exp);
+        }
+
+        public static object cast(Type type, object o)
+        {
+            return null;
+        }
+
+        public static T cast<T>(Type type, object o)
+            where T : Base
+        {
+            return default(T);
+        }
+
+        public static object cast(string type, object o)
+        {
+            return null;
+        }
+
+        public static T cast<T>(string type, object o)
+            where T : Base
+        {
+            return default(T);
+        }
+
+        public static object cast(CodeTypeReference type, object o)
+        {
+            return null;
+        }
+
+        public static T cast<T>(CodeTypeReference type, object o)
+            where T : Base
+        {
+            return default(T);
+        }
+
     }
 }

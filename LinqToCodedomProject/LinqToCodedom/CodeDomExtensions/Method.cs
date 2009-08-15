@@ -63,6 +63,42 @@ namespace LinqToCodedom.Extensions
             return method;
         }
 
+        public static CodeMemberMethod Generic(this CodeMemberMethod method, string paramName,
+            params CodeTypeReference[] constraints)
+        {
+            var p = new CodeTypeParameter(paramName);
+            p.Constraints.AddRange(constraints);
+            method.TypeParameters.Add(p);
+            return method;
+        }
+
+        public static CodeMemberMethod Generic(this CodeMemberMethod method, string paramName,
+            bool hasConstructor, params Type[] constraints)
+        {
+            var p = new CodeTypeParameter(paramName) {HasConstructorConstraint = hasConstructor};
+            p.Constraints.AddRange(constraints.Select((t) => new CodeTypeReference(t)).ToArray());
+            method.TypeParameters.Add(p);
+            return method;
+        }
+
+        public static CodeMemberMethod Generic(this CodeMemberMethod method, string paramName,
+            bool hasConstructor, params string[] constraints)
+        {
+            var p = new CodeTypeParameter(paramName) { HasConstructorConstraint = hasConstructor };
+            p.Constraints.AddRange(constraints.Select((t) => new CodeTypeReference(t)).ToArray());
+            method.TypeParameters.Add(p);
+            return method;
+        }
+
+        public static CodeMemberMethod Generic(this CodeMemberMethod method, string paramName,
+            bool hasConstructor, params CodeTypeReference[] constraints)
+        {
+            var p = new CodeTypeParameter(paramName) {HasConstructorConstraint = hasConstructor};
+            p.Constraints.AddRange(constraints);
+            method.TypeParameters.Add(p);
+            return method;
+        }
+
         public static CodeMemberMethod Partial(this CodeMemberMethod method, bool partial)
         {
             method.UserData["linq2codedom:partial"] = partial;
