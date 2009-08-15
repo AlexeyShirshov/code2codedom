@@ -270,6 +270,12 @@ namespace LinqToCodedomTest
                 .AddMethod(MemberAttributes.Public | MemberAttributes.Static, ()=>"foo2",
                     Emit.stmt(()=>CodeDom.Call("cls", "foo", typeof(int)))
                 )
+                .AddMethod(MemberAttributes.Static, ()=>"foo3", 
+                    Emit.@return()
+                ).Generic("T", true, typeof(object))
+                .AddMethod(MemberAttributes.Static, () => "foo4",
+                    Emit.@return()
+                ).Generic("T", typeof(ValueType))
             );
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
@@ -625,6 +631,9 @@ namespace LinqToCodedomTest
                     Define.StructField("Xx"),
                     Define.StructField("Yy"),
                     Define.StructField("Zz")
+            ).AddClass("cls").AddMethod(MemberAttributes.Static | MemberAttributes.Public, ()=>"foo",
+                Emit.declare("rr", "e"),
+                Emit.assignVar("e", () => CodeDom.Field(new CodeTypeReference("rr"), "Xx"))
             );
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));

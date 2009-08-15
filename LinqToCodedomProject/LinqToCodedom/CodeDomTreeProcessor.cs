@@ -344,6 +344,30 @@ namespace LinqToCodedom
 
         private static CodeMemberMethod ProcessMethod(CodeMemberMethod method, LinqToCodedom.CodeDomGenerator.Language language)
         {
+            if (method.TypeParameters.Count > 0)
+            {
+                foreach (CodeTypeParameter genericParam in method.TypeParameters)
+                {
+                    for (int i = 0; i < genericParam.Constraints.Count; i++)
+                    {
+                        if (genericParam.Constraints[i].BaseType == typeof(object).ToString())
+                        {
+                            if (language == LinqToCodedom.CodeDomGenerator.Language.CSharp)
+                                genericParam.Constraints[i] = new CodeTypeReference(" class");
+                            else if (language == LinqToCodedom.CodeDomGenerator.Language.VB)
+                                genericParam.Constraints[i] = new CodeTypeReference(" Class");
+                        }
+                        else if (genericParam.Constraints[i].BaseType == typeof(ValueType).ToString())
+                        {
+                            if (language == LinqToCodedom.CodeDomGenerator.Language.CSharp)
+                                genericParam.Constraints[i] = new CodeTypeReference(" struct");
+                            else if (language == LinqToCodedom.CodeDomGenerator.Language.VB)
+                                genericParam.Constraints[i] = new CodeTypeReference(" Structure");
+                        }
+                    }
+                }
+            }
+
             if (language == LinqToCodedom.CodeDomGenerator.Language.VB)
             {
                 if (method.PrivateImplementationType != null)
@@ -355,10 +379,10 @@ namespace LinqToCodedom
                 }
             }
 
-            object o = method.UserData["linq2codedom:partial"];
-            if (o != null)
-            {
-                bool partial = (bool)o;
+            //object o = method.UserData["linq2codedom:partial"];
+            //if (o != null)
+            //{
+            //    bool partial = (bool)o;
 
                 //if (partial)
                 //{
@@ -396,7 +420,7 @@ namespace LinqToCodedom
                 //            throw new NotImplementedException(language.ToString());
                 //    }
                 //}
-            }
+            //}
             return method;
         }
     }
