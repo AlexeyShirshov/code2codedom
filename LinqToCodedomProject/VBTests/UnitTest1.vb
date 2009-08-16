@@ -73,4 +73,15 @@ Imports System.CodeDom
 
     End Sub
 
+    Partial Public Class cls
+        Partial Private Sub foo()
+
+        End Sub
+    End Class
+
+    Partial Public Class cls
+        Private Sub foo()
+            Console.WriteLine("ds")
+        End Sub
+    End Class
 End Class

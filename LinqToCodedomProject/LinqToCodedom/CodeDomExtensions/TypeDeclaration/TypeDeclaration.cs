@@ -159,5 +159,13 @@ namespace LinqToCodedom.Extensions
         }
 
         #endregion
+
+        public static CodeTypeDeclaration AddMember(this CodeTypeDeclaration @class, CodeTypeMember member)
+        {
+            @class.Members_Add(member);
+
+            return @class;
+        }
+
     }
 }
