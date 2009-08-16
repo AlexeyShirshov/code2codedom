@@ -679,5 +679,73 @@ namespace LinqToCodedomTest
 
             Assert.IsNotNull(eeClass);
         }
+
+        [TestMethod]
+        public void TestPartialMethodsCS()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass(Define.Class("ee", MemberAttributes.Public, true)
+                .AddMember(new CodePartialMethod(Define.Method(MemberAttributes.Public,
+                    ()=>"foo"
+                )))
+                .AddMember(Define.PartialMethod(MemberAttributes.Public,
+                    () => "foo2"
+                ))
+                )
+                .AddClass(Define.Class("ee", MemberAttributes.Public, true)
+                .AddMember(new CodePartialMethod(Define.Method(MemberAttributes.Public,
+                    () => "foo", Emit.stmt(()=>Console.WriteLine())
+                )))
+                .AddMember(Define.PartialMethod(MemberAttributes.Public,
+                    () => "foo2", Emit.stmt(() => Console.WriteLine())
+                ))
+
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type eeClass = ass.GetType("Samples.ee");
+
+            Assert.IsNotNull(eeClass);
+        }
+
+        [TestMethod]
+        public void TestPartialMethodsVB()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass(Define.Class("ee", MemberAttributes.Public, true)
+                .AddMember(new CodePartialMethod(Define.Method(MemberAttributes.Public,
+                    () => "foo"
+                )))
+                //.AddMember(new CodePartialMethod(Define.Method(MemberAttributes.Public, typeof(string),
+                //    () => "foo2"
+                //)))
+                )
+                .AddClass(Define.Class("ee", MemberAttributes.Public, true)
+                .AddMember(new CodePartialMethod(Define.Method(MemberAttributes.Public,
+                    () => "foo", Emit.stmt(() => Console.WriteLine())
+                )))
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile(null, LinqToCodedom.CodeDomGenerator.Language.VB);
+
+            Assert.IsNotNull(ass);
+
+            Type eeClass = ass.GetType("Samples.ee");
+
+            Assert.IsNotNull(eeClass);
+        }
     }
 }

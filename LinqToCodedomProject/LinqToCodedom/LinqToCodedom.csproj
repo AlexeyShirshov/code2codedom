@@ -77,6 +77,7 @@
     <Compile Include="Generator\CodeDom.cs" />
     <Compile Include="Generator\Declarations\Class.cs" />
     <Compile Include="Generator\Declarations\Attribute.cs" />
+    <Compile Include="Generator\Declarations\PartialMethod.cs" />
     <Compile Include="Generator\Declarations\Operator.cs" />
     <Compile Include="Generator\Declarations\Ctor.cs" />
     <Compile Include="Generator\Declarations\Delegate.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="Generator\Extensions\CodeSwitchStatement.cs" />
     <Compile Include="Generator\Extensions\CodeNotExpression.cs" />
     <Compile Include="Generator\Extensions\CodeTernaryExpression.cs" />
+    <Compile Include="Generator\Extensions\CodePartialMethod.cs" />
     <Compile Include="Generator\Statements\assign.cs" />
     <Compile Include="Generator\Statements\attach.cs" />
     <Compile Include="Generator\Extensions\CodeAsExpression.cs" />

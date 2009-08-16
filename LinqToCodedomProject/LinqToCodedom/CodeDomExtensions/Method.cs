@@ -99,10 +99,10 @@ namespace LinqToCodedom.Extensions
             return method;
         }
 
-        public static CodeMemberMethod Partial(this CodeMemberMethod method, bool partial)
-        {
-            method.UserData["linq2codedom:partial"] = partial;
-            return method;
-        }
+        //public static CodeMemberMethod Partial(this CodeMemberMethod method, bool partial)
+        //{
+        //    method.UserData["linq2codedom:partial"] = partial;
+        //    return method;
+        //}
     }
 }
