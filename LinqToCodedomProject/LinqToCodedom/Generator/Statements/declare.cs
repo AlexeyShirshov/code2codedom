@@ -34,6 +34,13 @@ namespace LinqToCodedom.Generator
                 new CodeExpressionVisitor(new VisitorContext()).Visit(exp));
         }
 
+        public static CodeVariableDeclarationStatement declare(Type type, string varName,
+            Expression<Action> exp)
+        {
+            return new CodeVariableDeclarationStatement(type, varName,
+                new CodeExpressionVisitor(new VisitorContext()).Visit(exp));
+        }
+
         public static CodeVariableDeclarationStatement declare(Type type, string varName)
         {
             return new CodeVariableDeclarationStatement(type, varName, CodeDom.@default(type));

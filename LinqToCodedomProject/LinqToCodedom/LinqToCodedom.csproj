@@ -53,6 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeDomExtensions\Statement.cs" />
     <Compile Include="CodeDomExtensions\TryCatch.cs" />
     <Compile Include="CodeDomExtensions\Ctor.cs" />
     <Compile Include="CodeDomExtensions\Property.cs" />
@@ -99,6 +100,7 @@
     <Compile Include="Generator\Extensions\CodeNotExpression.cs" />
     <Compile Include="Generator\Extensions\CodeTernaryExpression.cs" />
     <Compile Include="Generator\Extensions\CodePartialMethod.cs" />
+    <Compile Include="Generator\Extensions\CodeUnaryExpression.cs" />
     <Compile Include="Generator\Statements\assign.cs" />
     <Compile Include="Generator\Statements\attach.cs" />
     <Compile Include="Generator\Extensions\CodeAsExpression.cs" />
