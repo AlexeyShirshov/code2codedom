@@ -15,9 +15,9 @@ namespace LinqToCodedom
 {
     public class CodeDomGenerator
     {
-        private List<CodeNamespace> _namespaces = new List<CodeNamespace>();
-
-        private List<string> _assemblies = new List<string> { "System.dll" };
+        private readonly List<CodeNamespace> _namespaces = new List<CodeNamespace>();
+        private readonly List<string> _assemblies = new List<string> { "System.dll" };
+        private readonly List<CodeChecksumPragma> _checksum = new List<CodeChecksumPragma>();
 
         public enum Language { CSharp, VB };
 
@@ -27,16 +27,27 @@ namespace LinqToCodedom
 
         public static CodeDomProvider CreateProvider(Language provider)
         {
-            var providerOptions = new Dictionary<string, string>(); providerOptions.Add("CompilerVersion", "v3.5");
+            var providerOptions = new Dictionary<string, string> { { "CompilerVersion", "v3.5" } };
 
             switch (provider)
             {
                 case Language.VB:
-                    return new CustomCodeDomGeneration.VBCustomCodeProvider(providerOptions);
+                    return new VBCustomCodeProvider(providerOptions);
                 case Language.CSharp:
-                    return new CustomCodeDomGeneration.CSCustomCodeProvider(providerOptions);
+                    return new CSCustomCodeProvider(providerOptions);
                 default:
                     throw new NotImplementedException(provider.ToString());
+            }
+        }
+
+        public bool? RequireVariableDeclaration { get; set; }
+        public bool? AllowLateBound { get; set; }
+
+        public List<CodeChecksumPragma> ChecksumPramas
+        {
+            get
+            {
+                return _checksum;
             }
         }
 
@@ -68,6 +79,14 @@ namespace LinqToCodedom
             // the program graph.
             CodeCompileUnit compileUnit = new CodeCompileUnit();
 
+            if (RequireVariableDeclaration.HasValue)
+                compileUnit.UserData.Add("RequireVariableDeclaration", RequireVariableDeclaration.Value);
+
+            if (AllowLateBound.HasValue)
+                compileUnit.UserData.Add("AllowLateBound", AllowLateBound.Value);
+
+            compileUnit.StartDirectives.AddRange(_checksum.ToArray());
+
             CodeDomTreeProcessor.ProcessNS(compileUnit, language, _namespaces);
 
             return compileUnit;
@@ -83,25 +102,32 @@ namespace LinqToCodedom
             return Compile(assemblyPath, Language.CSharp);
         }
 
+        public Assembly Compile(Language language)
+        {
+            return Compile(null, language);
+        }
+
         public Assembly Compile(string assemblyPath, Language language)
         {
             return Compile(assemblyPath, language, _assemblies, GetCompileUnit(language));
         }
 
-        public static Assembly Compile(string assemblyPath, Language language, 
+        public static Assembly Compile(string assemblyPath, Language language,
             IEnumerable<string> assemblies,
             params CodeCompileUnit[] units)
         {
-            CompilerParameters options = new CompilerParameters();
-            options.IncludeDebugInformation = false;
-            options.GenerateExecutable = false;
-            options.GenerateInMemory = (assemblyPath == null);
+            CompilerParameters options = new CompilerParameters
+            {
+                IncludeDebugInformation = false,
+                GenerateExecutable = false,
+                GenerateInMemory = (assemblyPath == null)
+            };
 
             foreach (string refAsm in assemblies)
                 options.ReferencedAssemblies.Add(refAsm);
 
             if (assemblyPath != null)
-                options.OutputAssembly = assemblyPath.Replace("file:\\",string.Empty).Replace('\\', '/');
+                options.OutputAssembly = assemblyPath.Replace("file:\\", string.Empty).Replace('\\', '/');
 
             using (CodeDomProvider codeProvider = CreateProvider(language))
             {

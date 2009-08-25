@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using LinqToCodedom.CodeDomPatterns;
 using LinqToCodedom.Visitors;
 using System.CodeDom;
 using System.Linq.Expressions;
@@ -23,6 +24,11 @@ namespace LinqToCodedom.Generator
         public class CodeVarExpression : CodeVariableReferenceExpression
         {
             public CodeVarExpression(string name) : base(name) { }
+        };
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public class CodeVarWrapExpression : CodeUnaryExpression
+        {
+            public CodeVarWrapExpression(CodeExpression exp) : base(exp) { }
         };
         [EditorBrowsable(EditorBrowsableState.Never)]
         public class CodeArgsInvoke : CodeMethodInvokeExpression

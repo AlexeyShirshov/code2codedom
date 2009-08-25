@@ -412,18 +412,25 @@ namespace LinqToCodedom.Visitors
                     object t = CodeDom.Eval(methodCallExpression.Arguments[0]);
                     CodeTypeReference type = CodeDom.GetTypeReference(t);
 
-                    return new CodeCastExpression(type, _Visit(methodCallExpression.Arguments[1]));
+                    if (methodCallExpression.Method.IsGenericMethod && methodCallExpression.Method.GetGenericArguments()[0] == typeof(Var))
+                    {
+                        return new CodeDom.CodeVarWrapExpression(new CodeCastExpression(type, _Visit(methodCallExpression.Arguments[1])));
+                    }
+                    else
+                        return new CodeCastExpression(type, _Visit(methodCallExpression.Arguments[1]));
                 }
             }
 
             var to = _Visit(methodCallExpression.Object);
-            if (to is CodeDom.CodeThisExpression || to is CodeDom.CodeBaseExpression || to is CodeDom.CodeVarExpression)
+            if (to is CodeDom.CodeThisExpression || to is CodeDom.CodeBaseExpression || to is CodeDom.CodeVarExpression || to is CodeDom.CodeVarWrapExpression)
             {
                 CodeExpression rto = to is CodeDom.CodeThisExpression ?
                     new CodeThisReferenceExpression() :
                     to is CodeDom.CodeBaseExpression ?
                         new CodeBaseReferenceExpression() as CodeExpression :
-                        to as CodeVariableReferenceExpression;
+                        to is CodeVariableReferenceExpression ?
+                        to as CodeVariableReferenceExpression :
+                        to;
 
                 switch (mr.MethodName)
                 {

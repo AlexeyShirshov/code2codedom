@@ -445,5 +445,133 @@ namespace LinqToCodedomTest
 
             Assert.IsNotNull(TestClass);
         }
+
+        [TestMethod]
+        public void TestRequireVariableDeclaration()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, ()=> "foo",
+                    Emit.assignVar("i", ()=>1)
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile(CodeDomGenerator.Language.VB);
+
+            Assert.IsNull(ass);
+
+            c.RequireVariableDeclaration = false;
+            ass = c.Compile(CodeDomGenerator.Language.VB);
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+        }
+
+        [TestMethod]
+        public void TestAllowLateBound()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, () => "foo",
+                    Emit.declare(typeof(object), "a", () => new List<int>()),
+                    Emit.stmt((List<int> a)=>a.ToArray())
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile(CodeDomGenerator.Language.VB);
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+
+            c.AllowLateBound = false;
+            
+            ass = c.Compile(CodeDomGenerator.Language.VB);
+
+            Assert.IsNull(ass);
+        }
+
+        [TestMethod]
+        public void TestMemberRegions()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls").WrapRegion("class region")
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, () => "foo")
+                    .StartDirective("outer")
+                    .WrapRegion("method region")
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Private, ()=> "zoo")
+                    .EndDirective()
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+        }
+
+        [TestMethod]
+        public void TestLineDirective()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls").LineMark("xxx", 1)
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, () => "foo",
+                    Emit.stmt(() => Console.WriteLine()).StartRegion("WriteLine").EndRegion().Line("xxx",2)
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+        }
+
+        [TestMethod]
+        public void TestStatementRegions()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, () => "foo",
+                    Emit.stmt(()=>Console.WriteLine()).StartRegion("WriteLine").EndRegion()
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+        }
     }
 }

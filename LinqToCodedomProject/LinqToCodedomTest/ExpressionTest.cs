@@ -339,7 +339,7 @@ namespace LinqToCodedomTest
             var c = new CodeDomGenerator();
 
             c.AddNamespace("Samples").AddClass("cls")
-                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, () => "foo",
+                .AddMethod(MemberAttributes.Public, () => "foo",
                     Emit.declare(typeof(object), "d"),
                     Emit.assignVar("d", () => 10d),
                     Emit.declare("dr", (object d) => (decimal)d),
