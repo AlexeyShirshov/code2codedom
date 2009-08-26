@@ -419,6 +419,12 @@ namespace LinqToCodedom.Visitors
                     else
                         return new CodeCastExpression(type, _Visit(methodCallExpression.Arguments[1]));
                 }
+                else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.default")
+                {
+                    object t = CodeDom.Eval(methodCallExpression.Arguments[0]);
+                    CodeTypeReference type = CodeDom.GetTypeReference(t);
+                    return new CodeDefaultValueExpression(type);
+                }
             }
 
             var to = _Visit(methodCallExpression.Object);

@@ -346,14 +346,14 @@ namespace LinqToCodedom.Generator
         //    return new CodeTypeOfExpression(TypeRef(type, types));
         //}
 
-        //public static CodeTypeOfExpression TypeOf(Type type, params Type[] types)
-        //{
-        //    return new CodeTypeOfExpression(TypeRef(type, types));
-        //}
+        public static CodeTypeReference TypeRef(Type type, params CodeTypeReference[] types)
+        {
+            return TypeRef(new CodeTypeReference(type), types);
+        }
 
-        //public static CodeTypeOfExpression TypeOf(Type type, params string[] types)
+        //public static CodeTypeReference TypeRef(string type, params CodeTypeReference[] types)
         //{
-        //    return new CodeTypeOfExpression(TypeRef(type, types));
+        //    return new CodeTypeReference(type, types);
         //}
 
         public static CodeTypeReference TypeRef(string type, params string[] types)
@@ -379,6 +379,12 @@ namespace LinqToCodedom.Generator
             var d = type;
             d.TypeArguments.AddRange(types.Select((t) => new CodeTypeReference(t)).ToArray());
             return d;
+        }
+
+        public static CodeTypeReference TypeRef(CodeTypeReference type, params CodeTypeReference[] types)
+        {
+            type.TypeArguments.AddRange(types);
+            return type;
         }
 
         public static CodeExpression[] ToArray(this CodeExpressionCollection col)

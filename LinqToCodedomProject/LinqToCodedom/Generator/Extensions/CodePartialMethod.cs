@@ -110,7 +110,7 @@ namespace LinqToCodedom.CodeDomPatterns
                 {
                     line = "partial" + line.Remove(0, idx);
                     idx = line.LastIndexOf(')');
-                    Text = line.Remove(idx + 1) + ";";
+                    Text = line.Remove(idx + 1) + ";" + Environment.NewLine;
                 }
             }
         }

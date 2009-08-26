@@ -60,6 +60,16 @@ namespace LinqToCodedom
 
         private static CodeTypeMember ProcessMember(CodeTypeMember m, LinqToCodedom.CodeDomGenerator.Language language)
         {
+            foreach (CodeDirective directive in m.StartDirectives)
+            {
+                ProcessDirective(directive, language);
+            }
+
+            foreach (CodeDirective directive in m.EndDirectives)
+            {
+                ProcessDirective(directive, language);
+            }
+
             if (typeof(CodeMemberMethod).IsAssignableFrom(m.GetType()))
             {
                 foreach (CodeStatement stmt in ((CodeMemberMethod)m).Statements)
@@ -110,6 +120,16 @@ namespace LinqToCodedom
         private static void ProcessStmt(CodeStatement stmt, LinqToCodedom.CodeDomGenerator.Language language)
         {
             if (stmt == null) return;
+
+            foreach (CodeDirective directive in stmt.StartDirectives)
+            {
+                ProcessDirective(directive, language);
+            }
+
+            foreach (CodeDirective directive in stmt.EndDirectives)
+            {
+                ProcessDirective(directive, language);
+            }
 
             if (typeof(CodeAssignStatement).IsAssignableFrom(stmt.GetType()))
             {
@@ -206,6 +226,19 @@ namespace LinqToCodedom
             ICustomCodeDomObject co = stmt as ICustomCodeDomObject;
             if (co != null)
                 co.GenerateCode(language);
+        }
+
+        private static void ProcessDirective(CodeDirective directive, CodeDomGenerator.Language language)
+        {
+            //if (language == CodeDomGenerator.Language.CSharp)
+            //{
+            //    if (directive is CodeRegionDirective)
+            //    {
+            //        CodeRegionDirective r = directive as CodeRegionDirective;
+            //        if (!r.RegionText.StartsWith("\""))
+            //            r.RegionText = "\"" + r.RegionText + "\"";
+            //    }
+            //}
         }
 
         private static void ProcessExpr(CodeExpression codeExpression, LinqToCodedom.CodeDomGenerator.Language language)

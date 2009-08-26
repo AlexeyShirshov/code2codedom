@@ -527,6 +527,9 @@ namespace LinqToCodedomTest
 
             Assert.IsNotNull(TestClass);
         }
+        #region sdfgsdkf sdfg;ksdgsd
+        //adsgadg
+        #endregion
 
         [TestMethod]
         public void TestLineDirective()
