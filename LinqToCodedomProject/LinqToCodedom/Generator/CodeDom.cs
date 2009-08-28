@@ -26,10 +26,15 @@ namespace LinqToCodedom.Generator
             public CodeVarExpression(string name) : base(name) { }
         };
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public class CodeVarWrapExpression : CodeUnaryExpression
+        public class CodeWrapExpression : CodeUnaryExpression
         {
-            public CodeVarWrapExpression(CodeExpression exp) : base(exp) { }
+            public CodeWrapExpression(CodeExpression exp) : base(exp) { }
         };
+        //[EditorBrowsable(EditorBrowsableState.Never)]
+        //public class CodePropWrapExpression : CodeUnaryExpression
+        //{
+        //    public CodePropWrapExpression(CodePropertyReferenceExpression exp) : base(exp) { }
+        //};
         [EditorBrowsable(EditorBrowsableState.Never)]
         public class CodeArgsInvoke : CodeMethodInvokeExpression
         {

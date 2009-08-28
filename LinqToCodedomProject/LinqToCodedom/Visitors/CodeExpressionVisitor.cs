@@ -142,29 +142,44 @@ namespace LinqToCodedom.Visitors
             {
                 CodeMethodInvokeExpression mi = to as CodeMethodInvokeExpression;
                 if (invocationExpression.Arguments.Count > 0)
-                    foreach (CodeExpression par in VisitArguments((invocationExpression.Arguments[0] as NewArrayExpression).Expressions))
-                    {
-                        mi.Parameters.Add(par);
-                    }
+                {
+                    if (invocationExpression.Arguments[0] is ConstantExpression)
+                        mi.Parameters.Add(_Visit(invocationExpression.Arguments[0]));
+                    else
+                        foreach (var par in (invocationExpression.Arguments[0] as NewArrayExpression).Expressions)
+                        {
+                            AddParam(mi.Parameters, par);
+                        }
+                }
                 return mi;
             }
             else if (to is CodeDelegateInvokeExpression)
             {
                 if (invocationExpression.Arguments.Count > 0)
-                    foreach (CodeExpression par in VisitArguments((invocationExpression.Arguments[0] as NewArrayExpression).Expressions))
-                    {
-                        (to as CodeDelegateInvokeExpression).Parameters.Add(par);
-                    }
+                {
+                    if (invocationExpression.Arguments[0] is ConstantExpression)
+                        (to as CodeDelegateInvokeExpression).Parameters.Add(_Visit(invocationExpression.Arguments[0]));
+                    else
+                        foreach (var par in (invocationExpression.Arguments[0] as NewArrayExpression).Expressions)
+                        {
+                            AddParam((to as CodeDelegateInvokeExpression).Parameters, par);
+                        }
+                }
                 return to;
             }
             else
             {
                 var mi = new CodeDelegateInvokeExpression(to);
                 if (invocationExpression.Arguments.Count > 0)
-                    foreach (CodeExpression par in VisitArguments(invocationExpression.Arguments))
-                    {
-                        mi.Parameters.Add(par);
-                    }
+                {
+                    if (invocationExpression.Arguments[0] is ConstantExpression)
+                        mi.Parameters.Add(_Visit(invocationExpression.Arguments[0]));
+                    else
+                        foreach (var par in invocationExpression.Arguments)
+                        {
+                            AddParam(mi.Parameters, par);
+                        }
+                }
                 return mi;
             }
 
@@ -414,7 +429,7 @@ namespace LinqToCodedom.Visitors
 
                     if (methodCallExpression.Method.IsGenericMethod && methodCallExpression.Method.GetGenericArguments()[0] == typeof(Var))
                     {
-                        return new CodeDom.CodeVarWrapExpression(new CodeCastExpression(type, _Visit(methodCallExpression.Arguments[1])));
+                        return new CodeDom.CodeWrapExpression(new CodeCastExpression(type, _Visit(methodCallExpression.Arguments[1])));
                     }
                     else
                         return new CodeCastExpression(type, _Visit(methodCallExpression.Arguments[1]));
@@ -428,12 +443,12 @@ namespace LinqToCodedom.Visitors
             }
 
             var to = _Visit(methodCallExpression.Object);
-            if (to is CodeDom.CodeThisExpression || to is CodeDom.CodeBaseExpression || to is CodeDom.CodeVarExpression || to is CodeDom.CodeVarWrapExpression)
+            if (to is CodeDom.CodeThisExpression || to is CodeDom.CodeBaseExpression || to is CodeDom.CodeVarExpression || to is CodeDom.CodeWrapExpression)
             {
                 CodeExpression rto = to is CodeDom.CodeThisExpression ?
                     new CodeThisReferenceExpression() :
                     to is CodeDom.CodeBaseExpression ?
-                        new CodeBaseReferenceExpression() as CodeExpression :
+                        new CodeBaseReferenceExpression() :
                         to is CodeVariableReferenceExpression ?
                         to as CodeVariableReferenceExpression :
                         to;
@@ -466,7 +481,7 @@ namespace LinqToCodedom.Visitors
                         string propertyName = CodeDom.Eval<string>(methodCallExpression.Arguments[0]);
                         if (methodCallExpression.Arguments.Count > 1)
                             throw new NotImplementedException();
-                        return new CodePropertyReferenceExpression(rto, propertyName);
+                        return new CodeDom.CodeWrapExpression(new CodePropertyReferenceExpression(rto, propertyName));
                     case "Field":
                         string fieldName = CodeDom.Eval<string>(methodCallExpression.Arguments[0]);
                         if (methodCallExpression.Arguments.Count > 1)
