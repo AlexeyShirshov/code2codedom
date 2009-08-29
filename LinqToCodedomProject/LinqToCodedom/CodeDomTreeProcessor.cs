@@ -222,6 +222,11 @@ namespace LinqToCodedom
                     ProcessStmt(cb.Statements, language);
                 }
             }
+            else if (typeof(CodeLockStatement).IsAssignableFrom(stmt.GetType()))
+            {
+                ProcessExpr(((CodeLockStatement)stmt).LockExpression, language);
+                ProcessStmt(((CodeLockStatement)stmt).Statements, language);
+            }
 
             ICustomCodeDomObject co = stmt as ICustomCodeDomObject;
             if (co != null)
@@ -356,6 +361,10 @@ namespace LinqToCodedom
             {
                 ProcessExpr(((CodeXorExpression)codeExpression).Left, language);
                 ProcessExpr(((CodeXorExpression)codeExpression).Right, language);
+            }
+            else if (typeof(CodeUnaryExpression).IsAssignableFrom(codeExpression.GetType()))
+            {
+                ProcessExpr(((CodeUnaryExpression)codeExpression).Expression, language);
             }
 
             ICustomCodeDomObject co = codeExpression as ICustomCodeDomObject;
