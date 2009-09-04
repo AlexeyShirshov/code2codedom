@@ -166,11 +166,16 @@ namespace LinqToCodedom
 
         public static void GenerateCode(TextWriter wr, Language language, CodeCompileUnit unit)
         {
+            GenerateCode(wr, language, unit, new CodeGeneratorOptions() {BracingStyle = "C", VerbatimOrder = true});
+        }
+        
+        public static void GenerateCode(TextWriter wr, Language language, CodeCompileUnit unit, CodeGeneratorOptions options)
+        {
             using (TextWriter tw = new IndentedTextWriter(wr))
             {
                 using (CodeDomProvider codeProvider = CreateProvider(language))
                 {
-                    codeProvider.GenerateCodeFromCompileUnit(unit, tw, new CodeGeneratorOptions());
+                    codeProvider.GenerateCodeFromCompileUnit(unit, tw, options);
                 }
             }
         }
