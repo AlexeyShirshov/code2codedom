@@ -268,7 +268,7 @@ namespace LinqToCodedomTest
                     Emit.@return((Var cc) => cc))
                 .Generic("T")
                 .AddMethod(MemberAttributes.Public | MemberAttributes.Static, ()=>"foo2",
-                    Emit.stmt(()=>CodeDom.Call("cls", "foo", typeof(int)))
+                    Emit.stmt(()=>CodeDom.Call(CodeDom.TypeRef("cls"), "foo", typeof(int)))
                 )
                 .AddMethod(MemberAttributes.Static, ()=>"foo3", 
                     Emit.@return()

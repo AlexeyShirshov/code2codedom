@@ -382,10 +382,8 @@ namespace LinqToCodedom.Visitors
                     else
                     {
                         CodeExpression targetExp = _Visit(methodCallExpression.Arguments[0]);
-                        if (targetExp is CodePrimitiveExpression)
+                        if (targetExp is CodePrimitiveExpression && ((CodePrimitiveExpression)targetExp).Value == null)
                         {
-                            //CodeTypeReference tr = CodeDom.GetTypeReference((targetExp as CodePrimitiveExpression).Value);
-                            //new CodeMethodReferenceExpression(
                             targetExp = null;
                         }
 
@@ -439,6 +437,11 @@ namespace LinqToCodedom.Visitors
                     object t = CodeDom.Eval(methodCallExpression.Arguments[0]);
                     CodeTypeReference type = CodeDom.GetTypeReference(t);
                     return new CodeDefaultValueExpression(type);
+                }
+                else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.InjectExp")
+                {
+                    int num = CodeDom.Eval<int>(methodCallExpression.Arguments[0]);
+                    return _ctx.Injections[num];
                 }
             }
 

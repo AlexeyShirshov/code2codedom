@@ -433,30 +433,33 @@ namespace LinqToCodedom.Generator
                 throw new NotSupportedException();
         }
 
-        public static CodeExpression GetExpression<TResult, T>(Expression<Func<TResult, T>> exp)
+        #region GetExpression
+        public static CodeExpression GetExpression<TResult, T>(Expression<Func<TResult, T>> exp, params CodeExpression[] injections)
         {
-            return new CodeExpressionVisitor(new VisitorContext()).Visit(exp);
+            return new CodeExpressionVisitor(new VisitorContext(injections)).Visit(exp);
         }
 
-        public static CodeExpression GetExpression<TResult>(Expression<Func<TResult>> exp)
+        public static CodeExpression GetExpression<TResult>(Expression<Func<TResult>> exp, params CodeExpression[] injections)
         {
-            return new CodeExpressionVisitor(new VisitorContext()).Visit(exp);
+            return new CodeExpressionVisitor(new VisitorContext(injections)).Visit(exp);
         }
 
-        public static CodeExpression GetExpression<TResult, T, T2>(Expression<Func<TResult, T, T2>> exp)
+        public static CodeExpression GetExpression<TResult, T, T2>(Expression<Func<TResult, T, T2>> exp, params CodeExpression[] injections)
         {
-            return new CodeExpressionVisitor(new VisitorContext()).Visit(exp);
+            return new CodeExpressionVisitor(new VisitorContext(injections)).Visit(exp);
         }
 
-        public static CodeExpression GetExpression(Expression<Action> exp)
+        public static CodeExpression GetExpression(Expression<Action> exp, params CodeExpression[] injections)
         {
-            return new CodeExpressionVisitor(new VisitorContext()).Visit(exp);
+            return new CodeExpressionVisitor(new VisitorContext(injections)).Visit(exp);
         }
 
-        public static CodeExpression GetExpression<T>(Expression<Action<T>> exp)
+        public static CodeExpression GetExpression<T>(Expression<Action<T>> exp, params CodeExpression[] injections)
         {
-            return new CodeExpressionVisitor(new VisitorContext()).Visit(exp);
+            return new CodeExpressionVisitor(new VisitorContext(injections)).Visit(exp);
         }
+
+        #endregion
 
         public static object cast(Type type, object o)
         {
@@ -491,5 +494,9 @@ namespace LinqToCodedom.Generator
             return default(T);
         }
 
+        public static T InjectExp<T>(int num)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

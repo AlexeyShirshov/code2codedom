@@ -15,6 +15,11 @@ namespace LinqToCodedom.Generator
             return new CodeMethodReturnStatement();
         }
 
+        public static CodeStatement @return(CodeExpression exp)
+        {
+            return new CodeMethodReturnStatement(exp);
+        }
+
         public static CodeStatement @return<TResult>(Expression<Func<TResult>> exp)
         {
             return new CodeMethodReturnStatement(new CodeExpressionVisitor(new VisitorContext()).Visit(exp));

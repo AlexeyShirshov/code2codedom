@@ -394,7 +394,7 @@ namespace LinqToCodedomTest
 
             c.AddNamespace("Samples").AddClass("cls")
                 .AddMethod(MemberAttributes.Static | MemberAttributes.Public, () => "foo",
-                    Emit.stmt(() => CodeDom.Call("cls", "zoo")(default(int)))
+                    Emit.stmt(() => CodeDom.Call(CodeDom.TypeRef("cls"), "zoo")(default(int)))
                 )
                 .AddMethod(MemberAttributes.Static | MemberAttributes.Private, (int i) => "zoo",
                     Emit.stmt((int i) => Console.WriteLine(i))
@@ -731,9 +731,41 @@ namespace LinqToCodedomTest
         {
             CodeExpression exp = CodeDom.GetExpression(()=>1);
 
+            Assert.IsTrue(exp is CodePrimitiveExpression);
+            Assert.AreEqual(1, ((CodePrimitiveExpression)exp).Value);
+
             CodeExpression exp2 = CodeDom.GetExpression((int g) => 1+g);
 
+            Assert.IsTrue(exp2 is CodeBinaryOperatorExpression);
+
             CodeExpression exp3 = CodeDom.GetExpression((int g) => CodeDom.@this.Field<int>("d")+g-10);
+
+            Assert.IsTrue(exp3 is CodeBinaryOperatorExpression);
+
+            CodeExpression exp4 = CodeDom.GetExpression(() => CodeDom.Call(exp, "ToString")());
+
+            Assert.IsTrue(exp4 is CodeMethodInvokeExpression);
+            Assert.AreEqual(exp, ((CodeMethodInvokeExpression)exp4).Method.TargetObject);
+
+            CodeExpression exp5 = CodeDom.GetExpression(() => CodeDom.Call(exp3, "ToString")());
+
+            Assert.IsTrue(exp5 is CodeMethodInvokeExpression);
+            Assert.AreEqual(exp3, ((CodeMethodInvokeExpression)exp5).Method.TargetObject);
+        }
+
+        [TestMethod]
+        public void TestGetExpressionInject()
+        {
+            CodeExpression exp = CodeDom.GetExpression(() => 1);
+
+            Assert.IsTrue(exp is CodePrimitiveExpression);
+            Assert.AreEqual(1, ((CodePrimitiveExpression) exp).Value);
+
+            CodeExpression exp2 = CodeDom.GetExpression((int g) => CodeDom.InjectExp<int>(0) + g, exp);
+
+            Assert.IsTrue(exp2 is CodeBinaryOperatorExpression);
+            Assert.AreSame(exp, ((CodeBinaryOperatorExpression)exp2).Left);
+            Assert.IsTrue(((CodeBinaryOperatorExpression)exp2).Right is CodeVariableReferenceExpression);
         }
 
         [TestMethod]
