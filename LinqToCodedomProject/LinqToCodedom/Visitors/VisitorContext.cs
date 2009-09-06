@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.CodeDom;
 using System.Linq.Expressions;
 
@@ -9,11 +6,27 @@ namespace LinqToCodedom.Visitors
 {
     public class VisitorContext
     {
-        private List<CodeExpression> _params = new List<CodeExpression>();
+        private readonly List<CodeExpression> _params = new List<CodeExpression>();
+        private readonly List<CodeExpression> _injections = new List<CodeExpression>();
+
+        public VisitorContext()
+        {
+
+        }
+
+        public VisitorContext(params CodeExpression[] injections)
+        {
+            _injections.AddRange(injections);
+        }
 
         public List<CodeExpression> Params
         {
             get { return _params; }
+        }
+
+        public List<CodeExpression> Injections
+        {
+            get { return _injections; }
         }
 
         public CodeExpression VisitParameter(ParameterExpression parameterExpression)
