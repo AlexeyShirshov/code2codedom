@@ -6,6 +6,7 @@ using System.CodeDom;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using LinqToCodedom.Generator;
+using System.Reflection;
 
 namespace LinqToCodedom.Extensions
 {
@@ -51,7 +52,7 @@ namespace LinqToCodedom.Extensions
         }
 
         public static CodeTypeDeclaration AddClass(this CodeNamespace codeNamespace, string className,
-            MemberAttributes ma)
+            TypeAttributes ma)
         {
             var c = Define.Class(className, ma);
 

@@ -538,7 +538,7 @@ namespace LinqToCodedomTest
             var c = new CodeDomGenerator();
 
             c.AddNamespace("Samples")
-            .AddClass(Define.Class("TestClass", MemberAttributes.Public)
+            .AddClass(Define.Class("TestClass", TypeAttributes.Public)
                 .Implements(typeof(IDisposable))
                 .AddMethod(MemberAttributes.Private, ()=>"Dispose", 
                     Emit.@throw(()=>new NotImplementedException())
@@ -685,7 +685,7 @@ namespace LinqToCodedomTest
         {
             var c = new CodeDomGenerator();
 
-            c.AddNamespace("Samples").AddClass(Define.Class("ee", MemberAttributes.Public, true)
+            c.AddNamespace("Samples").AddClass(Define.Class("ee", TypeAttributes.Public, true)
                 .AddMember(new CodePartialMethod(Define.Method(MemberAttributes.Public,
                     ()=>"foo"
                 )))
@@ -693,7 +693,7 @@ namespace LinqToCodedomTest
                     () => "foo2"
                 ))
                 )
-                .AddClass(Define.Class("ee", MemberAttributes.Public, true)
+                .AddClass(Define.Class("ee", TypeAttributes.Public, true)
                 .AddMember(new CodePartialMethod(Define.Method(MemberAttributes.Public,
                     () => "foo", Emit.stmt(()=>Console.WriteLine())
                 )))
@@ -722,7 +722,7 @@ namespace LinqToCodedomTest
         {
             var c = new CodeDomGenerator();
 
-            c.AddNamespace("Samples").AddClass(Define.Class("ee", MemberAttributes.Public, true)
+            c.AddNamespace("Samples").AddClass(Define.Class("ee", TypeAttributes.Public, true)
                 .AddMember(new CodePartialMethod(Define.Method(MemberAttributes.Public,
                     () => "foo"
                 )))
@@ -730,7 +730,7 @@ namespace LinqToCodedomTest
                 //    () => "foo2"
                 //)))
                 )
-                .AddClass(Define.Class("ee", MemberAttributes.Public, true)
+                .AddClass(Define.Class("ee", TypeAttributes.Public, true)
                 .AddMember(new CodePartialMethod(Define.Method(MemberAttributes.Public,
                     () => "foo", Emit.stmt(() => Console.WriteLine())
                 )))

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.CodeDom;
 
@@ -15,19 +16,19 @@ namespace LinqToCodedom.Generator
             return new CodeTypeDeclaration(className);
         }
 
-        public static CodeTypeDeclaration Class(string className, MemberAttributes attributes)
+        public static CodeTypeDeclaration Class(string className, TypeAttributes attributes)
         {
             return new CodeTypeDeclaration(className)
             {
-                Attributes = attributes
+                TypeAttributes = attributes
             };
         }
 
-        public static CodeTypeDeclaration Class(string className, MemberAttributes attributes, bool partial)
+        public static CodeTypeDeclaration Class(string className, TypeAttributes attributes, bool partial)
         {
             var c = new CodeTypeDeclaration(className)
             {
-                Attributes = attributes,
+                TypeAttributes = attributes,
                 IsPartial = partial
             };
 
