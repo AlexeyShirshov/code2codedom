@@ -345,8 +345,14 @@ namespace LinqToCodedom.Visitors
                 }
                 else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.Property")
                 {
+                    CodeExpression targetExp = _Visit(methodCallExpression.Arguments[0]);
+                    if (targetExp is CodePrimitiveExpression && ((CodePrimitiveExpression)targetExp).Value == null)
+                    {
+                        targetExp = null;
+                    }
+
                     return new CodePropertyReferenceExpression(
-                        _Visit(methodCallExpression.Arguments[0]),
+                        targetExp,
                         CodeDom.Eval<string>(methodCallExpression.Arguments[1]));
                 }
                 else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.Field")
@@ -363,13 +369,21 @@ namespace LinqToCodedom.Visitors
                     if (val != null && val is CodeTypeReference)
                     {
                         return new CodeFieldReferenceExpression(
-                            new CodeTypeReferenceExpression((CodeTypeReference)val), 
+                            new CodeTypeReferenceExpression((CodeTypeReference)val),
                             CodeDom.Eval<string>(methodCallExpression.Arguments[1]));
                     }
                     else
+                    {
+                        CodeExpression targetExp = _Visit(methodCallExpression.Arguments[0]);
+                        if (targetExp is CodePrimitiveExpression && ((CodePrimitiveExpression)targetExp).Value == null)
+                        {
+                            targetExp = null;
+                        }
+
                         return new CodeFieldReferenceExpression(
-                            _Visit(methodCallExpression.Arguments[0]),
+                            targetExp,
                             CodeDom.Eval<string>(methodCallExpression.Arguments[1]));
+                    }
                 }
                 else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.Call")
                 {
