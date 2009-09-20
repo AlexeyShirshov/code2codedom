@@ -24,7 +24,7 @@ namespace LinqToCodedom
             }
         }
 
-        public static void ProcessNS(CodeCompileUnit compileUnit, LinqToCodedom.CodeDomGenerator.Language language, IEnumerable<CodeNamespace> namespaces)
+        public static void ProcessNS(CodeCompileUnit compileUnit, CodeDomGenerator.Language language, IEnumerable<CodeNamespace> namespaces)
         {
             foreach (CodeNamespace ns in namespaces)
             {
@@ -246,7 +246,7 @@ namespace LinqToCodedom
             //}
         }
 
-        private static void ProcessExpr(CodeExpression codeExpression, LinqToCodedom.CodeDomGenerator.Language language)
+        private static void ProcessExpr(CodeExpression codeExpression, CodeDomGenerator.Language language)
         {
             if (codeExpression == null) return;
 
@@ -320,7 +320,7 @@ namespace LinqToCodedom
             }
             else if (typeof(CodeParameterDeclarationExpression).IsAssignableFrom(codeExpression.GetType()))
             {
-
+                
             }
             else if (typeof(CodePrimitiveExpression).IsAssignableFrom(codeExpression.GetType()))
             {

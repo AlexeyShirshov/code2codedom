@@ -217,17 +217,23 @@ namespace LinqToCodedom.Visitors
 
         private CodeExpression VisitNewArray(NewArrayExpression newArrayExpression)
         {
-            Type t = newArrayExpression.Type.GetElementType();
+            Type t = newArrayExpression.Type;//.GetElementType();
             CodeTypeReference tr = new CodeTypeReference(t);
             CodeArrayCreateExpression arr = new CodeArrayCreateExpression(tr);
+            //if (t.GetElementType().IsArray)
+            //    arr = new CodeArrayCreateExpression(new CodeTypeReference(tr,1));
 
             if (newArrayExpression.NodeType == ExpressionType.NewArrayBounds)
             {
-                throw new NotImplementedException();
-                //foreach (CodeExpression exp in VisitExpressionList(newArrayExpression.Expressions))
-                //{
-
-                //}
+                if (newArrayExpression.Expressions.Count > 1)
+                {
+                    return new CodeMultidimensionalArrayCreateExpression(tr, 
+                        VisitExpressionList(newArrayExpression.Expressions));
+                }
+                else
+                {
+                    arr.SizeExpression = _Visit(newArrayExpression.Expressions[0]);
+                }
             }
             else if (newArrayExpression.NodeType == ExpressionType.NewArrayInit)
             {
@@ -457,6 +463,23 @@ namespace LinqToCodedom.Visitors
                     int num = CodeDom.Eval<int>(methodCallExpression.Arguments[0]);
                     return _ctx.Injections[num];
                 }
+                else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.Is")
+                {
+                    return new CodeIdentityEqualityExpression(
+                        true,
+                        _Visit(methodCallExpression.Arguments[0]),
+                        _Visit(methodCallExpression.Arguments[1])
+                    );
+                }
+                else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.IsNot")
+                {
+                    return new CodeIdentityEqualityExpression(
+                        false,
+                        _Visit(methodCallExpression.Arguments[0]),
+                        _Visit(methodCallExpression.Arguments[1])
+                    );
+                }
+
             }
 
             var to = _Visit(methodCallExpression.Object);
@@ -555,13 +578,27 @@ namespace LinqToCodedom.Visitors
             //}
             else
             {
-                var c = new CodeMethodInvokeExpression(mr);
-                foreach (var par in methodCallExpression.Arguments)
+                if (methodCallExpression.Object != null && methodCallExpression.Object.Type.IsArray &&
+                    mr.MethodName == "Get")
                 {
-                    AddParam(c.Parameters, par);
+                    var c = new CodeArrayIndexerExpression();
+                    foreach (var par in methodCallExpression.Arguments)
+                    {
+                        AddParam(c.Indices, par);
+                    }
+                    c.TargetObject = to;
+                    return c;
                 }
-                c.Method.TargetObject = to;
-                return c;
+                else
+                {
+                    var c = new CodeMethodInvokeExpression(mr);
+                    foreach (var par in methodCallExpression.Arguments)
+                    {
+                        AddParam(c.Parameters, par);
+                    }
+                    c.Method.TargetObject = to;
+                    return c;
+                }
             }
         }
 

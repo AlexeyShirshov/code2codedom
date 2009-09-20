@@ -78,6 +78,7 @@
     <Compile Include="Generator\CodeDom.cs" />
     <Compile Include="Generator\Declarations\Class.cs" />
     <Compile Include="Generator\Declarations\Attribute.cs" />
+    <Compile Include="Generator\Declarations\Const.cs" />
     <Compile Include="Generator\Declarations\PartialMethod.cs" />
     <Compile Include="Generator\Declarations\Operator.cs" />
     <Compile Include="Generator\Declarations\Ctor.cs" />
@@ -88,6 +89,7 @@
     <Compile Include="Generator\Declarations\Property.cs" />
     <Compile Include="Generator\Declarations\StructField.cs" />
     <Compile Include="Generator\Delegates.cs" />
+    <Compile Include="Generator\Extensions\CodeCustomEvent.cs" />
     <Compile Include="Generator\Extensions\CodeGenerator.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -101,6 +103,12 @@
     <Compile Include="Generator\Extensions\CodeTernaryExpression.cs" />
     <Compile Include="Generator\Extensions\CodePartialMethod.cs" />
     <Compile Include="Generator\Extensions\CodeUnaryExpression.cs" />
+    <Compile Include="Generator\Extensions\CodeBinaryExpression.cs" />
+    <Compile Include="Generator\Extensions\CodeMultidimensionalArrayCreateExpression.cs" />
+    <Compile Include="Generator\Extensions\CodeIdentityEqualityExpression.cs" />
+    <Compile Include="Generator\Extensions\CodeDefaultProperty.cs" />
+    <Compile Include="Generator\Extensions\CodeParamExpression.cs" />
+    <Compile Include="Generator\Extensions\CodeReadonlyField.cs" />
     <Compile Include="Generator\Statements\assign.cs" />
     <Compile Include="Generator\Statements\attach.cs" />
     <Compile Include="Generator\Extensions\CodeAsExpression.cs" />
