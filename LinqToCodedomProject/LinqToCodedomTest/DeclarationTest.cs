@@ -170,7 +170,7 @@ namespace LinqToCodedomTest
 
             c.AddNamespace("Samples").AddClass(Define.Class("TestClass")
                 .AddFields(
-                    Define.Field(typeof(string), MemberAttributes.Private, "_s")
+                    Define.Field(MemberAttributes.Private, typeof(string), "_s")
                 )
                 .AddProperty(
                     Define.Property(typeof(string), MemberAttributes.Public, "Test",
@@ -188,7 +188,9 @@ namespace LinqToCodedomTest
                        CodeDom.Property<string>(CodeDom.VarRef("value"), "Test")
                    ))
                 )
-                .AddMethod(MemberAttributes.Public, typeof(string), (int a) => "Test1", Emit.assignProperty("Test", () => Guid.NewGuid().ToString()), Emit.@return((int a) =>
+                .AddMethod(MemberAttributes.Public, typeof(string), (int a) => "Test1", 
+                    Emit.assignProperty("Test", () => Guid.NewGuid().ToString()), 
+                    Emit.@return((int a) =>
                         a.ToString() + CodeDom.@this.Property<string>("Test")))
             );
 
@@ -245,7 +247,7 @@ namespace LinqToCodedomTest
             Assert.IsNotNull(TestClass);
 
             int s = (int)TestClass.InvokeMember("foo", 
-                System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.InvokeMethod, 
+                BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod, 
                 null, null, null);
 
             Assert.AreEqual(10, s);
@@ -258,7 +260,7 @@ namespace LinqToCodedomTest
 
             c.AddNamespace("Samples").AddClass(Define.Class("TestClass").Generic("T")
                 .AddFields(
-                    Define.Field("T", MemberAttributes.Private, "_s")
+                    Define.Field(MemberAttributes.Private, "T", "_s")
                 )
                 .AddProperty("T", MemberAttributes.Public, "S", "_s")
             ).AddClass(Define.Class("cls")
@@ -273,9 +275,21 @@ namespace LinqToCodedomTest
                 .AddMethod(MemberAttributes.Static, ()=>"foo3", 
                     Emit.@return()
                 ).Generic("T", true, typeof(object))
+                .AddMethod(MemberAttributes.Static, () => "foo5",
+                    Emit.@return()
+                ).Generic("T", true, "System.Object")
+                .AddMethod(MemberAttributes.Static, () => "foo6",
+                    Emit.@return()
+                ).Generic("T", true, new CodeTypeReference(typeof(object)))
                 .AddMethod(MemberAttributes.Static, () => "foo4",
                     Emit.@return()
                 ).Generic("T", typeof(ValueType))
+                .AddMethod(MemberAttributes.Static, () => "foo7",
+                    Emit.@return()
+                ).Generic("T", new CodeTypeReference(typeof(ValueType)))
+                .AddMethod(MemberAttributes.Static, () => "foo8",
+                    Emit.@return()
+                ).Generic("T", "cls")
             );
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
@@ -317,7 +331,7 @@ namespace LinqToCodedomTest
             c.AddNamespace("Samples").AddClass(Define.Class("TestClass")
                 .Generic("T")
                 .AddFields(
-                    Define.Field("T", MemberAttributes.Private, "_s")
+                    Define.Field(MemberAttributes.Private, "T", "_s")
                 )
                 .AddProperty("T", MemberAttributes.Public, "S", "_s")
             );
@@ -406,8 +420,8 @@ namespace LinqToCodedomTest
 
             c.AddNamespace("Samples").AddClass(Define.Class("TestClass")
                 .AddFields(
-                    Define.Field(typeof(string), MemberAttributes.Private, "_s"),
-                    Define.Field(typeof(int), MemberAttributes.Private, "_i")
+                    Define.Field(MemberAttributes.Private, typeof(string), "_s"),
+                    Define.Field(MemberAttributes.Private, typeof(int), "_i")
                 )
                 .AddCtor(
                     Define.Ctor(() => MemberAttributes.Public,
@@ -470,8 +484,8 @@ namespace LinqToCodedomTest
             c.AddNamespace("Samples").AddClass(Define.Class("TestClass")
                 .AddAttribute(Define.Attribute(typeof(SerializableAttribute)))
                 .AddFields(
-                    Define.Field(typeof(string), MemberAttributes.Private, "_s"),
-                    Define.Field(typeof(int), MemberAttributes.Private, "_i")
+                    Define.Field(MemberAttributes.Private, typeof(string), "_s"),
+                    Define.Field(MemberAttributes.Private, typeof(int), "_i")
                 )
                 .AddCtor(
                     Define.Ctor(() => MemberAttributes.Public,
@@ -549,18 +563,20 @@ namespace LinqToCodedomTest
                 .AddProperty("TestClass", MemberAttributes.Public, "Third")
                 .AddGetProperty("TestClass", MemberAttributes.Public, "Fifth")
                 .AddEvent(typeof(EventHandler), MemberAttributes.Public, "Fourth")
-            ).AddClass("xxx").Implements("Ixxx")
-                .AddMethod(MemberAttributes.Public, ()=>"First",
+            ).AddClass("xxx").Implements(new CodeTypeReference("Ixxx"))
+                .AddMethod(MemberAttributes.Private, ()=>"First",
                     Emit.@throw(()=>new NotImplementedException())
-                ).Implements("Ixxx")
-                .AddMethod(MemberAttributes.Public, typeof(DateTime), () => "Second", Emit.@throw(() => new NotImplementedException())).Implements("Ixxx")
+                ).Implements(new CodeTypeReference("Ixxx"))
+                .AddMethod(MemberAttributes.Public, typeof(DateTime), () => "Second", 
+                    Emit.@throw(() => new NotImplementedException())
+                ).Implements(new CodeTypeReference("Ixxx"))
                 .AddProperty("TestClass", MemberAttributes.Public, "Third",
                     CodeDom.CombineStmts(Emit.@throw(() => new NotImplementedException())),
                     Emit.@throw(() => new NotImplementedException())
                 ).Implements("Ixxx")
                 .AddGetProperty("TestClass", MemberAttributes.Public, "Fifth",
                     Emit.@throw(() => new NotImplementedException())
-                ).Implements("Ixxx")
+                ).Implements(new CodeTypeReference("Ixxx"))
                 .AddEvent(typeof(EventHandler), MemberAttributes.Public, "Fourth"
                 ).Implements("Ixxx")
                 .AddField(typeof(int), "_z", () => 100)
@@ -607,12 +623,12 @@ namespace LinqToCodedomTest
 
             Assert.IsNotNull(TestClass);
 
-            object t = TestClass.InvokeMember(null, System.Reflection.BindingFlags.CreateInstance, null, null,
+            object t = TestClass.InvokeMember(null, BindingFlags.CreateInstance, null, null,
                 new object[] { false });
 
             Assert.IsNotNull(t);
 
-            Assert.AreEqual(100, TestClass.InvokeMember("Z", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.GetProperty, null, t, null));
+            Assert.AreEqual(100, TestClass.InvokeMember("Z", BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty, null, t, null));
         }
 
         [TestMethod]
@@ -739,11 +755,114 @@ namespace LinqToCodedomTest
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
 
-            var ass = c.Compile(null, LinqToCodedom.CodeDomGenerator.Language.VB);
+            var ass = c.Compile(null, CodeDomGenerator.Language.VB);
 
             Assert.IsNotNull(ass);
 
             Type eeClass = ass.GetType("Samples.ee");
+
+            Assert.IsNotNull(eeClass);
+        }
+
+        [TestMethod]
+        public void TestDefaultProperty()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass(Define.Class("ee", TypeAttributes.Public, true)
+                .AddMember(Define.GetProperty(new CodeTypeReference(typeof(string)), MemberAttributes.Family,
+                    (int idx)=>"prop", true, 
+                        Emit.@return((int idx)=>idx.ToString())
+                ))
+                .AddMember(Define.Property(new CodeTypeReference(typeof(string)), MemberAttributes.Family,
+                    (int idx) => "prop2", false,
+                        CodeDom.CombineStmts(Emit.@return((int idx) => idx.ToString())),
+                        Emit.declare("i", (int idx)=>idx)
+                ))
+            );
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            var ass = c.Compile(null, CodeDomGenerator.Language.VB);
+
+            Assert.IsNotNull(ass);
+
+            Type eeClass = ass.GetType("Samples.ee");
+
+            Assert.IsNotNull(eeClass);
+        }
+
+        [TestMethod]
+        public void TestCustomEvent()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass(Define.Class("ee", TypeAttributes.Public, true)
+                .AddMember(Define.Event(new CodeTypeReference(typeof(EventHandler)), MemberAttributes.Family,
+                    "Event1", Define.GetProperty("", default(MemberAttributes), "",
+                        Emit.stmt(()=>Console.WriteLine("add"))
+                    ),
+                    Define.GetProperty("", default(MemberAttributes), "",
+                        Emit.stmt(() => Console.WriteLine("remove"))
+                    ),
+                    Define.Method(default(MemberAttributes), (object sender, EventArgs args)=>"",
+                        Emit.stmt(() => Console.WriteLine("raise"))
+                    )
+                ))
+            );
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            var ass = c.Compile(null, CodeDomGenerator.Language.VB);
+
+            Assert.IsNotNull(ass);
+
+            Type eeClass = ass.GetType("Samples.ee");
+
+            Assert.IsNotNull(eeClass);
+
+            ass = c.Compile(null, CodeDomGenerator.Language.CSharp);
+
+            Assert.IsNotNull(ass);
+
+            eeClass = ass.GetType("Samples.ee");
+
+            Assert.IsNotNull(eeClass);
+        }
+
+        [TestMethod]
+        public void TestReadonlyField()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass(Define.Class("ee", TypeAttributes.Public)
+                .AddMember(Define.ReadOnlyField(MemberAttributes.Family, new CodeTypeReference(typeof(int)), "fld1"))
+                .AddMember(Define.ReadOnlyField(MemberAttributes.Private | MemberAttributes.Static, new CodeTypeReference(typeof(int)), "fld2"))
+                .AddMember(Define.Const(MemberAttributes.Private, "cns1", ()=>1))
+                .AddMember(Define.Const(MemberAttributes.Public, "cns2", () => "hi!"))
+            );
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            var ass = c.Compile(null, CodeDomGenerator.Language.VB);
+
+            Assert.IsNotNull(ass);
+
+            Type eeClass = ass.GetType("Samples.ee");
+
+            Assert.IsNotNull(eeClass);
+
+            ass = c.Compile(null, CodeDomGenerator.Language.CSharp);
+
+            Assert.IsNotNull(ass);
+
+            eeClass = ass.GetType("Samples.ee");
 
             Assert.IsNotNull(eeClass);
         }

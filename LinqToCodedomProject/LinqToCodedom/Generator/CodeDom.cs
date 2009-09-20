@@ -108,7 +108,7 @@ namespace LinqToCodedom.Generator
                 
                 if (typeof(IOutParam).IsAssignableFrom(p.Type))
                     par.Direction = FieldDirection.Out;
-                
+
                 if (typeof(IParamArray).IsAssignableFrom(p.Type))
                     par.CustomAttributes.Add(Define.Attribute(typeof(ParamArrayAttribute)));
 
@@ -127,6 +127,10 @@ namespace LinqToCodedom.Generator
                         par.Type = new CodeTypeReference(rt);
                 }
 
+                //if (typeof(IParamArray).IsAssignableFrom(p.Type))
+                //    pars.Add()
+                //else
+                //    pars.Add(par);
                 pars.Add(par);
             }
             return Eval<T>(exp, pars);
@@ -495,6 +499,16 @@ namespace LinqToCodedom.Generator
         }
 
         public static T InjectExp<T>(int num)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static bool Is(object a, object b)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static bool IsNot(object a, object b)
         {
             throw new NotImplementedException();
         }

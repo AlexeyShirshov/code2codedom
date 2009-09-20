@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.CodeDom;
+using LinqToCodedom.CodeDomPatterns;
 
 namespace LinqToCodedom.Generator
 {
@@ -12,26 +10,50 @@ namespace LinqToCodedom.Generator
 
         public static CodeMemberEvent Event(Type delegateType, MemberAttributes ma, string name)
         {
-            var c = new CodeMemberEvent()
+            return Event(new CodeTypeReference(delegateType), ma, name);
+        }
+
+        public static CodeMemberEvent Event(string delegateType, MemberAttributes ma, string name)
+        {
+            return Event(new CodeTypeReference(delegateType), ma, name);
+        }
+
+        public static CodeMemberEvent Event(CodeTypeReference delegateType, MemberAttributes ma, string name)
+        {
+            var c = new CodeMemberEvent
             {
                 Name = name,
                 Attributes = ma,
-                Type = new CodeTypeReference(delegateType),
+                Type = delegateType,
             };
 
             return c;
         }
 
-        public static CodeMemberEvent Event(string delegateType, MemberAttributes ma, string name)
+        public static CodeCustomEvent Event(CodeTypeReference delegateType, MemberAttributes ma, string name,
+            CodeMemberProperty add, CodeMemberProperty remove)
         {
-            var c = new CodeMemberEvent()
+            var c = new CodeMemberEvent
             {
                 Name = name,
                 Attributes = ma,
-                Type = new CodeTypeReference(delegateType),
+                Type = delegateType,
             };
 
-            return c;
+            return new CodeCustomEvent(c, add, remove) ;
+        }
+
+        public static CodeCustomEvent Event(CodeTypeReference delegateType, MemberAttributes ma, string name,
+            CodeMemberProperty add, CodeMemberProperty remove, CodeMemberMethod raise)
+        {
+            var c = new CodeMemberEvent
+            {
+                Name = name,
+                Attributes = ma,
+                Type = delegateType,
+            };
+
+            return new CodeCustomEvent(c, add, remove, raise);
         }
 
         #endregion

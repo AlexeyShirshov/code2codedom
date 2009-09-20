@@ -1,11 +1,14 @@
 ﻿Imports System
 Imports System.Text
 Imports System.Collections.Generic
+Imports System.IO
 Imports Microsoft.VisualStudio.TestTools.UnitTesting
 Imports LinqToCodedom
 Imports LinqToCodedom.Extensions
 Imports LinqToCodedom.Generator
 Imports System.CodeDom
+Imports System.Linq
+Imports System.Reflection
 
 <TestClass()> Public Class UnitTest1
 
@@ -51,7 +54,8 @@ Imports System.CodeDom
 
         c.AddNamespace("Samples").AddClass("cls") _
                 .AddMethod(MemberAttributes.Public Or MemberAttributes.Static, Function() "foo", _
-                    Emit.declare("d2", Function() String.Empty Is GetType(String)) _
+                    Emit.declare("d1", Function() CodeDom.Is(String.Empty, GetType(String))), _
+                    Emit.declare("d2", Function() CodeDom.IsNot(String.Empty, GetType(String))) _
                 )
 
         Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp))
@@ -66,22 +70,7 @@ Imports System.CodeDom
 
         Assert.IsNotNull(TestClass)
 
-        Select Case "ssdfsd"
-            Case "ds"
-                Exit Select
-        End Select
-
     End Sub
 
-    Partial Public Class cls
-        Partial Private Sub foo()
-
-        End Sub
-    End Class
-
-    Partial Public Class cls
-        Private Sub foo()
-            Console.WriteLine("ds")
-        End Sub
-    End Class
+    Private Shared ReadOnly ds As Integer
 End Class

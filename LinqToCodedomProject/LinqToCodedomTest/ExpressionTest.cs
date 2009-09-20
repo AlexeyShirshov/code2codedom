@@ -7,6 +7,7 @@ using LinqToCodedom;
 using LinqToCodedom.Generator;
 using System.CodeDom;
 using LinqToCodedom.Extensions;
+using System.Reflection;
 
 namespace LinqToCodedomTest
 {
@@ -73,10 +74,10 @@ namespace LinqToCodedomTest
                     Emit.declare(typeof(int[]), "d"),
                     Emit.declare("d2", () => new int[] { 1, 2, 3 }),
                     Emit.assignVar("d", () => new int[] { 3, 4 }),
-                    Emit.declare("d3", (int[] d) => d[0])
+                    Emit.declare("d3", (int[] d) => d[0]),
+                    Emit.declare("d4", ()=>new int[10])
                 )
             ;
-
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
@@ -276,8 +277,8 @@ namespace LinqToCodedomTest
 
             c.AddNamespace("Samples").AddClass(Define.Class("TestClass")
                 .AddFields(
-                    Define.Field(typeof(string), MemberAttributes.Private, "_s"),
-                    Define.Field(typeof(int), MemberAttributes.Private, "_i")
+                    Define.Field(MemberAttributes.Private, typeof(string), "_s"),
+                    Define.Field(MemberAttributes.Private, typeof(int), "_i")
                 )
                 .AddCtor(
                     Define.Ctor((int i, string s) => MemberAttributes.Public,
@@ -309,7 +310,7 @@ namespace LinqToCodedomTest
             c.AddNamespace("Samples")
             .AddClass(Define.Class("TestClass").Generic("T")
                 .AddFields(
-                    Define.Field("T", MemberAttributes.Private, "_s")
+                    Define.Field(MemberAttributes.Private, "T", "_s")
                 )
                 .AddProperty("T", MemberAttributes.Public, "S", "_s")
             ).AddClass(Define.Class("cls")
@@ -818,6 +819,12 @@ namespace LinqToCodedomTest
             Type TestClass = ass.GetType("Samples.cls");
 
             Assert.IsNotNull(TestClass);
+        }
+
+        private string this[int index, int g]
+        {
+            get { return ""; }
+            set { var d = value; }
         }
     }
 }

@@ -22,7 +22,7 @@ namespace LinqToCodedom.Extensions
         public static CodeMemberField AddField(this CodeTypeDeclaration classCode,
             Type fieldType, MemberAttributes ma, string name)
         {
-            var c = Define.Field(fieldType, CorrectAttributes(classCode, ma), name);
+            var c = Define.Field(CorrectAttributes(classCode, ma), fieldType, name);
             
             classCode.Members_Add(c);
 
@@ -32,7 +32,7 @@ namespace LinqToCodedom.Extensions
         public static CodeMemberField AddField(this CodeTypeDeclaration classCode,
             CodeTypeReference fieldType, MemberAttributes ma, string name)
         {
-            var c = Define.Field(fieldType, CorrectAttributes(classCode, ma), name);
+            var c = Define.Field(CorrectAttributes(classCode, ma), fieldType, name);
 
             classCode.Members_Add(c);
 
@@ -42,7 +42,7 @@ namespace LinqToCodedom.Extensions
         public static CodeMemberField AddField(this CodeTypeDeclaration classCode,
             Type fieldType, string name)
         {
-            var c = Define.Field(fieldType, CorrectAttributes(classCode, MemberAttributes.Private), name);
+            var c = Define.Field(CorrectAttributes(classCode, MemberAttributes.Private), fieldType, name);
 
             classCode.Members_Add(c);
 
@@ -52,7 +52,7 @@ namespace LinqToCodedom.Extensions
         public static CodeMemberField AddField<T>(this CodeTypeDeclaration classCode,
             Type fieldType, string name, Expression<Func<T>> exp)
         {
-            var c = Define.Field(fieldType, CorrectAttributes(classCode, MemberAttributes.Private), name, exp);
+            var c = Define.Field(CorrectAttributes(classCode, MemberAttributes.Private), fieldType, name, exp);
 
             classCode.Members_Add(c);
 
@@ -62,7 +62,7 @@ namespace LinqToCodedom.Extensions
         public static CodeMemberField AddField<T>(this CodeTypeDeclaration classCode,
             Type fieldType, MemberAttributes ma, string name, Expression<Func<T>> exp)
         {
-            var c = Define.Field(fieldType, CorrectAttributes(classCode, ma), name, exp);
+            var c = Define.Field(CorrectAttributes(classCode, ma), fieldType, name, exp);
 
             classCode.Members_Add(c);
 
