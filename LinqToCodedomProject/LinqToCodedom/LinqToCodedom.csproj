@@ -97,6 +97,7 @@
     <Compile Include="Generator\Extensions\CodeContinueStatement.cs" />
     <Compile Include="Generator\Extensions\CodeBreakStatement.cs" />
     <Compile Include="Generator\Extensions\CodeDoStatement.cs" />
+    <Compile Include="Generator\Extensions\CodeVarStatement.cs" />
     <Compile Include="Generator\Extensions\CodeWhileStatement.cs" />
     <Compile Include="Generator\Extensions\CodeSwitchStatement.cs" />
     <Compile Include="Generator\Extensions\CodeNotExpression.cs" />
@@ -109,6 +110,8 @@
     <Compile Include="Generator\Extensions\CodeDefaultProperty.cs" />
     <Compile Include="Generator\Extensions\CodeParamExpression.cs" />
     <Compile Include="Generator\Extensions\CodeReadonlyField.cs" />
+    <Compile Include="Generator\Extensions\CodeLambdaExpression.cs" />
+    <Compile Include="Generator\Lambda.cs" />
     <Compile Include="Generator\Statements\assign.cs" />
     <Compile Include="Generator\Statements\attach.cs" />
     <Compile Include="Generator\Extensions\CodeAsExpression.cs" />

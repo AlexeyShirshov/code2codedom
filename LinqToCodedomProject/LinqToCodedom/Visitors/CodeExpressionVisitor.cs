@@ -479,7 +479,36 @@ namespace LinqToCodedom.Visitors
                         _Visit(methodCallExpression.Arguments[1])
                     );
                 }
+                else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.Lambda")
+                {
+                    CodeExpression exp = _Visit(methodCallExpression.Arguments[0]);
+                    List<LambdaParam> pars = new List<LambdaParam>();
+                    if (methodCallExpression.Arguments.Count == 2)
+                    {
+                        NewArrayExpression arr = methodCallExpression.Arguments[1] as NewArrayExpression;
+                        foreach (Expression par in arr.Expressions)
+                        {
+                            pars.Add(CodeDom.Eval<LambdaParam>(par));
+                        }
+                    }
+                    return new CodeLambdaExpression(exp, pars);
+                }
+                else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.CallDelegate")
+                {
+                    CodeExpression target = null;
+                    if (methodCallExpression.Arguments[0].Type == typeof(string))
+                    {
+                        target = new CodeVariableReferenceExpression(CodeDom.Eval<string>(methodCallExpression.Arguments[0]));
+                    }
+                    else
+                    {
+                        target = _Visit(methodCallExpression.Arguments[0]);
+                    }
 
+                    var d = new CodeDelegateInvokeExpression(target);
+
+                    return d;
+                }
             }
 
             var to = _Visit(methodCallExpression.Object);
