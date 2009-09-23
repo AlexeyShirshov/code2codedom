@@ -576,5 +576,38 @@ namespace LinqToCodedomTest
 
             Assert.IsNotNull(TestClass);
         }
+
+        [TestMethod]
+        public void TestVarVariable()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples").AddClass("cls")
+                .AddMethod(MemberAttributes.Static | MemberAttributes.Public, () => "foo",
+                    Emit.declareVar("a", ()=>1 ),
+                    Emit.declareVar("b", () => "gfdsgf")
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            ass = c.Compile(CodeDomGenerator.Language.VB);
+
+            Assert.IsNotNull(ass);
+
+            TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+        }
     }
 }

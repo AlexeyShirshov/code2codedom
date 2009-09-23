@@ -9,7 +9,7 @@ namespace LinqToCodedom.Visitors
 {
     public class CodeStatementVisitor
     {
-        private VisitorContext _ctx;
+        private readonly VisitorContext _ctx;
 
         public CodeStatementVisitor(VisitorContext ctx)
         {

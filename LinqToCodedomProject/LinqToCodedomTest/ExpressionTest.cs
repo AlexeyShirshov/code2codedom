@@ -8,6 +8,7 @@ using LinqToCodedom.Generator;
 using System.CodeDom;
 using LinqToCodedom.Extensions;
 using System.Reflection;
+using System.Linq.Expressions;
 
 namespace LinqToCodedomTest
 {
@@ -821,10 +822,67 @@ namespace LinqToCodedomTest
             Assert.IsNotNull(TestClass);
         }
 
-        private string this[int index, int g]
+        [TestMethod]
+        public void TestLambda()
         {
-            get { return ""; }
-            set { var d = value; }
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples")
+                .AddClass("cls")
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, (bool f) => "foo",
+                    Emit.declare("a", () => CodeDom.Lambda(()=>1)),
+                    Emit.declare("b", () => CodeDom.Lambda(() => Console.WriteLine("hi!"))),
+                    Emit.declare("c", () => CodeDom.Lambda((int aa) => Console.WriteLine(aa), 
+                        new LambdaParam(typeof(int), "aa"))),
+                    Emit.stmt((int a)=>CodeDom.CallDelegate(CodeDom.VarRef("c").Call("Compile"))(
+                        CodeDom.CallDelegate(CodeDom.VarRef("a").Call("Compile"))
+                        ))
+                )
+            ;
+
+            
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            c.AddReference("System.Core.dll");
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+        }
+
+        [TestMethod]
+        public void TestLambdaVB()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples")
+                .AddClass("cls")
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, (bool f) => "foo",
+                    Emit.declare("a", () => CodeDom.Lambda(() => 1)),
+                    Emit.declare("c", () => CodeDom.Lambda((int aa) => aa+10,
+                        new LambdaParam(typeof(int), "aa"))),
+                    Emit.stmt((int a) => CodeDom.CallDelegate(CodeDom.VarRef("c").Call("Compile"))(
+                        CodeDom.CallDelegate(CodeDom.VarRef("a").Call("Compile"))
+                        ))
+                )
+            ;
+
+
+            c.AddReference("System.Core.dll");
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            var ass = c.Compile(CodeDomGenerator.Language.VB);
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
         }
     }
 }

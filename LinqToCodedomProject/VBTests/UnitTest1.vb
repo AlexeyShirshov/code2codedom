@@ -1,14 +1,9 @@
 ﻿Imports System
-Imports System.Text
-Imports System.Collections.Generic
-Imports System.IO
 Imports Microsoft.VisualStudio.TestTools.UnitTesting
 Imports LinqToCodedom
 Imports LinqToCodedom.Extensions
 Imports LinqToCodedom.Generator
 Imports System.CodeDom
-Imports System.Linq
-Imports System.Reflection
 
 <TestClass()> Public Class UnitTest1
 
@@ -72,5 +67,4 @@ Imports System.Reflection
 
     End Sub
 
-    Private Shared ReadOnly ds As Integer
 End Class

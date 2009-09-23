@@ -10,7 +10,7 @@ using System.ComponentModel;
 
 namespace LinqToCodedom.Generator
 {
-    public static class CodeDom
+    public static partial class CodeDom
     {
         public class NilClass { }
 
@@ -277,9 +277,10 @@ namespace LinqToCodedom.Generator
             return default(ParamsDelegate);
         }
 
-        //public static void Call<TResult>(object target, string name, params object[] param)
-        //{
-        //}
+        public static ParamsDelegate Call(string name)
+        {
+            return default(ParamsDelegate);
+        }
 
         #endregion
 
@@ -420,6 +421,16 @@ namespace LinqToCodedom.Generator
             return default(ParamsDelegate);
         }
 
+        public static ParamsDelegate<TReturn> CallDelegate<TReturn>(object exp)
+        {
+            return default(ParamsDelegate<TReturn>);
+        }
+
+        public static ParamsDelegate CallDelegate(object exp)
+        {
+            return default(ParamsDelegate);
+        }
+
         public static CodeExpression GetTargetObject(Base o)
         {
             Type t = o.GetType();
@@ -512,5 +523,6 @@ namespace LinqToCodedom.Generator
         {
             throw new NotImplementedException();
         }
+        
     }
 }

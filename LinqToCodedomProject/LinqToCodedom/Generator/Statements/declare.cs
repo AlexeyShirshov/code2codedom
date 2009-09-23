@@ -5,6 +5,7 @@ using System.Text;
 using System.CodeDom;
 using LinqToCodedom.Visitors;
 using System.Linq.Expressions;
+using LinqToCodedom.CodeDomPatterns;
 
 namespace LinqToCodedom.Generator
 {
@@ -60,5 +61,18 @@ namespace LinqToCodedom.Generator
                 new CodeExpressionVisitor(new VisitorContext()).Visit(initExp));
         }
 
+        public static CodeVarStatement declareVar<TResult>(
+            string varName, Expression<Func<TResult>> initExp)
+        {
+            return new CodeVarStatement(varName,
+                new CodeExpressionVisitor(new VisitorContext()).Visit(initExp));
+        }
+
+        public static CodeVarStatement declareVar<T, TResult>(
+            string varName, Expression<Func<T, TResult>> initExp)
+        {
+            return new CodeVarStatement(varName,
+                new CodeExpressionVisitor(new VisitorContext()).Visit(initExp));
+        }
     }
 }
