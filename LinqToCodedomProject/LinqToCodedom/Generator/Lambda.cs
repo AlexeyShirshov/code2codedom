@@ -33,37 +33,11 @@ namespace LinqToCodedom.Generator
         {
         }
     }
-    //public class LambdaParams
-    //{
-        
-
-    //    //private readonly List<Params> _params = new List<Params>();
-
-    //    public LambdaParams Param(string name)
-    //    {
-    //        //_params.Add(new Params(name));
-    //        return this;
-    //    }
-
-    //    public LambdaParams Param(CodeTypeReference type, string name)
-    //    {
-    //        //_params.Add(new Params(name, type));
-    //        return this;
-    //    }
-
-    //    public T Returns<T>()
-    //    {
-    //        return default(T);
-    //    }
-
-    //    //public void Returns()
-    //    //{
-    //    //}
-    //}
 
     public static partial class CodeDom
     {
 
+        #region Lambda 
         public static Expression<Func<T>> Lambda<T>(Expression<Func<T>> exp, params LambdaParam[] lambdaParams)
         {
             return exp;
@@ -107,6 +81,13 @@ namespace LinqToCodedom.Generator
         public static Expression<Action<T, T2, T3, T4>> Lambda<T, T2, T3, T4>(Expression<Action<T, T2, T3, T4>> exp, params LambdaParam[] lambdaParams)
         {
             return exp;
+        }
+
+        #endregion
+
+        public static T Lambda<T>(LambdaParam[] lambdaParams, params CodeStatement[] stmt)
+        {
+            return default(T);
         }
     }
 }

@@ -829,7 +829,7 @@ namespace LinqToCodedomTest
 
             c.AddNamespace("Samples")
                 .AddClass("cls")
-                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, (bool f) => "foo",
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, () => "foo",
                     Emit.declare("a", () => CodeDom.Lambda(()=>1)),
                     Emit.declare("b", () => CodeDom.Lambda(() => Console.WriteLine("hi!"))),
                     Emit.declare("c", () => CodeDom.Lambda((int aa) => Console.WriteLine(aa), 
@@ -844,6 +844,33 @@ namespace LinqToCodedomTest
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
 
             c.AddReference("System.Core.dll");
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+        }
+
+        [TestMethod]
+        public void TestAnonymousMethod()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples")
+                .AddClass("cls")
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, () => "foo",
+                    Emit.declare("a", () => CodeDom.Lambda<Func<int, double>>(new []{new LambdaParam("s")},
+                        Emit.@return((double s)=>s+1)
+                    ))
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            //c.AddReference("System.Core.dll");
 
             var ass = c.Compile();
 
@@ -881,6 +908,42 @@ namespace LinqToCodedomTest
             Assert.IsNotNull(ass);
 
             Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+        }
+
+        [TestMethod]
+        public void TestAssignIndexer()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples")
+                .AddClass("cls")
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, () => "foo",
+                    Emit.declare("b", () => new int[10]),
+                    Emit.assignExp((int[] b)=>b[0], CodeDom.GetExpression(()=>1)),
+                    Emit.declare("a", () => new List<int>()),
+                    Emit.assignExp((List<int> a) => a[0], CodeDom.GetExpression(() => 1))
+                )
+            ;
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            var ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            Type TestClass = ass.GetType("Samples.cls");
+
+            Assert.IsNotNull(TestClass);
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            ass = c.Compile();
+
+            Assert.IsNotNull(ass);
+
+            TestClass = ass.GetType("Samples.cls");
 
             Assert.IsNotNull(TestClass);
         }

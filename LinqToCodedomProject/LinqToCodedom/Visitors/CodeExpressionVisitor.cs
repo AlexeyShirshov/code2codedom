@@ -481,17 +481,24 @@ namespace LinqToCodedom.Visitors
                 }
                 else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.Lambda")
                 {
-                    CodeExpression exp = _Visit(methodCallExpression.Arguments[0]);
-                    List<LambdaParam> pars = new List<LambdaParam>();
-                    if (methodCallExpression.Arguments.Count == 2)
+                    if (methodCallExpression.Arguments[0].Type.IsArray)
                     {
-                        NewArrayExpression arr = methodCallExpression.Arguments[1] as NewArrayExpression;
-                        foreach (Expression par in arr.Expressions)
-                        {
-                            pars.Add(CodeDom.Eval<LambdaParam>(par));
-                        }
+                        throw new NotImplementedException();
                     }
-                    return new CodeLambdaExpression(exp, pars);
+                    else
+                    {
+                        CodeExpression exp = _Visit(methodCallExpression.Arguments[0]);
+                        List<LambdaParam> pars = new List<LambdaParam>();
+                        if (methodCallExpression.Arguments.Count == 2)
+                        {
+                            NewArrayExpression arr = methodCallExpression.Arguments[1] as NewArrayExpression;
+                            foreach (Expression par in arr.Expressions)
+                            {
+                                pars.Add(CodeDom.Eval<LambdaParam>(par));
+                            }
+                        }
+                        return new CodeLambdaExpression(exp, pars);
+                    }
                 }
                 else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.CallDelegate")
                 {
@@ -607,8 +614,9 @@ namespace LinqToCodedom.Visitors
             //}
             else
             {
-                if (methodCallExpression.Object != null && methodCallExpression.Object.Type.IsArray &&
-                    mr.MethodName == "Get")
+                if ((methodCallExpression.Object != null && methodCallExpression.Object.Type.IsArray &&
+                    mr.MethodName == "Get") ||
+                    (mr.MethodName == "get_Item" && methodCallExpression.Method.IsSpecialName))
                 {
                     var c = new CodeArrayIndexerExpression();
                     foreach (var par in methodCallExpression.Arguments)
