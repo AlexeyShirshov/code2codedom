@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using LinqToCodedom.Generator;
 using LinqToCodedom.CodeDomPatterns;
 using System.Reflection;
+using System.Collections;
 
 namespace LinqToCodedom.Visitors
 {
@@ -483,7 +484,17 @@ namespace LinqToCodedom.Visitors
                 {
                     if (methodCallExpression.Arguments[0].Type.IsArray)
                     {
-                        throw new NotImplementedException();
+                        List<LambdaParam> pars = new List<LambdaParam>();
+                        foreach (LambdaParam lambdaParam in CodeDom.Eval<IEnumerable>(methodCallExpression.Arguments[0]))
+                        {
+                            pars.Add(lambdaParam);
+                        }
+                        List<CodeStatement> stmts = new List<CodeStatement>();
+                        foreach (CodeStatement stmt in CodeDom.Eval<IEnumerable>(methodCallExpression.Arguments[1]))
+                        {
+                            stmts.Add(stmt);
+                        }
+                        return new CodeLambdaStatements(stmts, pars);
                     }
                     else
                     {

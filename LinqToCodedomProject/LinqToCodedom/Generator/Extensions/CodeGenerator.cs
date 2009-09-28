@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.CodeDom.Compiler;
 using System.CodeDom;
 using System.IO;
@@ -10,26 +8,24 @@ namespace LinqToCodedom.CustomCodeDomGeneration
 {
     public interface ICustomCodeDomObject
     {
-        void GenerateCode(LinqToCodedom.CodeDomGenerator.Language language);
+        void GenerateCode(CodeDomGenerator.Language language);
     }
-
-    class ccc { }
 
     class CustomCodeGenerator : ICodeCompiler, ICodeGenerator
         //CodeCompiler
     {
-        LinqToCodedom.CodeDomGenerator.Language _lang;
-        CodeDomProvider _provider;
+        readonly CodeDomGenerator.Language _lang;
+        //CodeDomProvider _provider;
 
-        public CustomCodeGenerator(LinqToCodedom.CodeDomGenerator.Language lang)
+        public CustomCodeGenerator(CodeDomGenerator.Language lang)
         {
             _lang = lang;
         }
 
-        public CustomCodeGenerator(CodeDomProvider provider)
-        {
-            _provider = provider;
-        }
+        //public CustomCodeGenerator(CodeDomProvider provider)
+        //{
+        //    _provider = provider;
+        //}
 
         private ICodeGenerator _generator;
 

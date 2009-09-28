@@ -870,7 +870,7 @@ namespace LinqToCodedomTest
 
             Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
 
-            //c.AddReference("System.Core.dll");
+            c.AddReference("System.Core.dll");
 
             var ass = c.Compile();
 

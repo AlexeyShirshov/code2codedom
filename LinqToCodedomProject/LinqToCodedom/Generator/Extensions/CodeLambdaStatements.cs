@@ -8,25 +8,25 @@ using LinqToCodedom.Generator;
 
 namespace LinqToCodedom.CodeDomPatterns
 {
-    public class CodeLambdaExpression : CodeSnippetExpression, ICustomCodeDomObject
+    public class CodeLambdaStatements : CodeSnippetExpression, ICustomCodeDomObject
 	{
-		private CodeExpression m_expression;
+		private IEnumerable<CodeStatement> _statements;
         private List<LambdaParam> _params;
 
-        public CodeLambdaExpression(CodeExpression expression, List<LambdaParam> lambdaParams)
+        public CodeLambdaStatements(IEnumerable<CodeStatement> stmts, List<LambdaParam> lambdaParams)
 		{
-			m_expression = expression;
+			_statements = stmts;
             LambdaParams = lambdaParams;
 		}
 
-		public CodeExpression Expression
+        public IEnumerable<CodeStatement> Statements
 		{
-			get { return m_expression; }
+			get { return _statements; }
 			set
 			{
-				if (m_expression != value)
+				if (_statements != value)
 				{
-					m_expression = value;
+					_statements = value;
 				}
 			}
 		}
@@ -67,8 +67,15 @@ namespace LinqToCodedom.CodeDomPatterns
                             if (_params.Count != 1 || _params[0].Type != null)
                                 tw.Write(")");
 
-                            tw.Write(" => ");
-                            provider.GenerateCodeFromExpression(Expression, tw, opts);
+                            tw.WriteLine(" => ");
+                            tw.WriteLine("{");
+                            tw.Indent++;
+                            foreach (CodeStatement statement in Statements)
+                            {
+                                provider.GenerateCodeFromStatement(statement, tw, opts);
+                            }
+                            tw.Indent--;
+                            tw.Write("}");
                             Value = tw.InnerWriter.ToString();
                         }
                     }
@@ -79,25 +86,26 @@ namespace LinqToCodedom.CodeDomPatterns
                         System.CodeDom.Compiler.CodeGeneratorOptions opts = new System.CodeDom.Compiler.CodeGeneratorOptions();
                         using (System.CodeDom.Compiler.IndentedTextWriter tw = new System.CodeDom.Compiler.IndentedTextWriter(new StringWriter(), opts.IndentString))
                         {
-                            tw.Write("Function(");
+                            throw new NotImplementedException();
+                            //tw.Write("Function(");
 
-                            for (int i = 0; i < _params.Count; i++)
-                            {
-                                if (i > 0)
-                                    tw.Write(", ");
+                            //for (int i = 0; i < _params.Count; i++)
+                            //{
+                            //    if (i > 0)
+                            //        tw.Write(", ");
 
-                                tw.Write(_params[i].Name);
+                            //    tw.Write(_params[i].Name);
 
-                                if (_params[i].Type != null)
-                                {
-                                    tw.Write(" As ");
-                                    provider.GenerateCodeFromExpression(new CodeTypeReferenceExpression(_params[i].Type), tw, opts);
-                                }
-                            }
+                            //    if (_params[i].Type != null)
+                            //    {
+                            //        tw.Write(" As ");
+                            //        provider.GenerateCodeFromExpression(new CodeTypeReferenceExpression(_params[i].Type), tw, opts);
+                            //    }
+                            //}
 
-                            tw.Write(") ");
-                            provider.GenerateCodeFromExpression(Expression, tw, opts);
-                            Value = tw.InnerWriter.ToString();
+                            //tw.Write(") ");
+                            //provider.GenerateCodeFromExpression(Statements, tw, opts);
+                            //Value = tw.InnerWriter.ToString();
                         }
                     }
                     break;
