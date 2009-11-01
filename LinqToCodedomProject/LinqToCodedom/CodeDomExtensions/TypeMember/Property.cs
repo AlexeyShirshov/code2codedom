@@ -50,6 +50,14 @@ namespace LinqToCodedom.Extensions
         }
 
         public static CodeMemberProperty AddProperty(this CodeTypeMember member,
+            CodeTypeReference propertyType, MemberAttributes ma, string name)
+        {
+            var classCode = member.GetDeclaration();
+
+            return classCode.AddProperty(propertyType, ma, name);
+        }
+
+        public static CodeMemberProperty AddProperty(this CodeTypeMember member,
             Type propertyType, MemberAttributes ma, string name,
                 CodeStatement[] getStatements, params CodeStatement[] setStatements)
         {

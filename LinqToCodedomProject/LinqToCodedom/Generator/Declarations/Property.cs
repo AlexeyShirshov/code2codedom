@@ -147,6 +147,11 @@ namespace LinqToCodedom.Generator
             return Property(propertyType, ma, name, null, null);
         }
 
+        public static CodeMemberProperty Property(CodeTypeReference propertyType, MemberAttributes ma, string name)
+        {
+            return Property(propertyType, ma, name, null, null);
+        }
+
         public static CodeMemberProperty Property(string propertyType, MemberAttributes ma, string name)
         {
             return Property(propertyType, ma, name, null, null);
