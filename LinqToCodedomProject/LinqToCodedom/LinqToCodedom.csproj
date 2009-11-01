@@ -112,6 +112,7 @@
     <Compile Include="Generator\Extensions\CodeReadonlyField.cs" />
     <Compile Include="Generator\Extensions\CodeLambdaExpression.cs" />
     <Compile Include="Generator\Extensions\CodeLambdaStatements.cs" />
+    <Compile Include="Generator\Extensions\CodeSnippetStatement.cs" />
     <Compile Include="Generator\Lambda.cs" />
     <Compile Include="Generator\Statements\assign.cs" />
     <Compile Include="Generator\Statements\attach.cs" />
