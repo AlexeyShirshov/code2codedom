@@ -65,6 +65,11 @@ namespace LinqToCodedom.Extensions
 
         #region Interface
 
+        public static CodeNamespace AddInterface(this CodeNamespace codeNamespace, string interfaceName)
+        {
+            return codeNamespace.AddInterface(new CodeTypeDeclaration(interfaceName) { IsInterface = true });
+        }
+
         public static CodeNamespace AddInterface(this CodeNamespace codeNamespace, CodeTypeDeclaration codeType)
         {
             codeNamespace.Types_Add(codeType);

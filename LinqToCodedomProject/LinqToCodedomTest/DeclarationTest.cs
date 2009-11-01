@@ -594,6 +594,14 @@ namespace LinqToCodedomTest
 
             Assert.IsNotNull(TestClass);
 
+            ass = c.Compile(CodeDomGenerator.Language.VB);
+
+            Assert.IsNotNull(ass);
+
+            TestClass = ass.GetType("Samples.xxx");
+
+            Assert.IsNotNull(TestClass);
+
         }
 
         [TestMethod]

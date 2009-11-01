@@ -31,7 +31,8 @@ namespace LinqToCodedom
                 CodeNamespace ns2add = ns;
                 for (int j = 0; j < ns.Types.Count; j++)
                 {
-                    CodeTypeDeclaration c = ns.Types[j];
+                    CodeTypeDeclaration c = ns2add.Types[j];
+                    ProcessTypeDeclaration(c, language);
                     List<Pair<int, CodeTypeMember>> toReplace = new List<Pair<int, CodeTypeMember>>();
                     for (int i = 0; i < c.Members.Count; i++)
                     {
@@ -43,9 +44,11 @@ namespace LinqToCodedom
                     if (toReplace.Count > 0)
                     {
                         if (ns2add == ns)
+                        {
                             ns2add = ns.Clone() as CodeNamespace;
+                            c = ns2add.Types[j];
+                        }
 
-                        c = ns2add.Types[j];
                         foreach (Pair<int, CodeTypeMember> p in toReplace)
                         {
                             int idx = p.First;
@@ -55,6 +58,38 @@ namespace LinqToCodedom
                     }
                 }
                 compileUnit.Namespaces.Add(ns2add);
+            }
+        }
+
+        private static void ProcessTypeDeclaration(CodeTypeDeclaration td, CodeDomGenerator.Language language)
+        {
+            if (language == CodeDomGenerator.Language.VB)
+            {
+                if (td.BaseTypes.Count > 0)
+                {
+                    CodeTypeReference r = td.BaseTypes[0];
+                    if (r.UserData.Contains("linq2codedom:interface"))
+                    {
+                        if ((bool)r.UserData["linq2codedom:interface"])
+                        {
+                            bool found = false;
+                            for(int i = 1; i < td.BaseTypes.Count;i++)
+                            {
+                                CodeTypeReference item = td.BaseTypes[i];
+                                if (!item.UserData.Contains("linq2codedom:interface") ||
+                                    !(bool)item.UserData["linq2codedom:interface"])
+                                {
+                                    found = true;
+                                    td.BaseTypes.RemoveAt(i);
+                                    td.BaseTypes.Insert(i, item);
+                                    break;
+                                }
+                            }
+                            if (!found)
+                                td.BaseTypes.Insert(0, new CodeTypeReference(typeof(object)));
+                        }
+                    }
+                }
             }
         }
 
@@ -101,7 +136,9 @@ namespace LinqToCodedom
             }
             else if (typeof(CodeTypeDeclaration).IsAssignableFrom(m.GetType()))
             {
-                foreach (CodeTypeMember ms in ((CodeTypeDeclaration)m).Members)
+                CodeTypeDeclaration td = (CodeTypeDeclaration)m;
+                ProcessTypeDeclaration(td, language);
+                foreach (CodeTypeMember ms in td.Members)
                 {
                     ProcessMember(ms, language);
                 }
