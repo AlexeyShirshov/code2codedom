@@ -73,18 +73,32 @@ namespace LinqToCodedom.Extensions
 
         public static CodeTypeDeclaration Implements(this CodeTypeDeclaration classCode, params string[] type)
         {
-            classCode.BaseTypes.AddRange(type.Select((t)=>new CodeTypeReference(t)).ToArray());
+            var s = type.Select((t) => new CodeTypeReference(t));
+            foreach (var item in s)
+            {
+                item.UserData["linq2codedom:interface"] = true;
+            }
+            classCode.BaseTypes.AddRange(s.ToArray());
             return classCode;
         }
 
         public static CodeTypeDeclaration Implements(this CodeTypeDeclaration classCode, params Type[] type)
         {
-            classCode.BaseTypes.AddRange(type.Select((t) => new CodeTypeReference(t)).ToArray());
+            var s = type.Select((t) => new CodeTypeReference(t));
+            foreach (var item in s)
+            {
+                item.UserData["linq2codedom:interface"] = true;
+            }
+            classCode.BaseTypes.AddRange(s.ToArray());
             return classCode;
         }
 
         public static CodeTypeDeclaration Implements(this CodeTypeDeclaration classCode, params CodeTypeReference[] type)
         {
+            foreach (var item in type)
+            {
+                item.UserData["linq2codedom:interface"] = true;
+            }
             classCode.BaseTypes.AddRange(type);
             return classCode;
         }

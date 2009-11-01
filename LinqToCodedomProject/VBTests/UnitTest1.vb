@@ -66,5 +66,4 @@ Imports System.CodeDom
         Assert.IsNotNull(TestClass)
 
     End Sub
-
 End Class
