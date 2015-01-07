@@ -1,17 +1,17 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToCodedom", "LinqToCodedom\LinqToCodedom.csproj", "{FD81A5CB-BEC5-4B58-9A40-161BD87CF74D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo", "Demo\Demo.csproj", "{ADF4DAD3-9A8F-4207-90D9-4AF4320A0DB9}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToCodedomTest", "LinqToCodedomTest\LinqToCodedomTest.csproj", "{5B031C1D-341A-4C76-B822-DA7C0F35C457}"
-EndProject
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E46C8D98-9068-4F80-8C9D-6123FCEEDE92}"
 	ProjectSection(SolutionItems) = preProject
 		Default.testrunconfig = Default.testrunconfig
 		LinqToCodedomProject.vsmdi = LinqToCodedomProject.vsmdi
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToCodedom", "LinqToCodedom\LinqToCodedom.csproj", "{FD81A5CB-BEC5-4B58-9A40-161BD87CF74D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo", "Demo\Demo.csproj", "{ADF4DAD3-9A8F-4207-90D9-4AF4320A0DB9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToCodedomTest", "LinqToCodedomTest\LinqToCodedomTest.csproj", "{5B031C1D-341A-4C76-B822-DA7C0F35C457}"
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "VBTests", "VBTests\VBTests.vbproj", "{4B8B05B5-C0E3-4FF4-BE4A-655D8128C4E3}"
 EndProject
@@ -19,7 +19,7 @@ Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 5
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://tfs10.codeplex.com/
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs10
 		SccLocalPath0 = .
 		SccProjectUniqueName1 = LinqToCodedom\\LinqToCodedom.csproj
 		SccProjectName1 = LinqToCodedom
