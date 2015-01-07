@@ -66,4 +66,12 @@ Imports System.CodeDom
         Assert.IsNotNull(TestClass)
 
     End Sub
+
+    Public Sub TestLambda()
+        Dim a As System.Linq.Expressions.Expression(Of System.Func(Of Integer)) = Function() 1
+        Dim c As System.Linq.Expressions.Expression(Of System.Func(Of Integer, Integer)) = Function(aa As Integer) (aa + 10)
+
+        c.Compile()(a.Compile()())
+
+    End Sub
 End Class
