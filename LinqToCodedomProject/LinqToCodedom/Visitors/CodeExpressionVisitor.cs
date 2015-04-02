@@ -569,6 +569,7 @@ namespace LinqToCodedom.Visitors
                         if (methodCallExpression.Arguments.Count > 1)
                             throw new NotImplementedException();
                         return new CodeDom.CodeWrapExpression(new CodePropertyReferenceExpression(rto, propertyName));
+                        //return new CodePropertyReferenceExpression(rto, propertyName);
                     case "Field":
                         string fieldName = CodeDom.Eval<string>(methodCallExpression.Arguments[0]);
                         if (methodCallExpression.Arguments.Count > 1)

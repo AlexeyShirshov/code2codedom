@@ -75,6 +75,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeDomExtensions\PropertyInterface.cs" />
     <Compile Include="CodeDomExtensions\Statement.cs" />
     <Compile Include="CodeDomExtensions\TryCatch.cs" />
     <Compile Include="CodeDomExtensions\Ctor.cs" />
@@ -112,6 +113,7 @@
     <Compile Include="Generator\Declarations\StructField.cs" />
     <Compile Include="Generator\Delegates.cs" />
     <Compile Include="Generator\Extensions\CodeCustomEvent.cs" />
+    <Compile Include="Generator\Extensions\CodePropertyImplementsInterface.cs" />
     <Compile Include="Generator\Extensions\CodeGenerator.cs">
       <SubType>Component</SubType>
     </Compile>

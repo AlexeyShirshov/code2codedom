@@ -245,6 +245,10 @@ namespace LinqToCodedom.Generator
             return default(T);
         }
 
+        public static Prop Property(Base target, string name)
+        {
+            return new Prop(target, name);
+        }
         #endregion
 
         #region Functions
