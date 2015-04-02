@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LinqToCodedom.CodeDomPatterns;
+using System;
 using System.CodeDom;
 
 namespace LinqToCodedom.Extensions
@@ -14,6 +15,12 @@ namespace LinqToCodedom.Extensions
             else
                 property.ImplementationTypes.Add(t);
             return property;
+        }
+
+        public static CodePropertyImplementsInterface Implements(this CodeMemberProperty property, CodeTypeReference t, string interfaceProperty)
+        {
+            var p = new CodePropertyImplementsInterface(property);
+            return p.Implements(t, interfaceProperty);
         }
 
         public static CodeMemberProperty Implements(this CodeMemberProperty property, Type t)

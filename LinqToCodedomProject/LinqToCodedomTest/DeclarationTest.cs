@@ -803,6 +803,39 @@ namespace LinqToCodedomTest
         }
 
         [TestMethod]
+        public void TestPropertyInterface()
+        {
+            var c = new CodeDomGenerator();
+
+            c.AddNamespace("Samples")
+                .AddClass(Define.Class("ee", TypeAttributes.Public, true).Implements(new CodeTypeReference("Ixxx"))
+                    .AddMember(Define.Property(new CodeTypeReference(typeof(string)), MemberAttributes.Public,
+                        "prop", 
+                        new CodeStatement[]{ Emit.@return(() => "sdfsf")}, 
+                        new CodeStatement[]{ Emit.assignVar("value", ()=>"sadfaf")}
+                    ).Implements(new CodeTypeReference("Ixxx"), "dsf"))
+                ).AddInterface(Define.Interface("Ixxx")
+                    .AddProperty(new CodeTypeReference(typeof(string)), MemberAttributes.Public, "dsf")
+                );
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.VB));
+
+            Console.WriteLine(c.GenerateCode(CodeDomGenerator.Language.CSharp));
+
+            var ass = c.Compile(null, CodeDomGenerator.Language.VB);
+
+            Assert.IsNotNull(ass);
+
+            Type eeClass = ass.GetType("Samples.ee");
+
+            Assert.IsNotNull(eeClass);
+
+            ass = c.Compile(null, CodeDomGenerator.Language.CSharp);
+
+            Assert.IsNotNull(ass);
+        }
+
+        [TestMethod]
         public void TestCustomEvent()
         {
             var c = new CodeDomGenerator();

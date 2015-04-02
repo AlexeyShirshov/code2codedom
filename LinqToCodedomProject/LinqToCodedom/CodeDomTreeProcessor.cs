@@ -93,7 +93,7 @@ namespace LinqToCodedom
             }
         }
 
-        private static CodeTypeMember ProcessMember(CodeTypeMember m, LinqToCodedom.CodeDomGenerator.Language language)
+        internal static CodeTypeMember ProcessMember(CodeTypeMember m, LinqToCodedom.CodeDomGenerator.Language language)
         {
             foreach (CodeDirective directive in m.StartDirectives)
             {
@@ -142,6 +142,41 @@ namespace LinqToCodedom
                 {
                     ProcessMember(ms, language);
                 }
+            }
+            else if (typeof(CodeDefaultProperty).IsAssignableFrom(m.GetType()))
+            {
+                ProcessMember((m as CodeDefaultProperty).Property, language);
+                foreach (CodeExpression p in (m as CodeDefaultProperty).Parameters)
+                {
+                    ProcessExpr(p, language);
+                }
+            }
+            else if (typeof(CodeReadOnlyField).IsAssignableFrom(m.GetType()))
+            {
+                ProcessMember((m as CodeReadOnlyField).Field, language);
+            }
+            else if (typeof(CodePropertyImplementsInterface).IsAssignableFrom(m.GetType()))
+            {
+                ProcessMember((m as CodePropertyImplementsInterface).Property, language);
+            }
+            else if (typeof(CodePartialMethod).IsAssignableFrom(m.GetType()))
+            {
+                ProcessMember((m as CodePartialMethod).Method, language);
+            }
+            else if (typeof(CodeMemberOperatorOverride).IsAssignableFrom(m.GetType()))
+            {
+                foreach(CodeExpression p in (m as CodeMemberOperatorOverride).Parameters)
+                {
+                    ProcessExpr(p, language);
+                }
+            }
+            else if (typeof(CodeCustomEvent).IsAssignableFrom(m.GetType()))
+            {
+                var ce = m as CodeCustomEvent;
+                ProcessMember(ce.Event, language);
+                ProcessMember(ce.AddMethod, language);
+                ProcessMember(ce.RemoveMethod, language);
+                ProcessMember(ce.RaiseMethod, language);
             }
 
             ICustomCodeDomObject co = m as ICustomCodeDomObject;
