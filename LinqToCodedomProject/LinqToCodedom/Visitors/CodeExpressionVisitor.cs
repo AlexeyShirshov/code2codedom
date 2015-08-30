@@ -312,7 +312,7 @@ namespace LinqToCodedom.Visitors
                         CodeDom.Eval<string>(methodCallExpression.Arguments[0]));
                 }
 
-                else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.TypeRef")
+                else if (mr.MethodName.StartsWith("LinqToCodedom.Generator.CodeDom.TypeRef"))
                 {
                     var c = new CodeTypeReferenceExpression(
                         CodeDom.Eval<string>(methodCallExpression.Arguments[0]));
@@ -329,7 +329,7 @@ namespace LinqToCodedom.Visitors
                     }
                     return c;
                 }
-                else if (mr.MethodName == "LinqToCodedom.Generator.CodeDom.TypeOf")
+                else if (mr.MethodName.StartsWith("LinqToCodedom.Generator.CodeDom.TypeOf"))
                 {
                     var c = new CodeTypeOfExpression(
                         CodeDom.Eval<string>(methodCallExpression.Arguments[0]));
