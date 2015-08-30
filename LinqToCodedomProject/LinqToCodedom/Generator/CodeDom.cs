@@ -340,17 +340,17 @@ namespace LinqToCodedom.Generator
 
         #endregion
 
-        public static Type TypeOf(string type, params string[] types)
+        public static Type TypeOf(string type, params string[] generic)
         {
             return typeof(string);
         }
 
-        public static Type TypeOf(Type type, params Type[] types)
+        public static Type TypeOf(Type type, params Type[] generic)
         {
             return type;
         }
 
-        public static Type TypeOf(Type type, params string[] types)
+        public static Type TypeOf_str(Type type, params string[] generic)
         {
             return type;
         }
@@ -360,9 +360,9 @@ namespace LinqToCodedom.Generator
         //    return new CodeTypeOfExpression(TypeRef(type, types));
         //}
 
-        public static CodeTypeReference TypeRef(Type type, params CodeTypeReference[] types)
+        public static CodeTypeReference TypeRef(Type type, params CodeTypeReference[] generic)
         {
-            return TypeRef(new CodeTypeReference(type), types);
+            return TypeRef(new CodeTypeReference(type), generic);
         }
 
         //public static CodeTypeReference TypeRef(string type, params CodeTypeReference[] types)
@@ -370,34 +370,34 @@ namespace LinqToCodedom.Generator
         //    return new CodeTypeReference(type, types);
         //}
 
-        public static CodeTypeReference TypeRef(string type, params string[] types)
+        public static CodeTypeReference TypeRef_str(string type, params string[] generic)
         {
             return new CodeTypeReference(type,
-                types.Select((t) => new CodeTypeReference(t)).ToArray());
+                generic.Select((t) => new CodeTypeReference(t)).ToArray());
         }
 
-        public static CodeTypeReference TypeRef(Type type, params Type[] types)
+        public static CodeTypeReference TypeRef(Type type, params Type[] generic)
         {
             var d = new CodeTypeReference(type);
-            d.TypeArguments.AddRange(types.Select((t) => new CodeTypeReference(t)).ToArray());
+            d.TypeArguments.AddRange(generic.Select((t) => new CodeTypeReference(t)).ToArray());
             return d;
         }
 
-        public static CodeTypeReference TypeRef(Type type, params string[] types)
+        public static CodeTypeReference TypeRef_str(Type type, params string[] generic)
         {
-            return TypeRef(new CodeTypeReference(type), types);
+            return TypeRef_str(new CodeTypeReference(type), generic);
         }
 
-        public static CodeTypeReference TypeRef(CodeTypeReference type, params string[] types)
+        public static CodeTypeReference TypeRef_str(CodeTypeReference type, params string[] generic)
         {
             var d = type;
-            d.TypeArguments.AddRange(types.Select((t) => new CodeTypeReference(t)).ToArray());
+            d.TypeArguments.AddRange(generic.Select((t) => new CodeTypeReference(t)).ToArray());
             return d;
         }
 
-        public static CodeTypeReference TypeRef(CodeTypeReference type, params CodeTypeReference[] types)
+        public static CodeTypeReference TypeRef(CodeTypeReference type, params CodeTypeReference[] generic)
         {
-            type.TypeArguments.AddRange(types);
+            type.TypeArguments.AddRange(generic);
             return type;
         }
 
