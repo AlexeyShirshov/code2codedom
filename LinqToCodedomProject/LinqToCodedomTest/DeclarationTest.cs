@@ -264,13 +264,13 @@ namespace LinqToCodedomTest
                 )
                 .AddProperty("T", MemberAttributes.Public, "S", "_s")
             ).AddClass(Define.Class("cls")
-                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, CodeDom.TypeRef("TestClass", "T"), () => "foo", 
-                    Emit.declare(CodeDom.TypeRef("TestClass", "T"), "cc",
-                        () => CodeDom.@new(CodeDom.TypeRef("TestClass", "T"))), 
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, CodeDom.TypeRef(new CodeTypeReference("TestClass"), new CodeTypeReference("T")), () => "foo", 
+                    Emit.declare(CodeDom.TypeRef(new CodeTypeReference("TestClass"), new CodeTypeReference("T")), "cc",
+                        () => CodeDom.@new(CodeDom.TypeRef(new CodeTypeReference("TestClass"), new CodeTypeReference("T")))), 
                     Emit.@return((Var cc) => cc))
                 .Generic("T")
                 .AddMethod(MemberAttributes.Public | MemberAttributes.Static, ()=>"foo2",
-                    Emit.stmt(()=>CodeDom.Call(CodeDom.TypeRef("cls"), "foo", typeof(int)))
+                    Emit.stmt(()=>CodeDom.Call(CodeDom.TypeRef(new CodeTypeReference("cls")), "foo", typeof(int)))
                 )
                 .AddMethod(MemberAttributes.Static, ()=>"foo3", 
                     Emit.@return()

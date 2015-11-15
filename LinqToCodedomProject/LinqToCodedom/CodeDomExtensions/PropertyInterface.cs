@@ -1,6 +1,7 @@
 ﻿using LinqToCodedom.CodeDomPatterns;
 using System;
 using System.CodeDom;
+using System.Linq;
 
 namespace LinqToCodedom.Extensions
 {
@@ -10,15 +11,12 @@ namespace LinqToCodedom.Extensions
 
         public static CodePropertyImplementsInterface Implements(this CodePropertyImplementsInterface property, CodeTypeReference t, string interfaceProperty)
         {
-            //if ((property.Attributes & MemberAttributes.Private) == MemberAttributes.Private)
-            //    property.Property.PrivateImplementationType = t;
-            //else
-            {
-                if (!property.Property.ImplementationTypes.Contains(t))
-                    property.Property.ImplementationTypes.Add(t);
+            if (!property.Property.ImplementationTypes.Cast<CodeTypeReference>().Any(it=>it.IsEquals(t)))
+                property.Property.ImplementationTypes.Add(t);
 
-                if (!string.IsNullOrEmpty(interfaceProperty))
-                    property.InterfaceProperties[t] = interfaceProperty;
+            if (!string.IsNullOrEmpty(interfaceProperty) && !property.InterfaceProperties.Any(it=>it.Item2 == interfaceProperty))
+            {
+                property.InterfaceProperties.Add(new Tuple<CodeTypeReference,string>(t, interfaceProperty));
             }
             return property;
         }
