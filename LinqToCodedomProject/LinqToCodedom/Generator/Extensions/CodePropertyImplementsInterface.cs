@@ -7,17 +7,18 @@ using System.CodeDom;
 using LinqToCodedom.CustomCodeDomGeneration;
 using LinqToCodedom.Extensions;
 using LinqToCodedom.Generator;
+using System.Linq;
 
 namespace LinqToCodedom.CodeDomPatterns
 {
 
     public class CodePropertyImplementsInterface : CodeSnippetTypeMember, ICustomCodeDomObject
     {
-        public IDictionary<CodeTypeReference, String> InterfaceProperties { get; set; }
+        public IList<Tuple<CodeTypeReference, String>> InterfaceProperties { get; set; }
 
         public CodePropertyImplementsInterface(CodeMemberProperty property)
         {
-            InterfaceProperties = new Dictionary<CodeTypeReference, string>();
+            InterfaceProperties = new List<Tuple<CodeTypeReference, string>>();
             _property = property;
         }
 
@@ -73,10 +74,8 @@ namespace LinqToCodedom.CodeDomPatterns
                 List<CodeTypeReference> implTypes = new List<CodeTypeReference>();
                 if (_property.ImplementationTypes != null)
                 {
-                    var arr = new CodeTypeReference[_property.ImplementationTypes.Count];
-                    _property.ImplementationTypes.CopyTo(arr, 0);
+                    implTypes.AddRange(_property.ImplementationTypes.Cast<CodeTypeReference>().Distinct(new CodeTypeReferenceEqualityComparer()));
                     _property.ImplementationTypes.Clear();
-                    implTypes.AddRange(arr);
                 }
                 provider.GenerateCodeFromMember(_property, sw, opts);
                 foreach (CodeTypeReference tr in implTypes)
@@ -95,10 +94,9 @@ namespace LinqToCodedom.CodeDomPatterns
                     sb.Append(" Implements ");
                     foreach (CodeTypeReference tr in implTypes)
                     {
-                        string prop;
-                        if (InterfaceProperties.TryGetValue(tr, out prop))
+                        foreach(var prop in InterfaceProperties.Where(it => it.Item1.IsEquals(tr)))
                         {
-                            sb.Append(provider.GetTypeOutput(tr)).Append(".").Append(prop).Append(", ");
+                            sb.Append(provider.GetTypeOutput(tr)).Append(".").Append(prop.Item2).Append(", ");
                         }
                     }
                     sb.Length -= 2;
@@ -120,11 +118,8 @@ namespace LinqToCodedom.CodeDomPatterns
                 List<CodeTypeReference> implTypes = new List<CodeTypeReference>();
                 if (_property.ImplementationTypes != null)
                 {
-                    var arr = new CodeTypeReference[_property.ImplementationTypes.Count];
-                    _property.ImplementationTypes.CopyTo(arr, 0);
+                    implTypes.AddRange(_property.ImplementationTypes.Cast<CodeTypeReference>().Distinct(new CodeTypeReferenceEqualityComparer()));
                     _property.ImplementationTypes.Clear();
-                    _property.PrivateImplementationType = null;
-                    implTypes.AddRange(arr);
                 }
                 provider.GenerateCodeFromMember(_property, sw, opts);
                 foreach (CodeTypeReference tr in implTypes)
@@ -142,10 +137,9 @@ namespace LinqToCodedom.CodeDomPatterns
                 {
                     foreach (CodeTypeReference tr in implTypes)
                     {
-                        string prop;
-                        if (InterfaceProperties.TryGetValue(tr, out prop))
+                        foreach (var prop in InterfaceProperties.Where(it => it.Item1.IsEquals(tr)))
                         {
-                            var newProp = Define.Property(_property.Type, MemberAttributes.Private, prop).Implements(tr);
+                            var newProp = Define.Property(_property.Type, MemberAttributes.Private, prop.Item2).Implements(tr);
                             if (_property.HasGet)
                             {
                                 newProp.GetStatements.Add(Emit.@return(()=>CodeDom.@this.Property(_property.Name)));

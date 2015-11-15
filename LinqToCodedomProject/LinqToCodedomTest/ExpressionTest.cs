@@ -100,7 +100,7 @@ namespace LinqToCodedomTest
             c.AddNamespace("Samples").AddClass("cls")
                 .AddMethod(MemberAttributes.Public | MemberAttributes.Static, () => "foo",
                     Emit.declare("cls[]", "d"),
-                    Emit.declare(CodeDom.TypeRef(typeof(List<>), "cls"), "d2"),
+                    Emit.declare(CodeDom.TypeRef(typeof(List<>), new CodeTypeReference("cls")), "d2"),
                     Emit.assignVar("d", (Var d2) => d2.Call("ToArray"))
                 )
             ;
@@ -315,9 +315,9 @@ namespace LinqToCodedomTest
                 )
                 .AddProperty("T", MemberAttributes.Public, "S", "_s")
             ).AddClass(Define.Class("cls")
-                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, CodeDom.TypeRef("TestClass", "T"), () => "foo", 
-                    Emit.declare(CodeDom.TypeRef("TestClass", "T"), "cc",
-                        () => CodeDom.@new(CodeDom.TypeRef("TestClass", "T"))), 
+                .AddMethod(MemberAttributes.Public | MemberAttributes.Static, CodeDom.TypeRef(new CodeTypeReference("TestClass"), new CodeTypeReference("T")), () => "foo", 
+                    Emit.declare(CodeDom.TypeRef(new CodeTypeReference("TestClass"), new CodeTypeReference("T")), "cc",
+                        () => CodeDom.@new(CodeDom.TypeRef(new CodeTypeReference("TestClass"), new CodeTypeReference("T")))), 
                     Emit.@return((Var cc) => cc))
                 .Generic("T")
             );
@@ -396,7 +396,7 @@ namespace LinqToCodedomTest
 
             c.AddNamespace("Samples").AddClass("cls")
                 .AddMethod(MemberAttributes.Static | MemberAttributes.Public, () => "foo",
-                    Emit.stmt(() => CodeDom.Call(CodeDom.TypeRef("cls"), "zoo")(default(int)))
+                    Emit.stmt(() => CodeDom.Call(CodeDom.TypeRef(new CodeTypeReference("cls")), "zoo")(default(int)))
                 )
                 .AddMethod(MemberAttributes.Static | MemberAttributes.Private, (int i) => "zoo",
                     Emit.stmt((int i) => Console.WriteLine(i))

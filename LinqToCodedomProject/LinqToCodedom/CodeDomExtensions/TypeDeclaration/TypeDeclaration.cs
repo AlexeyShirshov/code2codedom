@@ -3,6 +3,8 @@ using System.Linq.Expressions;
 using LinqToCodedom.Generator;
 using System;
 using System.Linq;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace LinqToCodedom.Extensions
 {
@@ -181,5 +183,67 @@ namespace LinqToCodedom.Extensions
             return @class;
         }
 
+        public static bool IsEquals(this CodeTypeReference typeRef, CodeTypeReference type)
+        {
+            if (typeRef == null)
+            {
+                if (type == null)
+                    return true;
+            }
+            else if (type != null)
+            {
+                if (typeRef.BaseType == type.BaseType)
+                {
+                    if ((typeRef.TypeArguments == null || typeRef.TypeArguments.Count == 0) &&
+                        (type.TypeArguments == null || type.TypeArguments.Count == 0))
+                    {
+                        return true;
+                    }
+                    else if (typeRef.TypeArguments != null && type.TypeArguments != null)
+                    {
+                        return typeRef.TypeArguments.Cast<CodeTypeReference>().All(outer => type.TypeArguments.Cast<CodeTypeReference>().Any(inner => inner.IsEquals(outer)));
+                    }
+                }
+            }
+            return false;
+        }
+    }
+
+    public class CodeTypeReferenceEqualityComparer : IEqualityComparer, IEqualityComparer<CodeTypeReference>
+    {
+
+        bool IEqualityComparer.Equals(object x, object y)
+        {
+            return Equals(x as CodeTypeReference, y as CodeTypeReference);
+        }
+
+        int IEqualityComparer.GetHashCode(object obj)
+        {
+            return GetHashCode(obj as CodeTypeReference);
+        }
+
+        public bool Equals(CodeTypeReference x, CodeTypeReference y)
+        {
+            return x.IsEquals(y);
+        }
+
+        public int GetHashCode(CodeTypeReference typeRef)
+        {
+            if (typeRef != null && !string.IsNullOrEmpty(typeRef.BaseType))
+            {
+                var r = typeRef.BaseType.GetHashCode();
+
+                if (typeRef.TypeArguments != null)
+                    foreach (CodeTypeReference t in typeRef.TypeArguments)
+                    {
+                        r |= new CodeTypeReferenceEqualityComparer().GetHashCode(t);
+                    }
+
+                return r;
+            }
+
+            return 0;
+
+        }
     }
 }
