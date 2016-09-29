@@ -262,6 +262,11 @@ namespace LinqToCodedom.Generator
         {
             return default(ParamsDelegate<TReturn>);
         }
+
+        public static ParamsDelegate<TReturn> Call<TReturn>(CodeMethodReferenceExpression method)
+        {
+            return default(ParamsDelegate<TReturn>);
+        }
         #endregion
 
         #region Routines
@@ -286,6 +291,10 @@ namespace LinqToCodedom.Generator
             return default(ParamsDelegate);
         }
 
+        public static ParamsDelegate Call(CodeMethodReferenceExpression method)
+        {
+            return default(ParamsDelegate);
+        }
         #endregion
 
         #region Fields
@@ -339,7 +348,14 @@ namespace LinqToCodedom.Generator
         }
 
         #endregion
-
+        public static CodeMethodReferenceExpression MethodRef(Type type, string name)
+        {
+            return new CodeMethodReferenceExpression(new CodeTypeReferenceExpression(type), name);
+        }
+        public static CodeMethodReferenceExpression MethodRef(CodeExpression target, string name)
+        {
+            return new CodeMethodReferenceExpression(target, name);
+        }
         public static Type TypeOf(string type, params string[] generic)
         {
             return typeof(string);

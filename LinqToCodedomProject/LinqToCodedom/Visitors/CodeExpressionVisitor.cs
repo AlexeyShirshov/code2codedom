@@ -396,9 +396,15 @@ namespace LinqToCodedom.Visitors
                 {
                     if (methodCallExpression.Arguments.Count == 1)
                     {
-                        return new CodeMethodInvokeExpression(
-                            null,
-                            CodeDom.Eval<string>(methodCallExpression.Arguments[0]));
+                        if (methodCallExpression.Arguments[0].Type == typeof(CodeMethodReferenceExpression))
+                        {
+                            return new CodeMethodInvokeExpression(
+                                CodeDom.Eval<CodeMethodReferenceExpression>(methodCallExpression.Arguments[0]));
+                        }
+                        else
+                            return new CodeMethodInvokeExpression(
+                                null,
+                                CodeDom.Eval<string>(methodCallExpression.Arguments[0]));
                     }
                     else
                     {
