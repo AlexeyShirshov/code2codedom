@@ -355,11 +355,18 @@ namespace LinqToCodedom.Generator
             return type;
         }
 
-        //public static CodeTypeOfExpression TypeOf(string type, params string[] types)
-        //{
-        //    return new CodeTypeOfExpression(TypeRef(type, types));
-        //}
-
+        public static CodeTypeOfExpression TypeOfExp(CodeTypeReference type)
+        {
+            return new CodeTypeOfExpression(type);
+        }
+        public static CodeTypeOfExpression TypeOfExp(string type)
+        {
+            return new CodeTypeOfExpression(type);
+        }
+        public static CodeTypeOfExpression TypeOfExp(Type type)
+        {
+            return new CodeTypeOfExpression(type);
+        }
         public static CodeTypeReference TypeRef(Type type, params CodeTypeReference[] generic)
         {
             return TypeRef(new CodeTypeReference(type), generic);
