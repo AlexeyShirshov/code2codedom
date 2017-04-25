@@ -8,7 +8,7 @@ The library helps developers to write dynamic source code generators based on Mi
 ### Features
 * Easy of use
 * Compile time check
-* [How to](How-to)
+* [How to](How-to.md)
 
 ### Sample
 CodeDOM is a abstract tree of language independent structures that can be converted to source code via corresponding code providers. 
